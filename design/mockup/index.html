@@ -62,7 +62,7 @@ canvas.gl{position:absolute;inset:0;width:100%;height:100%;display:block}
 .crumbs{position:absolute;left:36px;top:84px;display:flex;gap:12px;color:var(--dim);opacity:0;transition:opacity .5s}
 .crumbs.on{opacity:1}.crumbs b{color:var(--text);font-weight:500}
 .rail{position:absolute;right:36px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:flex-end;z-index:5}
-.rail button.z{display:flex;align-items:center;gap:14px;padding:12px 0;color:var(--faint);text-transform:uppercase;letter-spacing:.16em;font-size:12px;font-weight:500;transition:color .25s}
+.rail button.z{text-shadow:0 1px 8px #000;display:flex;align-items:center;gap:14px;padding:12px 0;color:var(--faint);text-transform:uppercase;letter-spacing:.16em;font-size:12px;font-weight:500;transition:color .25s}
 .rail button.z i{display:block;width:18px;height:1px;background:currentColor;transition:width .35s var(--ease)}
 .rail button.z:hover,.rail button.z[aria-current=true]{color:var(--text)}
 .rail button.z[aria-current=true] i{width:44px}
@@ -196,6 +196,9 @@ h2.t{font-weight:300;font-size:24px;letter-spacing:.16em;text-transform:uppercas
   .cmp{overflow-x:auto}.heat{grid-template-columns:150px repeat(10,minmax(38px,1fr));min-width:640px}
   .strip{grid-template-columns:repeat(2,1fr);bottom:84px;right:36px}
 }
+@media (max-height:760px){
+  .intro{top:44%}.intro p{display:none}.intro .row{margin-top:30px}
+}
 @media (max-width:700px){
   .top{padding:0 16px;grid-template-columns:auto 1fr}.top .r,.brand span{display:none}.nav a{padding:10px 9px}
   .intro{left:16px;right:16px}.rail{right:12px}.timebar{padding:0 14px;gap:12px}.timebar .date{min-width:120px}.strip{display:none}
@@ -238,7 +241,7 @@ h2.t{font-weight:300;font-size:24px;letter-spacing:.16em;text-transform:uppercas
     <div><span class="lab">Lunar day</span><b id="sAge"></b><small id="sPhase"></small></div>
     <div><span class="lab">Sun over the Moon</span><b id="sSun"></b><small>sub-solar longitude · declination</small></div>
     <div><span class="lab">Earth libration</span><b id="sLib"></b><small>latitude · longitude</small></div>
-    <div><span class="lab">Earth–Moon distance</span><b id="sDist"></b><small>not to scale on screen</small></div>
+    <div><span class="lab">Earth–Moon distance</span><b id="sDist"></b><small>Earth at true size ratio (3.7×); distance compressed; Sun not to scale</small></div>
   </div>
   <div class="rail" id="rail" role="group" aria-label="Zoom level">
     <button class="z" data-z="0" aria-current="true"><span>Moon</span><i></i></button>
@@ -482,7 +485,7 @@ vec4 earth(vec2 px){
  // rotate the surface about Earth's tilted spin axis
  vec3 ax=normalize(uAx);float cs=cos(uSpin),sn=sin(uSpin);
  vec3 q=n*cs+cross(ax,n)*sn+ax*dot(ax,n)*(1.-cs);
- float land=smoothstep(.5,.54,fbm3(q*2.4+3.)*.75+fbm3(q*6.)*.25);
+ float land=smoothstep(.46,.58,fbm3(q*1.9+3.)*.8+fbm3(q*5.)*.2);
  float cl=smoothstep(.55,.82,fbm3(q*3.4+11.+vec3(uSpin*.25,0.,0.)));
  vec3 sea=vec3(.03,.14,.38),ln=mix(vec3(.12,.3,.14),vec3(.52,.45,.3),smoothstep(.55,.75,fbm3(q*5.+1.)));
  vec3 base=mix(sea,ln,land);base=mix(base,vec3(.92),cl*.7);
@@ -591,11 +594,11 @@ function renderMoon(){
   const z=zst.z,k=sm(clamp(z,0,1)),k2=sm(clamp(z-1,0,1));
   const phi=lerp(-45,-90,k)*D2R;
   const B=camBasis(phi,zst.lon);
-  const R=Math.exp(z<=1?lerp(Math.log(.72),Math.log(5.2),k):lerp(Math.log(5.2),Math.log(24),k2));
+  const R=Math.exp(z<=1?lerp(Math.log(.3),Math.log(5.2),k):lerp(Math.log(5.2),Math.log(24),k2));
   const site=SITES[state.site],pole=[0,-1,0];
   const foc=z<=1?norm(B.d.map((v,i)=>lerp(v,pole[i],k))):norm(pole.map((v,i)=>lerp(v,site.q[i],k2)));
   const [W,Hh]=sizeCanvas(moonCv,.85),asp=W/Hh;
-  const tx=lerp(.133*asp,.18*asp,k);
+  const tx=lerp(.1*asp,.18*asp,k);
   const C=[tx-R*dot(foc,B.r),-R*dot(foc,B.u)];
   const S=sunVec(state.t),E=earthVec(state.t);
   // Sun: distant light, drawn in its true direction around the Moon
@@ -603,7 +606,8 @@ function renderMoon(){
   const sunS=[sx/sl*dist*asp*.62,sy/sl*dist*.85];
   // Earth: distant body in the sub-Earth direction (librates a few degrees; drawn off-scale, in the background)
   const ev=[dot(E,B.r),dot(E,B.u)],eBehind=dot(E,B.d)<0?1:0;
-  const eR=.13,eA=.92*sm(clamp((.5-z)/.4,0,1)),ep=[C[0]+ev[0]*asp*.52,C[1]+ev[1]*.9];
+  // True size ratio: Earth's diameter is 12,742 km vs the Moon's 3,474 km (3.67x). Only the distance is compressed.
+  const eR=R*3.67,dEM=R*5.0,eA=.92*sm(clamp((.5-z)/.4,0,1)),ep=[C[0]+ev[0]*dEM,C[1]+ev[1]*dEM];
   // Earth spin axis: 23.44° tilt, leaning away from the Sun (northern winter) ; one rotation per 0.99727 d
   const Sh=norm([S[0],0,S[2]]),ax3=norm([-Sh[0]*Math.sin(23.44*D2R),Math.cos(23.44*D2R),-Sh[2]*Math.sin(23.44*D2R)]);
   const axC=[dot(ax3,B.r),dot(ax3,B.u),dot(ax3,B.d)],Lc=[dot(S,B.r),dot(S,B.u),dot(S,B.d)];
