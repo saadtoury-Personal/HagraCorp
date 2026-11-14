@@ -87,6 +87,34 @@ public class EphemerisTests
         Assert.Equal(381000, eph.At(Row(0).Utc.AddMinutes(30)).EarthRangeKm, 6);
     }
 
+    private const string RealCsv =
+        "utc,subSunLat,subSunLon,subEarthLat,subEarthLon,earthRangeKm\n" +
+        "2026-01-01T00:00:00Z,-1.346422,32.519634,-6.556142,358.716549,361045.116\n" +
+        "2026-01-01T01:00:00Z,-1.345746,32.014308,-6.561459,358.793844,360984.955\n";
+
+    [Fact]
+    public void At_RealRows_MatchesReferenceValues()
+    {
+        var eph = Ephemeris.ParseCsv(new StringReader(RealCsv));
+        var s = eph.At(new DateTime(2026, 1, 1, 0, 30, 0, DateTimeKind.Utc));
+        Assert.Equal(-1.346097, s.SubSunLatDeg, 1e-5);
+        Assert.Equal(32.266971, s.SubSunLonDeg, 1e-5);
+        Assert.Equal(-6.558802, s.SubEarthLatDeg, 1e-5);
+        Assert.Equal(358.755196, s.SubEarthLonDeg, 1e-5);
+        Assert.Equal(361015.035, s.EarthRangeKm, 1e-3); // reference is rounded to 3 decimals
+    }
+
+    [Fact]
+    public void At_LocalTime_IsConvertedToUtc()
+    {
+        var eph = Ephemeris.ParseCsv(new StringReader(RealCsv));
+        var utc = new DateTime(2026, 1, 1, 0, 30, 0, DateTimeKind.Utc);
+        var fromUtc = eph.At(utc);
+        var fromLocal = eph.At(utc.ToLocalTime());
+        Assert.Equal(fromUtc.SubSunLonDeg, fromLocal.SubSunLonDeg, 9);
+        Assert.Equal(fromUtc.EarthRangeKm, fromLocal.EarthRangeKm, 9);
+    }
+
     [Fact]
     public void Constructor_MissingHour_Throws()
     {

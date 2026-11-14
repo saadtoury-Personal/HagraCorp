@@ -50,6 +50,9 @@ public sealed class Ephemeris
     /// <summary>Values at any time between Start and End (linear interpolation between the two hourly rows).</summary>
     public EphemSample At(DateTime utc)
     {
+        if (utc.Kind == DateTimeKind.Local)
+            utc = utc.ToUniversalTime();
+
         if (utc < Start || utc > End)
             throw new ArgumentOutOfRangeException(nameof(utc), utc, "utc is outside the ephemeris range");
 
