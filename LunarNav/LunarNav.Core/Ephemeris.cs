@@ -25,12 +25,24 @@ public sealed class Ephemeris
     /// utc,subSunLat,subSunLon,subEarthLat,subEarthLon,earthRangeKm</summary>
     public static Ephemeris ParseCsv(TextReader reader)
     {
-        // TODO:
-        // 1. skip the header line
-        // 2. for each non-empty line: split on ',', parse with CultureInfo.InvariantCulture
-        //    (utc: DateTime.Parse(..., InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal))
-        // 3. return new Ephemeris(list)
-        throw new NotImplementedException();
+        var inv = CultureInfo.InvariantCulture;
+        var list = new List<EphemSample>();
+        reader.ReadLine(); // header
+        string? line;
+        while ((line = reader.ReadLine()) != null)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+                continue;
+            var p = line.Split(',');
+            list.Add(new EphemSample(
+                DateTime.Parse(p[0], inv, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
+                double.Parse(p[1], inv),
+                double.Parse(p[2], inv),
+                double.Parse(p[3], inv),
+                double.Parse(p[4], inv),
+                double.Parse(p[5], inv)));
+        }
+        return new Ephemeris(list);
     }
 
     /// <summary>Values at any time between Start and End (linear interpolation between the two hourly rows).</summary>
