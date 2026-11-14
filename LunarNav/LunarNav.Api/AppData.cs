@@ -19,9 +19,10 @@ public sealed class AppData
         if (!File.Exists(sitesPath)) throw new FileNotFoundException("sites.json not found in data directory");
 
         var json = File.ReadAllText(sitesPath);
-        Sites = JsonSerializer.Deserialize<List<Site>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        Sites = JsonSerializer.Deserialize<List<Site>>(json, JsonSerializerOptions.Web)
+            ?? throw new InvalidDataException("sites.json is empty or invalid");
 
-        if (Sites == null || Sites.Count == 0) throw new InvalidDataException("sites.json is empty or invalid");
+        if (Sites.Count == 0) throw new InvalidDataException("sites.json contains no sites");
     }
 
     public Site? FindSite(string id)
