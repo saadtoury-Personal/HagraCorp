@@ -1,14 +1,11 @@
 import { Box3, Vector3, type Object3D } from 'three'
 
-// Radii relative to the Moon (1737.4 km). The GLBs ship at unrelated native scales
-// (Moon r~1, Earth r=500), so each is normalised here. The Sun GLB (r=500 after its node scale)
-// is not used: the Sun is a distant light, drawn as a plain emissive disc.
+// The Moon GLB ships at its own scale, so it is normalised to a radius of 1.
+// Earth and Sun are not drawn in this view.
 export const MOON_R = 1
-export const EARTH_R = 6378.1 / 1737.4 // 3.67 : Earth is really 3.7x wider than the Moon
 
 export const MODEL_URLS = {
   moon: '/models/Moon_NASA_LRO_15k_Grid_Small.glb',
-  earth: '/models/Earth_1_12756.glb',
 } as const
 
 /** Scale `root` so its bounding sphere has the given radius, centred on the origin. */

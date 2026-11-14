@@ -1,23 +1,31 @@
 import { create } from 'zustand'
 
-// Single source of truth for a scenario. shortcut: no URL sync yet, add it when sharing links is needed.
+// Single source of truth for a scenario: every view reads it, none keeps its own copy.
+// shortcut: no URL sync yet, add it when sharing links is needed.
 type Scenario = {
-  siteId: string | null
-  /** Days since the timeline epoch (see lib/ephemeris). One shared time for every view. */
+  /** Index of the selected site in SITES. */
+  site: number
+  /** Days since the timeline epoch (see lib/ephemeris). */
   day: number
   playing: boolean
-  slipDays: number
-  stayDays: number
-  mast: 2 | 10
+  /** Mission length in days. */
+  dur: number
+  /** Minimum sunlit share, percent. */
+  minE: number
+  /** Minimum Earth-link share, percent. */
+  minD: number
+  /** Mast height in metres. */
+  mast: number
   set: (patch: Partial<Omit<Scenario, 'set'>>) => void
 }
 
 export const useScenario = create<Scenario>((set) => ({
-  siteId: null,
+  site: 0,
   day: 17, // waning gibbous: the visible hemisphere is lit, so the first screen is not a black disc
   playing: false,
-  slipDays: 0,
-  stayDays: 7,
-  mast: 2,
+  dur: 6.5, // 2023 NASA white paper: a first landing site should be sunlit about 6 to 6.5 days
+  minE: 90,
+  minD: 50,
+  mast: 3,
   set: (patch) => set(patch),
 }))

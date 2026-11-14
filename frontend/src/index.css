@@ -109,3 +109,20 @@ input[type='range']::-moz-range-thumb {
     animation-duration: 0.01ms !important;
   }
 }
+
+/* Diagonal hatch so "within 8 points" is not told apart by colour alone. */
+.hatch {
+  background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / 0.18) 0 2px, transparent 2px 6px);
+}
+
+@keyframes tour-fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+.tour-bar {
+  animation: tour-fill linear forwards;
+}

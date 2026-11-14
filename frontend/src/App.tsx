@@ -2,18 +2,15 @@ import { MoonIcon } from '@phosphor-icons/react'
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router'
 import Compare from './pages/Compare'
-import Navigator from './pages/Navigator'
-import SlipNavigator from './pages/SlipNavigator'
-import Validation from './pages/Validation'
 
+// The Globe (three.js) and Site pages are split out so the Compare page stays light.
 const Globe = lazy(() => import('./pages/Globe'))
+const Site = lazy(() => import('./pages/Site'))
 
 const links = [
   ['/', 'Globe'],
-  ['/navigator', 'Navigator'],
-  ['/slip', 'Slip Navigator'],
+  ['/site', 'Site'],
   ['/compare', 'Compare'],
-  ['/validation', 'Validation'],
 ] as const
 
 export default function App() {
@@ -32,7 +29,7 @@ export default function App() {
               end={to === '/'}
               className={({ isActive }) =>
                 `relative flex min-h-11 shrink-0 items-center px-3 text-xs font-medium uppercase tracking-[0.16em] transition-colors md:px-4 ${
-                  isActive ? "text-ink after:absolute after:inset-x-3 after:bottom-2 after:h-px after:bg-ink md:after:inset-x-4" : 'text-dim hover:text-ink'
+                  isActive ? 'text-ink after:absolute after:inset-x-3 after:bottom-2 after:h-px after:bg-ink md:after:inset-x-4' : 'text-dim hover:text-ink'
                 }`
               }
             >
@@ -42,13 +39,11 @@ export default function App() {
         </nav>
         <span className="hidden shrink-0 text-xs text-faint lg:block">NASA Space Apps 2026</span>
       </header>
-      <Suspense fallback={<div className="grid min-h-dvh place-items-center text-sm text-dim" role="status">Loading the Moon</div>}>
+      <Suspense fallback={<div className="grid min-h-dvh place-items-center text-sm text-dim" role="status">Loading</div>}>
         <Routes>
           <Route path="/" element={<Globe />} />
-          <Route path="/navigator" element={<Navigator />} />
-          <Route path="/slip" element={<SlipNavigator />} />
+          <Route path="/site" element={<Site />} />
           <Route path="/compare" element={<Compare />} />
-          <Route path="/validation" element={<Validation />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
