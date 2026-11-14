@@ -2,7 +2,7 @@
 
 <!-- impeccable:product-schema 1 -->
 
-> Contexte déduit du brief de l'utilisateur et du README (aucune entrevue formelle). Les éléments marqués « à confirmer » sont des hypothèses.
+> Context inferred from the user's brief and the README (no formal interview). Items marked "to confirm" are assumptions.
 
 ## Platform
 
@@ -10,46 +10,52 @@ web
 
 ## Stack
 
-React + TypeScript + Vite, D3 pour les graphiques, Three.js / WebGL pour le globe et le terrain (choix de l'utilisateur, option A). Maquette jetable en HTML statique dans `design/mockup/`.
+React + TypeScript + Vite, D3 for charts, Three.js / WebGL for the globe and terrain (user's choice, option A). Throwaway static HTML mockup in `design/mockup/`.
 
 ## Users
 
-- Planificateurs de missions lunaires (science et ingénierie) qui comparent des sites d'atterrissage et des dates.
-- Enseignants et grand public qui veulent comprendre pourquoi le pôle Sud lunaire est difficile (lumière rasante, liaison avec la Terre).
-- Contexte : défi NASA Space Apps 2026 « Lunar Landing Site Navigator » (équipe HagraCorp, Sherbrooke).
+- Lunar mission planners (science and engineering) who compare landing sites and dates.
+- Educators and the public who want to understand why the lunar south pole is hard (grazing light, line of sight to Earth).
+- Context: NASA Space Apps 2026 challenge "Lunar Landing Site Navigator" (team HagraCorp, Sherbrooke).
 
 ## Product Purpose
 
-Un outil intuitif qui compare des sites d'atterrissage et des dates au pôle Sud lunaire, en montrant le Soleil et la Terre par rapport à l'horizon, pour évaluer la production d'énergie et les fenêtres de communication directe avec la Terre (DTE). Succès : répondre en quelques secondes à « ce site est-il viable à cette date ? ».
+An intuitive tool that compares landing sites and dates at the lunar south pole, showing the Sun and Earth relative to the horizon, to assess power generation and direct-to-Earth (DTE) communication windows. Success: answer "is this site viable on this date?" within seconds.
 
 ## Positioning
 
-Les outils existants (Moon Trek, JMARS, LROC QuickMap) sont puissants mais à l'interface compliquée. Ici : un seul zoom continu du globe jusqu'au sol, un curseur de temps qui pilote tout, et un classement inversé (on décrit la mission, l'outil propose les créneaux).
+Existing tools (Moon Trek, JMARS, LROC QuickMap) are powerful but have complicated interfaces. Here: one continuous zoom from the globe to the ground, a time slider that drives everything, and an inverted ranking (describe the mission, the tool proposes the windows).
 
 ## Capabilities and Constraints
 
-- 3 pages : Globe (Lune et Soleil à 45°, zoom jusqu'aux 13 régions), Site (survol du terrain façon vidéo NASA SVS 5013, indicateurs, chronogramme Soleil / Terre / les deux), Comparer (carte de chaleur sites × dates, classement).
-- Backend prévu : FastAPI, pré-calcul par site (terrain LOLA, éphémérides SPICE ou Skyfield). Le frontend se développe d'abord contre des données simulées.
-- Langue : français (anglais à confirmer).
-- Les 13 régions candidates Artemis III sont celles de la vidéo NASA SVS 5013. Leurs positions dans la maquette sont illustratives.
+- 3 pages: Globe (Moon, Sun and Earth, 45° view, zoom to the 13 regions), Site (terrain flyover in the spirit of NASA SVS 5013, assessment, Sun / Earth / both timeline), Compare (site × date heatmap, ranking).
+- Planned backend: FastAPI, per-site precompute (LOLA terrain, SPICE or Skyfield ephemerides). The frontend is built first against simulated data.
+- Language: English (the interface is fully in English).
+- The 13 Artemis III candidate regions are those of the NASA SVS 5013 video. Their positions in the mockup are illustrative.
 
 ## Brand Commitments
 
-Direction visuelle imposée par l'utilisateur : proche des sites de la NASA et de SpaceX, propre et professionnel.
+Visual direction set by the user: close to NASA and SpaceX websites, clean and professional, dark editorial layouts.
 
 ## Evidence on Hand
 
-- Défi : https://www.spaceappschallenge.org/2026/challenges/lunar-landing-site-navigator/
-- Vidéo de référence : https://svs.gsfc.nasa.gov/5013/
-- Aucune donnée scientifique réelle intégrée pour l'instant : tout chiffre affiché dans la maquette est simulé et doit rester étiqueté comme tel.
+- Challenge: https://www.spaceappschallenge.org/2026/challenges/lunar-landing-site-navigator/
+- Reference video: https://svs.gsfc.nasa.gov/5013/
+- No real scientific data is integrated yet: every figure in the mockup is simulated and must stay labelled as such.
 
 ## Product Principles
 
-1. Une réponse lisible avant le détail : verdict d'abord, courbes ensuite.
-2. Un seul temps partagé : le curseur de date pilote le globe, le terrain et les indicateurs.
-3. Honnêteté scientifique : chaque valeur indique sa source ou son statut (simulé / calculé).
-4. L'image porte la page, l'interface reste en retrait.
+1. A readable answer before the detail: verdict first, curves after.
+2. One shared time: the date slider drives the globe, the terrain and the indicators.
+3. Scientific honesty: every value states its source or status (simulated / computed).
+4. The image carries the page; the interface stays in the background.
 
 ## Accessibility & Inclusion
 
-Thème sombre par nature ; contraste texte AA, couleurs lisibles par les daltoniens (ne jamais coder le verdict par la couleur seule), navigation au clavier, respect de `prefers-reduced-motion`.
+Dark theme by nature; AA text contrast, colours readable by colour-blind users (never code the verdict by colour alone), keyboard navigation, respect for `prefers-reduced-motion`.
+
+## Selection criteria (sources)
+
+- NASA, "50 Years Ago: Lunar Landing Sites Selected" (Apollo, 1968): smoothness, approach paths, propellant, free return, lighting (Sun 7–20° behind the lander), slope under 2°.
+- NASA Moon to Mars Architecture, "Lunar Site Selection" white paper (2023): a first landing site should be sunlit about 6–6.5 days; no known south polar location is continuously sunlit; mast height increases sunlight; Earth must be visible for direct-to-Earth communication; a human lander stays viable about 90 days in near-rectilinear halo orbit.
+- The mockup uses a simplified analytic model (real synodic, anomalistic and draconic periods). Real SPICE ephemerides and LOLA horizon masks must replace it.
