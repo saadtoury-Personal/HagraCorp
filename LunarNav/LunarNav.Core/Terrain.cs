@@ -10,12 +10,29 @@ namespace LunarNav.Core;
 /// </summary>
 public sealed class Dem
 {
+    private const double MoonRadiusM = 1737400;
+
+    private readonly short[] _dn;
+    private readonly int _lines;
+    private readonly int _samples;
+    private readonly double _mapScaleM;
+    private readonly double _lineOffset;
+    private readonly double _sampleOffset;
+    private readonly double _scaling;
+
     /// <param name="dn">Raw pixel values, row by row: dn[line * samples + sample]. Loaded by LunarNav.Api/Tools.cs.</param>
     public Dem(short[] dn, int lines = 7600, int samples = 7600, double mapScaleM = 80,
         double lineOffset = 3799.5, double sampleOffset = 3799.5, double scaling = 0.5)
     {
-        // TODO: throw ArgumentException if dn.Length != lines * samples; store everything in private readonly fields.
-        throw new NotImplementedException();
+        if (dn.Length != lines * samples)
+            throw new ArgumentException("dn.Length must equal lines * samples", nameof(dn));
+        _dn = dn;
+        _lines = lines;
+        _samples = samples;
+        _mapScaleM = mapScaleM;
+        _lineOffset = lineOffset;
+        _sampleOffset = sampleOffset;
+        _scaling = scaling;
     }
 
     /// <summary>Map position (fractional, 0-based) of a point on the Moon.</summary>
