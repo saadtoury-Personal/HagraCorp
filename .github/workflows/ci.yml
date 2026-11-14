@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 11.0.x # projects target net11.0; .slnx needs SDK >= 9.0.200
+      - run: dotnet restore LunarNav/LunarNav.slnx
+      - run: dotnet build LunarNav/LunarNav.slnx --no-restore -c Release
+      - run: dotnet test LunarNav/LunarNav.slnx --no-build -c Release
