@@ -16,8 +16,9 @@ public sealed class Ephemeris
 
     public Ephemeris(IReadOnlyList<EphemSample> samples)
     {
-        // TODO: throw ArgumentException if samples is empty; store it in Samples.
-        throw new NotImplementedException();
+        if (samples.Count == 0)
+            throw new ArgumentException("samples must not be empty", nameof(samples));
+        Samples = samples;
     }
 
     /// <summary>Reads the CSV: one header line, then
