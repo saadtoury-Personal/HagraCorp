@@ -64,13 +64,25 @@ public sealed class Dem
     /// <summary>Terrain height in meters at a point. Returns false when the point is outside the map.</summary>
     public bool TryHeightM(double latDeg, double lonDeg, out double heightM)
     {
-        // TODO:
-        // 1. (line, sample) = LatLonToPixel(...)
-        // 2. l0 = floor(line), s0 = floor(sample); if l0 < 0, s0 < 0, l0 + 1 >= lines or s0 + 1 >= samples:
-        //    heightM = 0, return false
-        // 3. bilinear interpolation of the 4 surrounding pixels (weights from the fractional parts)
-        // 4. heightM = interpolated DN * scaling; return true
-        throw new NotImplementedException();
+        var (line, sample) = LatLonToPixel(latDeg, lonDeg);
+        int l0 = (int)Math.Floor(line);
+        int s0 = (int)Math.Floor(sample);
+        if (l0 < 0 || s0 < 0 || l0 + 1 >= _lines || s0 + 1 >= _samples)
+        {
+            heightM = 0;
+            return false;
+        }
+
+        double fl = line - l0;
+        double fs = sample - s0;
+        double d00 = _dn[l0 * _samples + s0];
+        double d01 = _dn[l0 * _samples + s0 + 1];
+        double d10 = _dn[(l0 + 1) * _samples + s0];
+        double d11 = _dn[(l0 + 1) * _samples + s0 + 1];
+        double top = d00 * (1 - fs) + d01 * fs;
+        double bottom = d10 * (1 - fs) + d11 * fs;
+        heightM = (top * (1 - fl) + bottom * fl) * _scaling;
+        return true;
     }
 }
 

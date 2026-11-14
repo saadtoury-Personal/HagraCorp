@@ -51,6 +51,34 @@ public class DemTests
     }
 
     [Fact]
+    public void TryHeightM_AtPixelCentre_ReturnsScaledValue()
+    {
+        // 3x3 map, pole at pixel (1, 1) where DN = 100 -> 50 m.
+        var dn = new short[9];
+        dn[1 * 3 + 1] = 100;
+        var dem = new Dem(dn, 3, 3, 80, 1.0, 1.0, 0.5);
+        Assert.True(dem.TryHeightM(-90, 0, out var h));
+        Assert.Equal(50.0, h, 6);
+    }
+
+    [Fact]
+    public void TryHeightM_InterpolatesBilinearly()
+    {
+        // 2x2 map, DN 0,100 / 200,300; pole at the middle (0.5, 0.5) -> mean of the four = 150 -> 75 m.
+        var dem = new Dem(new short[] { 0, 100, 200, 300 }, 2, 2, 80, 0.5, 0.5, 0.5);
+        Assert.True(dem.TryHeightM(-90, 0, out var h));
+        Assert.Equal(75.0, h, 6);
+    }
+
+    [Fact]
+    public void TryHeightM_OutsideMap_ReturnsFalse()
+    {
+        var dem = SmallDem(new short[16]);
+        Assert.False(dem.TryHeightM(-80, 0, out var h));
+        Assert.Equal(0.0, h);
+    }
+
+    [Fact]
     public void Constructor_RightLength_DoesNotThrow()
     {
         var dem = SmallDem(new short[16]);
