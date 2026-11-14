@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+
 namespace LunarNav.Core;
 
 /// <summary>
@@ -78,11 +79,11 @@ public static class Geometry
         // The Earth is close: its direction changes by up to ~0.26 deg depending on where you stand
         // (parallax), so subtract the site position.                         MATH-REVIEW
         // TODO:
-        // 1. earthPos = e.EarthRangeKm * UnitVector(e.SubEarthLatDeg, e.SubEarthLonDeg)
-        // 2. sitePos  = MoonRadiusKm * UnitVector(latDeg, lonDeg)   (site height ignored: error < 0.001 deg)
-        // 3. dir = normalize(earthPos - sitePos)
-        // 4. return ToAzEl(dir, latDeg, lonDeg)
-        throw new NotImplementedException();
+        var earthPos = (e.EarthRangeKm * UnitVector(e.SubEarthLatDeg, e.SubEarthLonDeg).X, e.EarthRangeKm * UnitVector(e.SubEarthLatDeg, e.SubEarthLonDeg).Y, e.EarthRangeKm * UnitVector(e.SubEarthLatDeg, e.SubEarthLonDeg).Z);
+        var sitePos = (MoonRadiusKm * UnitVector(latDeg, lonDeg).X, MoonRadiusKm * UnitVector(latDeg, lonDeg).Y, MoonRadiusKm * UnitVector(latDeg, lonDeg).Z);
+        var dir = (earthPos.Item1 - sitePos.Item1, earthPos.Item2 - sitePos.Item2, earthPos.Item3 - sitePos.Item3);
+        return ToAzEl(dir, latDeg, lonDeg);
+        
     }
 
     /// <summary>Apparent radius of the Earth's disk, about 0.95 deg.</summary>
