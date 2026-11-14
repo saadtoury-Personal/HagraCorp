@@ -55,7 +55,7 @@ canvas.gl{position:absolute;inset:0;width:100%;height:100%;display:block}
 
 /* ---------- page 1 ---------- */
 .intro{position:absolute;left:36px;top:50%;transform:translateY(-58%);max-width:760px;transition:opacity .6s var(--ease),transform .6s var(--ease)}
-.intro h1{font-weight:300;font-size:clamp(46px,7.2vw,104px);line-height:1;letter-spacing:-.015em;text-wrap:balance}
+.intro h1{font-weight:300;font-size:clamp(32px,5.2vw,76px);line-height:1.14;letter-spacing:.2em;text-transform:uppercase;text-wrap:balance}
 .intro p{margin:28px 0 36px;max-width:40ch;color:var(--dim);font-size:17px;font-weight:300}
 .intro .row{display:flex;gap:12px;flex-wrap:wrap}
 .hide-intro{opacity:0;transform:translateY(-58%) translateX(-24px);pointer-events:none}
@@ -109,10 +109,11 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;bac
 .note{color:var(--faint);font-size:13px;line-height:1.5}
 
 /* ---------- page 2 ---------- */
-#p2 .grid{position:absolute;inset:64px 0 72px 0;display:grid;grid-template-columns:268px 1fr 340px;border-top:1px solid var(--line2)}
-.side{overflow:auto}
-.side.left{border-right:1px solid var(--line2)}
-.side.right{border-left:1px solid var(--line2);padding:26px 26px 30px}
+#p2 .grid{position:absolute;inset:0 0 72px 0;display:block}
+.side{overflow:auto;position:absolute;top:136px;bottom:0;z-index:9;background:rgba(5,6,8,.95);transition:transform .55s var(--ease)}
+.side.left{left:0;width:300px;border-right:1px solid var(--line2);transform:translateX(-102%)}
+.side.right{right:0;width:360px;border-left:1px solid var(--line2);padding:26px 26px 30px;transform:translateX(102%)}
+.side.open{transform:none}
 .side header{padding:20px 22px 18px;border-bottom:1px solid var(--line2);position:sticky;top:0;background:var(--bg);z-index:2}
 .side header .btn{width:100%;justify-content:center;margin-top:14px}
 .sites li button{width:100%;display:grid;grid-template-columns:28px 1fr 46px;align-items:center;gap:8px;text-align:left;padding:13px 22px;border-bottom:1px solid var(--line2);color:var(--dim);transition:background .2s,color .2s}
@@ -122,9 +123,14 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;bac
 .sites .nm{font-size:14px;line-height:1.35}
 .sites .bar{height:2px;background:var(--line2);position:relative}
 .sites .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--sun)}
-.stage{position:relative;overflow:hidden;background:#000}
-.cap{position:absolute;left:30px;top:26px;z-index:4;pointer-events:none;text-shadow:0 1px 16px #000}
-.cap h2{font-weight:300;font-size:clamp(34px,4.2vw,60px);line-height:1.05;letter-spacing:-.012em}
+.stage{position:absolute;inset:0;overflow:hidden;background:#000}
+.cap{position:absolute;left:36px;top:92px;z-index:4;pointer-events:none;text-shadow:0 1px 16px #000}
+.cap h2{font-weight:300;font-size:clamp(28px,3.8vw,56px);line-height:1.12;letter-spacing:.16em;text-transform:uppercase;max-width:14em}
+.vbar{position:absolute;right:36px;top:84px;z-index:10;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.hstats{position:absolute;left:36px;right:36px;bottom:158px;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);z-index:4;pointer-events:none}
+.hstats>div{padding:14px 18px 0 0}
+.hstats>div+div{padding-left:18px;border-left:1px solid var(--line2)}
+.hstats b{display:block;font-weight:300;font-size:30px;letter-spacing:-.01em;line-height:1.2;margin-top:2px;text-shadow:0 1px 12px #000}
 .cap p{margin-top:8px;color:var(--dim);font-size:14px}
 .seginfo{margin-top:14px;display:flex;align-items:center;gap:14px}
 .seginfo i{display:block;width:120px;height:1px;background:var(--line);position:relative}
@@ -160,7 +166,7 @@ input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;bac
 #p3 .grid{position:absolute;inset:64px 0 0 0;display:grid;grid-template-columns:300px 1fr 330px;border-top:1px solid var(--line2)}
 .form,.rank{padding:28px 28px;overflow:auto}
 .form{border-right:1px solid var(--line2)}.rank{border-left:1px solid var(--line2)}
-h2.t{font-weight:300;font-size:34px;letter-spacing:-.01em;line-height:1.1;margin-bottom:8px}
+h2.t{font-weight:300;font-size:24px;letter-spacing:.16em;text-transform:uppercase;line-height:1.2;margin-bottom:10px}
 .fld{margin-top:26px}
 .fld .h{display:flex;justify-content:space-between;margin-bottom:2px}
 .fld output{font-weight:500}
@@ -183,8 +189,8 @@ h2.t{font-weight:300;font-size:34px;letter-spacing:-.01em;line-height:1.1;margin
 .rk .two{display:flex;gap:22px;font-size:14px}.rk .two b{font-weight:500}
 .empty{color:var(--dim);padding:22px 0;font-size:14px}
 @media (max-width:1100px){
-  #p2 .grid{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;overflow:auto}
-  .side{max-height:200px}
+  .side.left,.side.right{width:min(100%,360px)}
+  .hstats{grid-template-columns:repeat(2,1fr);bottom:150px}
   #p3 .grid{display:block;overflow:auto}
   .form,.cmp,.rank{overflow:visible;border:0;border-bottom:1px solid var(--line2)}
   .cmp{overflow-x:auto}.heat{grid-template-columns:150px repeat(10,minmax(38px,1fr));min-width:640px}
@@ -218,8 +224,8 @@ h2.t{font-weight:300;font-size:34px;letter-spacing:-.01em;line-height:1.1;margin
   <canvas id="moon" class="gl" aria-label="The Moon seen from 45 degrees south, lit by the Sun, with Earth in the background"></canvas>
   <div class="crumbs lab" id="crumbs"><span>Moon</span><span>›</span><b>South Pole</b><span id="cr3"></span></div>
   <div class="intro" id="intro">
-    <h1>Where to land.<br>When.</h1>
-    <p>Compare lunar south pole landing sites and dates: where the Sun and Earth sit above the horizon, and for how long.</p>
+    <h1>The Moon's<br>South Pole</h1>
+    <p>Where to land, and when. Compare candidate sites by how long the Sun and Earth stay above the horizon.</p>
     <div class="row">
       <button class="btn" id="goPole">Explore the South Pole</button>
       <button class="btn ghost" id="goTour">Tour the 13 regions</button>
@@ -260,9 +266,22 @@ h2.t{font-weight:300;font-size:34px;letter-spacing:-.01em;line-height:1.1;margin
         <p id="capSub"></p>
         <div class="seginfo lab" id="segInfo" hidden><span id="segTxt"></span><i><b id="segBar"></b></i></div>
       </div>
-      <div class="vctl seg" id="viewSeg" role="group" aria-label="Point of view">
-        <button data-v="orbit" aria-pressed="true">Orbit</button>
-        <button data-v="lander" aria-pressed="false">Lander</button>
+      <div class="vbar">
+        <div class="seg" role="group" aria-label="Region"><button id="prevS" aria-label="Previous region">‹</button><button id="pgTxt" tabindex="-1" style="pointer-events:none;color:var(--text)">01 / 13</button><button id="nextS" aria-label="Next region">›</button></div>
+        <div class="seg" id="viewSeg" role="group" aria-label="Point of view">
+          <button data-v="orbit" aria-pressed="true">Orbit</button>
+          <button data-v="lander" aria-pressed="false">Lander</button>
+        </div>
+        <div class="seg" role="group" aria-label="Panels">
+          <button id="openL" aria-pressed="false">Regions</button>
+          <button id="openR" aria-pressed="false">Details</button>
+        </div>
+      </div>
+      <div class="hstats" id="hstats">
+        <div><span class="lab">Assessment</span><b id="hV"></b></div>
+        <div><span class="lab">Sunlight</span><b id="hE"></b></div>
+        <div><span class="lab">Earth link</span><b id="hD"></b></div>
+        <div><span class="lab">Longest night</span><b id="hN"></b></div>
       </div>
       <div class="body-tag" id="sunTag"><div class="disc" style="width:16px;height:16px;background:var(--sun)"></div><div class="l" id="sunLbl"></div></div>
       <div class="body-tag" id="earthTag"><div class="disc" style="width:12px;height:12px;background:var(--earth)"></div><div class="l" id="earthLbl"></div></div>
@@ -643,7 +662,17 @@ SITES.forEach(s=>{
   li.innerHTML=`<button type="button" data-i="${s.i}"><span class="n">${String(s.i+1).padStart(2,'0')}</span><span class="nm">${s.name}</span><span class="bar" title="Share of the next 90 days with the Sun above the horizon"><i></i></span></button>`;
   list.appendChild(li);s.li=li.firstChild;
 });
-list.addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(b){stopTour();state.site=+b.dataset.i;syncSite();}});
+list.addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(b){stopTour();state.site=+b.dataset.i;syncSite();drawer('L',false);}});
+function drawer(which,on){
+  const el=which==='L'?$('.side.left'):$('.side.right'),other=which==='L'?$('.side.right'):$('.side.left');
+  const open=on===undefined?!el.classList.contains('open'):on;
+  if(open){other.classList.remove('open');$(which==='L'?'#openR':'#openL').setAttribute('aria-pressed','false')}
+  el.classList.toggle('open',open);$(which==='L'?'#openL':'#openR').setAttribute('aria-pressed',String(open));
+}
+$('#openL').onclick=()=>drawer('L');$('#openR').onclick=()=>drawer('R');
+addEventListener('keydown',e=>{if(e.key==='Escape'){drawer('L',false);drawer('R',false)}});
+$('#prevS').onclick=()=>{stopTour();state.site=(state.site+12)%13;syncSite()};
+$('#nextS').onclick=()=>{stopTour();state.site=(state.site+1)%13;syncSite()};
 function updateList(){SITES.forEach(s=>{s.li.setAttribute('aria-current',String(s.i===state.site));s.li.querySelector('.bar i').style.width=Math.round(100*frac(s.sun,0,SPAN))+'%'})}
 $$('#viewSeg button').forEach(b=>b.onclick=()=>{state.view=b.dataset.v;$$('#viewSeg button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));dirty2=true});
 function syncSite(){dirty1=true;dirty2=true;updatePanel();updateList();}
@@ -654,6 +683,8 @@ function updatePanel(){
   $('#capName').textContent=s.name;
   $('#capSub').textContent=`Region ${s.i+1} of 13 · landing site radius 100 m · illustrative position`;
   $('#vTxt').textContent=v[0];$('#vTxt').style.color=v[1];$('#vWhy').textContent=v[2];
+  $('#hV').textContent=v[0];$('#hV').style.color=v[1];$('#hE').textContent=m.E+'%';$('#hD').textContent=m.D+'%';$('#hN').textContent=Math.round(s.night)+' h';
+  $('#pgTxt').textContent=String(s.i+1).padStart(2,'0')+' / 13';
   $('#mE').textContent=m.E+'%';$('#mEb').style.width=m.E+'%';$('#mEs').textContent=`of the ${state.dur}-day window with the Sun above the local horizon`;
   $('#mD').textContent=m.D+'%';$('#mDb').style.width=m.D+'%';$('#mDs').textContent=`of the ${state.dur}-day window with Earth in view`;
   const nh=Math.round(s.night);$('#mN').textContent=nh+' h';$('#mNs').textContent=`longest continuous shadow in the next 90 days (${(nh/24).toFixed(1)} days)`;
@@ -696,7 +727,7 @@ function placeBody(tagEl,lblEl,az,el,yaw,pitch,w,h,name,extra){
   const A=az*D2R,E=el*D2R,dir=[Math.cos(E)*Math.sin(A),Math.sin(E),Math.cos(E)*Math.cos(A)],zf=dot(dir,f);
   if(zf<=.05){tagEl.style.display='none';return}
   const X=w/2+1.6*dot(dir,uu)/zf*.5*h,Y=h/2-1.6*dot(dir,vv)/zf*.5*h;
-  if(X<20||X>w-20||Y<20||Y>h-120){tagEl.style.display='none';return}
+  if(X<20||X>w-20||Y<130||Y>h-260){tagEl.style.display='none';return}
   tagEl.style.display='flex';tagEl.style.left=X+'px';tagEl.style.top=Y+'px';lblEl.innerHTML=`${name}<small>${extra}</small>`;
 }
 function renderTerrain(){
