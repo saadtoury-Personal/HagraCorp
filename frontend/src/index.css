@@ -1,11 +1,111 @@
+@import '@fontsource/barlow/300.css';
+@import '@fontsource/barlow/400.css';
+@import '@fontsource/barlow/500.css';
 @import "tailwindcss";
 
+/* Design tokens from Nazim's mockup: dark editorial, hairlines, no cards, one corner system (square). */
 @theme {
-  --color-space-950: #0a0e1a;
-  --color-space-900: #111729;
-  --color-moon-100: #e8ecf5;
+  --font-sans: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --color-bg: #050608;
+  --color-ink: #f3f5f8;
+  --color-dim: #a6aebb;
+  --color-faint: #8b94a3;
+  --color-line: rgb(255 255 255 / 0.16);
+  --color-line-soft: rgb(255 255 255 / 0.08);
+  --color-sun: #ffc766;
+  --color-earth: #6fa8ff;
+  --color-ok: #4ad295;
+  --color-warn: #f2b441;
+  --color-bad: #ef6a5e;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  min-height: 100dvh;
 }
 
 body {
-  @apply bg-space-950 text-moon-100;
+  @apply bg-bg font-sans text-[15px] leading-normal text-ink antialiased;
+  font-variant-numeric: tabular-nums;
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-bg);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+/* Small uppercase label, used for data captions only. */
+.lab {
+  @apply text-xs font-medium uppercase tracking-[0.16em] text-dim;
+}
+
+.btn {
+  @apply inline-flex min-h-11 items-center justify-center gap-3 whitespace-nowrap border border-ink px-7 text-xs font-medium uppercase tracking-[0.16em] transition-colors duration-200;
+}
+.btn:hover {
+  @apply bg-ink text-bg;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn-ghost {
+  @apply border-line;
+}
+
+/* Hidden on phones: the label would sit on top of the headline controls. */
+.scene-tag {
+  @apply hidden md:flex flex-col items-center gap-0.5 text-center text-xs text-dim;
+  text-shadow: 0 1px 10px #000;
+  white-space: nowrap;
+}
+.scene-tag b {
+  @apply text-xs font-medium uppercase tracking-[0.16em];
+}
+
+input[type='range'] {
+  @apply h-11 w-full cursor-pointer appearance-none bg-transparent;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 1px;
+  background: var(--color-line);
+}
+input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  border: 0;
+}
+input[type='range']::-moz-range-track {
+  height: 1px;
+  background: var(--color-line);
+}
+input[type='range']::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }

@@ -1,3 +1,4 @@
+import { MoonIcon } from '@phosphor-icons/react'
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router'
 import Compare from './pages/Compare'
@@ -8,34 +9,48 @@ import Validation from './pages/Validation'
 const Globe = lazy(() => import('./pages/Globe'))
 
 const links = [
-  ['/', 'Navigator'],
+  ['/', 'Globe'],
+  ['/navigator', 'Navigator'],
   ['/slip', 'Slip Navigator'],
   ['/compare', 'Compare'],
   ['/validation', 'Validation'],
-  ['/globe', 'Globe'],
 ] as const
 
 export default function App() {
   return (
     <BrowserRouter>
-      <nav className="flex gap-4 border-b border-white/10 bg-space-900 px-4 py-3">
-        {links.map(([to, label]) => (
-          <NavLink key={to} to={to} className={({ isActive }) => (isActive ? 'font-semibold' : 'opacity-70')}>
-            {label}
-          </NavLink>
-        ))}
-      </nav>
-      <main className="p-4">
-        <Suspense fallback={null}>
-          <Routes>
-            <Route path="/" element={<Navigator />} />
-            <Route path="/slip" element={<SlipNavigator />} />
-            <Route path="/compare" element={<Compare />} />
-            <Route path="/validation" element={<Validation />} />
-            <Route path="/globe" element={<Globe />} />
-          </Routes>
-        </Suspense>
-      </main>
+      <header className="fixed inset-x-0 top-0 z-30 flex h-16 items-center gap-6 bg-gradient-to-b from-bg to-transparent px-5 md:px-9">
+        <NavLink to="/" className="flex shrink-0 items-center gap-3 text-sm font-medium uppercase tracking-[0.3em]" aria-label="LunarNav home">
+          <MoonIcon size={22} weight="light" aria-hidden />
+          <span className="hidden sm:inline">LunarNav</span>
+        </NavLink>
+        <nav aria-label="Main" className="-mx-2 flex min-w-0 flex-1 gap-1 overflow-x-auto md:justify-center">
+          {links.map(([to, label]) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/'}
+              className={({ isActive }) =>
+                `relative flex min-h-11 shrink-0 items-center px-3 text-xs font-medium uppercase tracking-[0.16em] transition-colors md:px-4 ${
+                  isActive ? "text-ink after:absolute after:inset-x-3 after:bottom-2 after:h-px after:bg-ink md:after:inset-x-4" : 'text-dim hover:text-ink'
+                }`
+              }
+            >
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+        <span className="hidden shrink-0 text-xs text-faint lg:block">NASA Space Apps 2026</span>
+      </header>
+      <Suspense fallback={<div className="grid min-h-dvh place-items-center text-sm text-dim" role="status">Loading the Moon</div>}>
+        <Routes>
+          <Route path="/" element={<Globe />} />
+          <Route path="/navigator" element={<Navigator />} />
+          <Route path="/slip" element={<SlipNavigator />} />
+          <Route path="/compare" element={<Compare />} />
+          <Route path="/validation" element={<Validation />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   )
 }
