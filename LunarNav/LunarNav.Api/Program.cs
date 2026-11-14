@@ -43,3 +43,6 @@ api.MapGet("/sites/{id}/mask", (string id, AppData data, int mast = 2) =>
 }).WithName("GetSiteMask");
 
 app.Run();
+
+
+public partial class Program;   // lets the test project's WebApplicationFactory<Program> see the top-level Program class
