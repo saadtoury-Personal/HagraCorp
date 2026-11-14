@@ -3,17 +3,17 @@ Nasa Sherbrooke Hakaton
 ### Missions to the Moon’s south pole face extreme lighting and communication constraints, and planning them takes careful coordination between science and engineering teams. Tools for determining Sun and Earth positions at candidate landing sites exist, but their complicated interfaces make it difficult to evaluate critical information with efficiency. Your challenge is to create an intuitive tool or application that lets mission planners, educators, and the public compare landing sites and dates quickly, visualizing Sun and Earth positions relative to the horizon to assess power generation potential and direct-to-Earth communication windows.
 
 ## Rôles et Responsabilités de l'Équipe
-### Saad — Tech Lead & Full-Stack / Ephemeris Engineer  
+### Saad - Tech Lead & Full-Stack / Ephemeris Engineer  
 Responsabilités / Owns : Architecture globale de l'application, conception du moteur de position du Soleil et de la Terre (via SPICE ou Skyfield), et intégration générale.  
-### Edi — Geospatial Scientist & Data Validation Lead
+### Edi - Geospatial Scientist & Data Validation Lead
 Responsabilités / Owns : Gestion du terrain LOLA, extraction des masques d'horizon, calcul des fenêtres d'illumination et de visibilité (DTE), et vérifications numériques de cohérence physique.
-### Youssef — Frontend & Data Visualization Engineer  
+### Youssef - Frontend & Data Visualization Engineer  
 Responsabilités / Owns : Développement des graphiques d'horizon, du chronogramme puissance/communications, de la matrice de comparaison des sites et de la visualisation en globe 3D (optionnel).
-### Nizar — Backend & API Developer
+### Nizar - Backend & API Developer
 Responsabilités / Owns : Développement de l'API (FastAPI), mise en place du système de pré-calcul par site (cache) et gestion du déploiement.
-### Nazim — UI/UX Designer & Frontend Support
+### Nazim - UI/UX Designer & Frontend Support
 Responsabilités / Owns : Création des wireframes, du design system, des composants d'interface de base et optimisation de l'ergonomie (UX). (Note : Nizar et Nazim peuvent permuter leurs rôles selon leurs compétences en design).
-### Maggie — Mission Domain Specialist & Pitch Lead
+### Maggie - Mission Domain Specialist & Pitch Lead
 Responsabilités / Owns : Recherche scientifique sur les sites d'atterrissage, rédaction des explications textuelles dans l'application, réalisation de la vidéo, soumission finale et présentation (pitch).
 ## Actions, Activités et Traitements par Domaine
 ### Pour mener à bien le projet, les actions et traitements techniques se répartissent ainsi :
