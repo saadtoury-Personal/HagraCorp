@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 namespace LunarNav.Core;
 
 /// <summary>
@@ -16,7 +17,8 @@ public static class Geometry
     public static (double X, double Y, double Z) UnitVector(double latDeg, double lonDeg)
     {
         // TODO: convert to radians, then return (cos lat * cos lon, cos lat * sin lon, sin lat)
-        throw new NotImplementedException();
+        return (Math.Cos(latDeg * Math.PI / 180) * Math.Cos(lonDeg * Math.PI / 180), Math.Cos(latDeg * Math.PI / 180)
+            * Math.Sin(lonDeg * Math.PI / 180), Math.Sin(latDeg * Math.PI / 180));
     }
 
     /// <summary>Inverse of UnitVector. v does not need to be normalized. Longitude returned in [0, 360).</summary>
