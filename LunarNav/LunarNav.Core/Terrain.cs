@@ -38,28 +38,27 @@ public sealed class Dem
     /// <summary>Map position (fractional, 0-based) of a point on the Moon.</summary>
     public (double Line, double Sample) LatLonToPixel(double latDeg, double lonDeg)
     {
-        // TODO (lat, lon in radians; R = 1737400 m):                          MATH-REVIEW
-        //   rho = 2 * R * tan(PI/4 + lat/2)        (0 at the pole, grows going north)
-        //   x = rho * sin(lon)
-        //   y = rho * cos(lon)
-        //   sample = sampleOffset + x / mapScaleM
-        //   line   = lineOffset   - y / mapScaleM   <-- the minus sign is the usual convention but NOT yet verified
-        //
-        // HOW TO VERIFY: Shackleton crater is at about 89.67 S, 129.8 E. Print heights on a 21 x 21 grid
-        // (1 km spacing) around the pixel you get. You must see a deep floor in the middle with a rim
-        // about 3 to 4 km higher around it. If you see nothing like a crater, flip the sign of y and retry.
-        throw new NotImplementedException();
+        // MATH-REVIEW. The minus sign on y (line) is the usual convention but NOT yet verified against
+        // the real DEM: check with Shackleton crater (about 89.67 S, 129.8 E), see the class summary.
+        double lat = latDeg * Math.PI / 180;
+        double lon = lonDeg * Math.PI / 180;
+        double rho = 2 * MoonRadiusM * Math.Tan(Math.PI / 4 + lat / 2);
+        double x = rho * Math.Sin(lon);
+        double y = rho * Math.Cos(lon);
+        return (_lineOffset - y / _mapScaleM, _sampleOffset + x / _mapScaleM);
     }
 
     /// <summary>Inverse of LatLonToPixel. PixelToLatLon(LatLonToPixel(p)) must give p back.</summary>
     public (double LatDeg, double LonDeg) PixelToLatLon(double line, double sample)
     {
-        // TODO:
-        //   x = (sample - sampleOffset) * mapScaleM;  y = (lineOffset - line) * mapScaleM   (same sign as above)
-        //   rho = sqrt(x*x + y*y)
-        //   lat = 2 * atan(rho / (2 * R)) - PI/2
-        //   lon = atan2(x, y), add 2*PI if negative
-        throw new NotImplementedException();
+        double x = (sample - _sampleOffset) * _mapScaleM;
+        double y = (_lineOffset - line) * _mapScaleM;
+        double rho = Math.Sqrt(x * x + y * y);
+        double lat = 2 * Math.Atan(rho / (2 * MoonRadiusM)) - Math.PI / 2;
+        double lon = Math.Atan2(x, y);
+        if (lon < 0)
+            lon += 2 * Math.PI;
+        return (lat * 180 / Math.PI, lon * 180 / Math.PI);
     }
 
     /// <summary>Terrain height in meters at a point. Returns false when the point is outside the map.</summary>
