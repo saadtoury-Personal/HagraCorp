@@ -31,7 +31,7 @@ public static class Geometry
         if (lon < 0)
         {
             lon += 2 * Math.PI;
-    }
+        }
         return (lat * 180 / Math.PI, lon * 180 / Math.PI);
     }
 
@@ -68,7 +68,7 @@ public static class Geometry
         if (azimuth < 0)
             azimuth += 2 * Math.PI;
         return new AzEl(azimuth * 180 / Math.PI, elevation * 180 / Math.PI);
-    }
+    }  
 
         
     
@@ -106,6 +106,12 @@ public static class Geometry
         // k = margin / radius
         // return 1 - (acos(k) - k * sqrt(1 - k*k)) / PI
         // Check: margin = 0 gives exactly 0.5.
-        throw new NotImplementedException();
+        if (marginDeg >= radiusDeg)
+            return 1.0;
+        if (marginDeg <= -radiusDeg)
+            return 0.0;
+
+        double k = marginDeg / radiusDeg;
+        return 1.0 - (Math.Acos(k) - k * Math.Sqrt(1.0 - k * k)) / Math.PI;
     }
 }
