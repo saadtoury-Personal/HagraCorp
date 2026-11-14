@@ -39,8 +39,8 @@ public static class Geometry
     {
         // The Sun is so far away that its direction is the same from anywhere on the Moon.
         // TODO:
-        // 1. dir = UnitVector(e.SubSunLatDeg, e.SubSunLonDeg)
-        // 2. return ToAzEl(dir, latDeg, lonDeg)   (write that private helper, see below)
+        var dir = UnitVector(e.SubSunLatDeg, e.SubSunLonDeg);
+        return ToAzEl(dir, latDeg, lonDeg);
         //
         // private helper ToAzEl(dir, latDeg, lonDeg):                       MATH-REVIEW
         //   u = ( cos lat cos lon,  cos lat sin lon, sin lat)   local up
@@ -48,8 +48,29 @@ public static class Geometry
         //   N = (-sin lat cos lon, -sin lat sin lon, cos lat)   local north
         //   elevation = asin(dot(dir, u))
         //   azimuth   = atan2(dot(dir, E), dot(dir, N)), then add 360 if negative
-        throw new NotImplementedException();
     }
+        private static AzEl ToAzEl((double X, double Y, double Z) dir, double latDeg, double lonDeg)
+    {
+        double latRad = latDeg * Math.PI / 180;
+        double lonRad = lonDeg * Math.PI / 180;
+        // Local up vector
+        var u = (X: Math.Cos(latRad) * Math.Cos(lonRad), Y: Math.Cos(latRad) * Math.Sin(lonRad), Z: Math.Sin(latRad));
+        // Local east vector
+        var E = (X: -Math.Sin(lonRad), Y: Math.Cos(lonRad), Z: 0);
+        // Local north vector
+        var N = (X: -Math.Sin(latRad) * Math.Cos(lonRad), Y: -Math.Sin(latRad) * Math.Sin(lonRad), Z: Math.Cos(latRad));
+        // Elevation calculation
+        double elevation = Math.Asin(dir.X * u.X + dir.Y * u.Y + dir.Z * u.Z);
+        // Azimuth calculation
+        double azimuth = Math.Atan2(dir.X * E.X + dir.Y * E.Y + dir.Z * E.Z,
+                                    dir.X * N.X + dir.Y * N.Y + dir.Z * N.Z);
+        if (azimuth < 0)
+            azimuth += 2 * Math.PI;
+        return new AzEl(azimuth * 180 / Math.PI, elevation * 180 / Math.PI);
+    }
+
+        
+    
 
     /// <summary>Azimuth / elevation of the Earth's center seen from the site.</summary>
     public static AzEl EarthAzEl(EphemSample e, double latDeg, double lonDeg)
