@@ -12,10 +12,11 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAn
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app.MapOpenApi();   // the OpenAPI document is public: the demo API has no secrets
+
+app.UseSwaggerUI(o => o.SwaggerEndpoint("/openapi/v1.json", "LunarNav API"));
+
+app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 
 app.UseCors();
 
@@ -34,7 +35,7 @@ api.MapGet("/sites/{id}/mask", (string id, AppData data, int mast = 2) =>
     if (site is null)
         return Results.NotFound($"unknown site '{id}'");
 
-    var mask = data.Mask(site.Id, mast);  // Changed to use site.Id for case-sensitive lookup
+    var mask = data.Mask(site.Id, mast);
     if (mask is null)
         return Results.NotFound($"no horizon mask computed yet for '{id}' at {mast} m");
 
