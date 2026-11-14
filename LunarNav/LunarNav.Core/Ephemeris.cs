@@ -18,6 +18,8 @@ public sealed class Ephemeris
     {
         if (samples.Count == 0)
             throw new ArgumentException("samples must not be empty", nameof(samples));
+        if ((samples[^1].Utc - samples[0].Utc).TotalHours != samples.Count - 1)
+            throw new ArgumentException("samples must be hourly with no gaps", nameof(samples));
         Samples = samples;
     }
 

@@ -88,6 +88,12 @@ public class EphemerisTests
     }
 
     [Fact]
+    public void Constructor_MissingHour_Throws()
+    {
+        Assert.Throws<ArgumentException>(() => new Ephemeris(new[] { Row(0), Row(1), Row(3) }));
+    }
+
+    [Fact]
     public void Constructor_StoresSamplesAndExposesStartEnd()
     {
         var eph = new Ephemeris(new[] { Row(0), Row(1), Row(2) });
