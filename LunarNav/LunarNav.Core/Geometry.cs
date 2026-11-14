@@ -25,7 +25,13 @@ public static class Geometry
     public static (double LatDeg, double LonDeg) ToLatLon((double X, double Y, double Z) v)
     {
         // TODO: lat = atan2(z, sqrt(x^2 + y^2)); lon = atan2(y, x); add 360 if negative
-        throw new NotImplementedException();
+        double lat = Math.Atan2(v.Z, Math.Sqrt(v.X * v.X + v.Y * v.Y));
+        double lon = Math.Atan2(v.Y, v.X);
+        if (lon < 0)
+        {
+            lon += 2 * Math.PI;
+    }
+        return (lat * 180 / Math.PI, lon * 180 / Math.PI);
     }
 
     /// <summary>Azimuth / elevation of the Sun's center seen from the site.</summary>
