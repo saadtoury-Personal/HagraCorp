@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lunar Navigator — maquette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04060a; --panel:#090c11; --panel2:#0d1118;
+  --line:rgba(255,255,255,.14); --line2:rgba(255,255,255,.07);
+  --text:#f2f4f7; --dim:#a3acba; --faint:#808998;
+  --sun:#ffc766; --earth:#6fa8ff; --ok:#4ad295; --warn:#f2b441; --bad:#ef6a5e;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --sans:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --cond:'Barlow Condensed','Barlow',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body{overflow:hidden;font-variant-numeric:tabular-nums}
+::selection{background:var(--text);color:var(--bg)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--text);outline-offset:3px}
+ol,ul{list-style:none}
+svg{display:block}
+.up{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:500}
+.dim{color:var(--dim)}
+
+/* ---------- barre du haut ---------- */
+.top{position:fixed;inset:0 0 auto 0;height:60px;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:0 32px;
+  background:linear-gradient(var(--bg),rgba(4,6,10,0));}
+.brand{display:flex;align-items:center;gap:14px;font-family:var(--cond);font-weight:600;font-size:19px;letter-spacing:.3em;text-transform:uppercase}
+.brand svg{width:26px;height:26px}
+.nav{display:flex;gap:6px}
+.nav a{color:var(--dim);text-decoration:none;padding:9px 16px;position:relative;transition:color .25s}
+.nav a:hover{color:var(--text)}
+.nav a[aria-current=page]{color:var(--text)}
+.nav a[aria-current=page]::after{content:"";position:absolute;left:16px;right:16px;bottom:2px;height:1px;background:var(--text)}
+.utc{color:var(--dim);text-align:right}
+
+/* ---------- pages ---------- */
+.page{position:absolute;inset:0;display:none}
+.page.on{display:block}
+canvas.gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* ---------- boutons ---------- */
+.btn{display:inline-flex;align-items:center;gap:12px;padding:14px 26px;border:1px solid var(--text);color:var(--text);
+  text-transform:uppercase;letter-spacing:.16em;font-size:12px;font-weight:500;transition:background .25s,color .25s}
+.btn:hover{background:var(--text);color:var(--bg)}
+.btn.sm{padding:9px 16px;font-size:12px}
+.btn.ghost{border-color:var(--line)}
+.btn[aria-pressed=true]{background:var(--text);color:var(--bg)}
+.btn svg{width:14px;height:14px}
+.seg{display:inline-flex;border:1px solid var(--line)}
+.seg button{padding:9px 16px;color:var(--dim);text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:500;transition:color .2s,background .2s}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed=true]{background:var(--text);color:var(--bg)}
+.seg button:hover:not([aria-pressed=true]){color:var(--text)}
+
+/* ---------- page 1 ---------- */
+.intro{position:absolute;left:32px;top:50%;transform:translateY(-62%);max-width:560px;transition:opacity .6s var(--ease),transform .6s var(--ease);pointer-events:none}
+.intro>*{pointer-events:auto}
+.intro h1{font-family:var(--cond);font-weight:600;font-size:clamp(52px,8vw,112px);line-height:.94;letter-spacing:.02em;text-transform:uppercase;text-wrap:balance}
+.intro p{margin:26px 0 34px;max-width:42ch;color:var(--dim);font-size:17px}
+.intro .row{display:flex;gap:12px;flex-wrap:wrap}
+.hidden-intro{opacity:0;transform:translateY(-62%) translateX(-24px);pointer-events:none!important}
+.hidden-intro>*{pointer-events:none!important}
+.crumbs{position:absolute;left:32px;top:78px;display:flex;gap:10px;align-items:center;color:var(--dim);opacity:0;transition:opacity .5s}
+.crumbs.on{opacity:1}
+.crumbs b{color:var(--text);font-weight:500}
+.rail{position:absolute;right:32px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:flex-end;gap:2px;z-index:5}
+.rail button{display:flex;align-items:center;gap:14px;padding:12px 0;color:var(--faint);text-transform:uppercase;letter-spacing:.16em;font-size:12px;font-weight:500;transition:color .25s}
+.rail button i{display:block;width:20px;height:1px;background:currentColor;transition:width .35s var(--ease)}
+.rail button:hover{color:var(--text)}
+.rail button[aria-current=true]{color:var(--text)}
+.rail button[aria-current=true] i{width:44px}
+.rail .zoomstep{display:flex;margin-top:14px;border:1px solid var(--line)}
+.rail .zoomstep button{padding:0;width:40px;height:40px;justify-content:center;font-size:18px;letter-spacing:0;color:var(--dim)}
+.rail .zoomstep button+button{border-left:1px solid var(--line)}
+.etag{position:absolute;z-index:4;pointer-events:none;transform:translateX(-50%);color:var(--earth);opacity:0;transition:opacity .4s;text-shadow:0 1px 10px #000}
+.markers{position:absolute;inset:0;pointer-events:none;z-index:4}
+.mk{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;pointer-events:auto;border-radius:50%}
+.mk::before{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border:1px solid var(--text);border-radius:50%;transition:transform .25s var(--ease),background .2s}
+.mk:hover::before,.mk.sel::before{transform:scale(1.7);background:var(--text)}
+.mk span{position:absolute;left:24px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text);opacity:0;transition:opacity .25s;text-shadow:0 1px 8px #000}
+.mk.lab span{opacity:.85}
+.mk:hover span,.mk.sel span{opacity:1}
+.tip{position:absolute;z-index:6;width:268px;background:var(--panel);border:1px solid var(--line);padding:18px 18px 16px;pointer-events:auto;opacity:0;transform:translateY(6px);transition:opacity .25s,transform .35s var(--ease);visibility:hidden}
+.tip.on{opacity:1;transform:none;visibility:visible}
+.tip h3{font-family:var(--cond);font-weight:600;font-size:24px;letter-spacing:.03em;text-transform:uppercase;line-height:1.1;margin-bottom:12px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:7px 12px;font-size:13px;margin-bottom:14px}
+.kv dt{color:var(--dim)} .kv dd{text-align:right;font-weight:500}
+.bracket{position:absolute;width:300px;height:300px;margin:-150px 0 0 -150px;z-index:3;pointer-events:none;opacity:0;transition:opacity .5s}
+.bracket.on{opacity:1}
+.bracket i{position:absolute;width:22px;height:22px;border:1px solid var(--text)}
+.bracket i:nth-child(1){left:0;top:0;border-right:0;border-bottom:0}.bracket i:nth-child(2){right:0;top:0;border-left:0;border-bottom:0}
+.bracket i:nth-child(3){left:0;bottom:0;border-right:0;border-top:0}.bracket i:nth-child(4){right:0;bottom:0;border-left:0;border-top:0}
+
+/* ---------- barre de temps ---------- */
+.timebar{position:fixed;left:0;right:0;bottom:0;height:68px;z-index:15;display:flex;align-items:center;gap:22px;padding:0 32px;border-top:1px solid var(--line2);background:rgba(4,6,10,.82)}
+.timebar .play{width:40px;height:40px;border:1px solid var(--line);display:grid;place-items:center;transition:background .2s,color .2s}
+.timebar .play:hover{background:var(--text);color:var(--bg)}
+.timebar .date{min-width:210px}
+.timebar .date b{display:block;font-weight:500;font-size:14px;letter-spacing:.04em}
+input[type=range]{-webkit-appearance:none;appearance:none;background:none;width:100%;height:24px;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--line)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;margin-top:-6px;border-radius:50%;background:var(--text);border:0}
+input[type=range]::-moz-range-track{height:1px;background:var(--line)}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--text);border:0}
+.timebar .scr{flex:1}
+.timebar .ticks{display:flex;justify-content:space-between;color:var(--faint);font-size:11.5px;letter-spacing:.1em;margin-top:-2px}
+.note{color:var(--faint);font-size:12px;letter-spacing:.03em}
+
+/* ---------- page 2 ---------- */
+#p2 .grid{position:absolute;inset:60px 0 68px 0;display:grid;grid-template-columns:292px 1fr 312px;border-top:1px solid var(--line2)}
+.side{overflow:auto;border-right:1px solid var(--line2);background:var(--bg)}
+.side.right{border-right:0;border-left:1px solid var(--line2);padding:22px 22px 28px}
+.side header{padding:18px 20px 16px;border-bottom:1px solid var(--line2);position:sticky;top:0;background:var(--bg);z-index:2}
+.side header .btn{width:100%;justify-content:center;margin-top:12px}
+.sites li button{width:100%;display:grid;grid-template-columns:30px 1fr 54px;align-items:center;gap:8px;text-align:left;padding:13px 20px;border-bottom:1px solid var(--line2);color:var(--dim);transition:background .2s,color .2s}
+.sites li button:hover{background:var(--panel);color:var(--text)}
+.sites li button[aria-current=true]{background:var(--panel2);color:var(--text)}
+.sites .n{font-size:12px;color:var(--faint);letter-spacing:.08em}
+.sites .nm{font-size:13.5px;line-height:1.35}
+.sites .bar{height:3px;background:var(--line2);position:relative}
+.sites .bar i{position:absolute;left:0;top:0;bottom:0;background:var(--sun)}
+.stage{position:relative;overflow:hidden;background:#000}
+.cap{position:absolute;left:28px;top:24px;z-index:4;pointer-events:none;text-shadow:0 1px 14px #000}
+.cap h2{font-family:var(--cond);font-weight:600;font-size:clamp(34px,4.4vw,64px);line-height:1;letter-spacing:.03em;text-transform:uppercase}
+.cap p{margin-top:8px;color:var(--dim);font-size:13px;letter-spacing:.04em}
+.cap .seginfo{margin-top:14px;display:flex;align-items:center;gap:12px;color:var(--text)}
+.cap .seginfo i{display:block;width:120px;height:1px;background:var(--line);position:relative}
+.cap .seginfo i b{position:absolute;left:0;top:0;bottom:0;background:var(--text);width:0}
+.vctl{position:absolute;right:24px;top:24px;z-index:5}
+.body-tag{position:absolute;z-index:4;pointer-events:none;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;text-shadow:0 1px 10px #000}
+.body-tag .disc{border-radius:50%}
+.body-tag .l{position:absolute;top:100%;margin-top:8px;white-space:nowrap;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:500}
+.body-tag .l small{display:block;color:var(--dim);font-size:12px;letter-spacing:.03em;text-transform:none;font-weight:400}
+#sunTag .l{color:var(--sun)} #earthTag .l{color:var(--earth)}
+.horizon-l{position:absolute;left:28px;z-index:3;color:var(--faint);pointer-events:none}
+.lanes{position:absolute;left:0;right:0;bottom:0;z-index:5;background:rgba(4,6,10,.86);border-top:1px solid var(--line2);padding:12px 24px 10px}
+.lanes canvas{width:100%;height:78px;display:block;cursor:ew-resize}
+.lanehead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.legend{display:flex;gap:18px;color:var(--dim);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.legend i{display:inline-block;width:10px;height:3px;margin-right:7px;vertical-align:middle}
+.verdict{display:flex;align-items:center;gap:12px;padding:14px 0 18px;border-bottom:1px solid var(--line2)}
+.verdict .dot{width:10px;height:10px;border-radius:50%}
+.verdict b{font-family:var(--cond);font-size:26px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.verdict-why{color:var(--dim);font-size:13.5px;margin:12px 0 22px}
+.met{padding:15px 0;border-bottom:1px solid var(--line2)}
+.met .h{display:flex;justify-content:space-between;align-items:baseline}
+.met .h b{font-size:21px;font-weight:500;letter-spacing:-.01em}
+.met .bar{height:3px;background:var(--line2);margin:9px 0 7px;position:relative}
+.met .bar i{position:absolute;left:0;top:0;bottom:0}
+.met small{color:var(--dim);font-size:12.5px}
+.mast{margin-top:22px}
+.mast .h{display:flex;justify-content:space-between}
+.mast .h output{font-weight:500}
+
+/* ---------- page 3 ---------- */
+#p3 .grid{position:absolute;inset:60px 0 0 0;display:grid;grid-template-columns:300px 1fr 320px;border-top:1px solid var(--line2)}
+.form{padding:26px 24px;border-right:1px solid var(--line2);overflow:auto}
+.form h2,.rank h2,.cmp-head h2{font-family:var(--cond);font-weight:600;font-size:30px;letter-spacing:.03em;text-transform:uppercase;line-height:1.1;margin-bottom:6px}
+.fld{margin-top:26px}
+.fld .h{display:flex;justify-content:space-between;margin-bottom:2px}
+.fld .h output{font-weight:500}
+.cmp{padding:26px 28px;overflow:auto}
+.cmp-head{margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-end;gap:18px;flex-wrap:wrap}
+.heat{display:grid;grid-template-columns:200px repeat(10,1fr);gap:3px;align-items:stretch}
+.heat .dh{font-size:12px;color:var(--faint);letter-spacing:.03em;text-align:center;padding-bottom:6px}
+.heat .rn{display:flex;align-items:center;gap:8px;color:var(--dim);font-size:13px;padding:0 6px 0 0;text-align:left;transition:color .2s}
+.heat .rn:hover{color:var(--text)}
+.heat .rn span{font-size:12px;color:var(--faint);width:18px}
+.cell{height:30px;display:grid;place-items:center;font-size:12px;font-weight:500;position:relative;transition:outline-color .15s;outline:1px solid transparent;color:rgba(255,255,255,.88)}
+.cell:hover,.cell:focus-visible{outline-color:var(--text);z-index:2}
+.cell.pass{background:#1f7f58} .cell.near{background:#7b5c15} .cell.fail{background:#161b24;color:var(--faint)}
+.cell.best{outline:2px solid var(--text);z-index:1}
+.cell.pass.hi{background:#2da673}
+.cmp .leg{display:flex;gap:20px;margin-top:20px;color:var(--dim);font-size:12px}
+.cmp .leg i{display:inline-block;width:12px;height:12px;margin-right:8px;vertical-align:-2px}
+.rank{border-left:1px solid var(--line2);padding:26px 24px;overflow:auto}
+.rk{display:block;width:100%;text-align:left;padding:18px 0;border-top:1px solid var(--line2);transition:background .2s}
+.rk:first-of-type{margin-top:20px}
+.rk:hover .nm{text-decoration:underline;text-underline-offset:4px}
+.rk .no{color:var(--faint);font-size:12px;letter-spacing:.14em}
+.rk .nm{font-family:var(--cond);font-size:26px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;line-height:1.15}
+.rk .dt{color:var(--dim);font-size:13px;margin:2px 0 10px}
+.rk .two{display:flex;gap:22px;font-size:13px}
+.rk .two b{font-weight:500}
+.empty{color:var(--dim);padding:20px 0}
+@media (max-width:1100px){
+  #p2 .grid{grid-template-columns:1fr;grid-template-rows:auto 1fr auto;overflow:auto}
+  .side{max-height:200px}
+  #p3 .grid{display:block;overflow:auto}
+  .form,.cmp,.rank{overflow:visible;border:0;border-bottom:1px solid var(--line2)}
+  .cmp{overflow-x:auto}
+  .heat{grid-template-columns:150px repeat(10,minmax(38px,1fr));min-width:620px}
+}
+@media (max-width:700px){
+  .top{padding:0 16px}.nav a{padding:9px 9px}.utc,.brand span{display:none}.brand{font-size:15px}
+  .intro{left:16px;right:16px}.rail{right:12px}.timebar{padding:0 14px;gap:12px}.timebar .date{min-width:120px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><circle cx="13" cy="13" r="11.4"/><path d="M13 1.6a11.4 11.4 0 0 0 0 22.8 6.2 11.4 0 0 1 0-22.8z" fill="currentColor" stroke="none"/></svg>
+    <span>Lunar Navigator</span>
+  </div>
+  <nav class="nav" aria-label="Pages">
+    <a href="#globe" data-p="p1">Globe</a>
+    <a href="#site" data-p="p2">Site</a>
+    <a href="#comparer" data-p="p3">Comparer</a>
+  </nav>
+  <div class="utc up" id="utc">UTC</div>
+</header>
+
+<main>
+<!-- ===================== PAGE 1 : GLOBE ===================== -->
+<section id="p1" class="page" aria-label="Globe lunaire">
+  <canvas id="moon" class="gl" aria-label="Vue de la Lune à 45 degrés, éclairée par le Soleil"></canvas>
+  <div class="crumbs up" id="crumbs"><span>Lune</span><span>›</span><b id="cr2">Pôle Sud</b><span id="cr3"></span></div>
+  <div class="intro" id="intro">
+    <h1>Où poser.<br>Quand.</h1>
+    <p>Comparez les sites d'atterrissage du pôle Sud lunaire : où est le Soleil, où est la Terre, et pour combien de temps.</p>
+    <div class="row">
+      <button class="btn" id="goPole">Explorer le pôle Sud</button>
+      <button class="btn ghost" id="goTour">Visiter les 13 régions</button>
+    </div>
+  </div>
+  <div class="etag up" id="earthTag1">Terre</div>
+  <div class="markers" id="markers"></div>
+  <div class="bracket" id="bracket"><i></i><i></i><i></i><i></i></div>
+  <div class="tip" id="tip"></div>
+  <div class="rail" id="rail" role="group" aria-label="Niveau de zoom">
+    <button data-z="0" aria-current="true"><span>Lune</span><i></i></button>
+    <button data-z="1"><span>Pôle</span><i></i></button>
+    <button data-z="2"><span>Région</span><i></i></button>
+    <div class="zoomstep"><button id="zin" aria-label="Zoom avant">+</button><button id="zout" aria-label="Zoom arrière">−</button></div>
+  </div>
+</section>
+
+<!-- ===================== PAGE 2 : SITE ===================== -->
+<section id="p2" class="page" aria-label="Site d'atterrissage">
+  <div class="grid">
+    <aside class="side" aria-label="Régions candidates">
+      <header>
+        <div class="up dim">13 régions candidates</div>
+        <button class="btn sm" id="tourBtn" aria-pressed="false"><svg viewBox="0 0 14 14" fill="currentColor" aria-hidden="true"><path d="M3 1.5v11l9-5.5z"/></svg><span>Visite guidée</span></button>
+      </header>
+      <ol class="sites" id="siteList"></ol>
+    </aside>
+
+    <div class="stage" id="stage">
+      <canvas id="terrain" class="gl" aria-label="Survol du terrain du site sélectionné"></canvas>
+      <div class="cap">
+        <h2 id="capName">—</h2>
+        <p id="capSub"></p>
+        <div class="seginfo up" id="segInfo" hidden><span id="segTxt"></span><i><b id="segBar"></b></i></div>
+      </div>
+      <div class="vctl seg" id="viewSeg" role="group" aria-label="Point de vue">
+        <button data-v="orbit" aria-pressed="true">Orbite</button>
+        <button data-v="lander" aria-pressed="false">Atterrisseur</button>
+      </div>
+      <div class="body-tag" id="sunTag"><div class="disc" style="width:16px;height:16px;background:var(--sun)"></div><div class="l" id="sunLbl"></div></div>
+      <div class="body-tag" id="earthTag"><div class="disc" style="width:12px;height:12px;background:var(--earth)"></div><div class="l" id="earthLbl"></div></div>
+      <div class="lanes">
+        <div class="lanehead">
+          <span class="up dim">30 jours · cliquer pour déplacer le temps</span>
+          <span class="legend"><span><i style="background:var(--sun)"></i>Soleil</span><span><i style="background:var(--earth)"></i>Terre</span><span><i style="background:var(--ok)"></i>Les deux</span></span>
+        </div>
+        <canvas id="lanes" aria-label="Chronogramme Soleil, Terre, et les deux"></canvas>
+      </div>
+    </div>
+
+    <aside class="side right" aria-label="Diagnostic du site">
+      <div class="verdict"><span class="dot" id="vDot"></span><b id="vTxt"></b></div>
+      <p class="verdict-why" id="vWhy"></p>
+      <div class="met"><div class="h"><span class="up dim">Énergie · 8 jours</span><b id="mE"></b></div><div class="bar"><i id="mEb" style="background:var(--sun)"></i></div><small id="mEs"></small></div>
+      <div class="met"><div class="h"><span class="up dim">Liaison Terre (DTE)</span><b id="mD"></b></div><div class="bar"><i id="mDb" style="background:var(--earth)"></i></div><small id="mDs"></small></div>
+      <div class="met"><div class="h"><span class="up dim">Plus longue nuit</span><b id="mN"></b></div><small id="mNs">sur 30 jours</small></div>
+      <div class="met"><div class="h"><span class="up dim">Soleil maintenant</span><b id="mS"></b></div><small id="mSs"></small></div>
+      <div class="met"><div class="h"><span class="up dim">Terre maintenant</span><b id="mT"></b></div><small id="mTs"></small></div>
+      <div class="mast"><div class="h"><label for="mast" class="up dim">Hauteur du mât</label><output id="mastO">3 m</output></div><input type="range" id="mast" min="0" max="10" step="0.5" value="3"></div>
+      <p class="note" style="margin-top:22px">Valeurs simulées pour la maquette. Le calcul réel viendra de l'API (terrain LOLA et éphémérides).</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ===================== PAGE 3 : COMPARER ===================== -->
+<section id="p3" class="page" aria-label="Comparateur">
+  <div class="grid">
+    <form class="form" onsubmit="return false" aria-label="Besoins de la mission">
+      <h2>Ma mission</h2>
+      <p class="dim" style="font-size:13.5px">Décrivez ce qu'il vous faut. L'outil classe les meilleurs créneaux.</p>
+      <div class="fld"><div class="h"><label for="fDur" class="up dim">Durée</label><output id="oDur"></output></div><input type="range" id="fDur" min="2" max="14" step="1" value="8"></div>
+      <div class="fld"><div class="h"><label for="fE" class="up dim">Énergie minimale</label><output id="oE"></output></div><input type="range" id="fE" min="30" max="95" step="1" value="70"></div>
+      <div class="fld"><div class="h"><label for="fD" class="up dim">Liaison Terre minimale</label><output id="oD"></output></div><input type="range" id="fD" min="20" max="90" step="1" value="50"></div>
+      <div class="fld"><div class="h"><label for="fM" class="up dim">Hauteur du mât</label><output id="oM"></output></div><input type="range" id="fM" min="0" max="10" step="0.5" value="3"></div>
+      <div class="fld"><button type="button" class="btn sm ghost" id="printBtn">Exporter la fiche</button></div>
+      <p class="note" style="margin-top:22px">Valeurs simulées pour la maquette.</p>
+    </form>
+    <div class="cmp">
+      <div class="cmp-head"><div><h2>Sites et dates</h2><p class="dim" id="cmpSub" style="font-size:13.5px"></p></div></div>
+      <div class="heat" id="heat" role="grid" aria-label="Viabilité par site et par date de début"></div>
+      <div class="leg"><span><i style="background:#2da673"></i>Répond à la mission</span><span><i style="background:#7b5c15"></i>À moins de 8 points</span><span><i style="background:#161b24;outline:1px solid var(--line)"></i>Insuffisant</span><span>Valeur affichée : le plus faible des deux critères (%)</span></div>
+    </div>
+    <aside class="rank" aria-label="Meilleures combinaisons">
+      <h2>Recommandé</h2>
+      <p class="dim" style="font-size:13.5px">Les trois meilleurs créneaux pour votre mission.</p>
+      <div id="rankList"></div>
+    </aside>
+  </div>
+</section>
+</main>
+
+<footer class="timebar" id="timebar">
+  <button class="play" id="play" aria-label="Lecture"><svg viewBox="0 0 14 14" fill="currentColor" id="playIc" aria-hidden="true"><path d="M3 1.5v11l9-5.5z"/></svg></button>
+  <div class="date"><span class="up dim">Date simulée</span><b id="dateTxt"></b></div>
+  <div class="scr">
+    <input type="range" id="tsl" min="0" max="30" step="0.01" value="0" aria-label="Temps (jours)">
+    <div class="ticks" aria-hidden="true"><span>J 0</span><span>J 10</span><span>J 20</span><span>J 30</span></div>
+  </div>
+  <div class="up dim" style="min-width:120px;text-align:right">Données simulées</div>
+</footer>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const D2R=Math.PI/180, TAU=Math.PI*2;
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x)), lerp=(a,b,t)=>a+(b-a)*t, sm=t=>t*t*(3-2*t);
+const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ======================= DONNÉES SIMULÉES ======================= */
+// 13 régions (ordre de la vidéo NASA SVS 5013). Positions illustratives (colatitude°, longitude°).
+const SITE_DEF=[
+ ['Connecting Ridge',0.9,150],['Connecting Ridge Extended',1.5,168],['de Gerlache Rim 1',2.6,-100],['de Gerlache Rim 2',3.3,-82],
+ ['Haworth',4.1,-5],['Malapert Massif',5.6,0],['Leibnitz Beta Plateau',6.2,-150],['Nobile Rim 1',4.6,55],
+ ['Nobile Rim 2',4.0,38],['Amundsen Rim',6.4,85],['Peak Near Shackleton',0.5,129],['Faustini Rim A',3.9,95],['de Gerlache–Kocher Massif',5.0,-120]];
+function rng(seed){let s=seed*2654435761>>>0;return()=>((s=(s*1664525+1013904223)>>>0)/4294967296)}
+const SITES=SITE_DEF.map(([name,colat,lon],i)=>{
+  const r=rng(i+7);
+  return {i,name,colat,lon,ph:r()*TAU,ps:r()*TAU,off:2.0+r()*3.2,mask:0.6+r()*1.2,pe:r()*TAU,eAmp:5.0+r()*2.0,eoff:-1.6+r()*1.8,emask:0.4+r()*0.9,az0:r()*360,eaz:r()*360};
+});
+const SYN=29.53, LIB=27.32, DAYS=45, STEP=0.05, N=Math.round(DAYS/STEP);
+const state={t:0,site:0,mast:3,view:'orbit',playing:false};
+function sunEl(s,t){return 5.2*Math.sin(TAU*t/SYN+s.ph)+1.6*Math.sin(2*TAU*t/SYN+s.ps)+s.off}
+function earthEl(s,t){return s.eAmp*Math.sin(TAU*t/LIB+s.pe)+s.eoff}
+function sunAz(s,t){return (s.az0+360*t/SYN)%360}
+function earthAz(s,t){return s.eaz+6*Math.sin(TAU*t/LIB+s.pe)}
+function buildSeries(mast){
+  SITES.forEach(s=>{
+    const m=mast*0.05;
+    s.sun=new Uint8Array(N); s.earth=new Uint8Array(N);
+    for(let k=0;k<N;k++){const t=k*STEP; s.sun[k]=sunEl(s,t)>s.mask-m?1:0; s.earth[k]=earthEl(s,t)>s.emask-m?1:0;}
+    // plus longue nuit (h) sur 0..30 j
+    let run=0,best=0; for(let k=0;k<30/STEP;k++){ if(!s.sun[k]){run++;best=Math.max(best,run)} else run=0 }
+    s.night=best*STEP*24;
+  });
+}
+function frac(arr,t0,dur){const a=Math.floor(t0/STEP),b=Math.min(N,Math.floor((t0+dur)/STEP));let c=0;for(let k=a;k<b;k++)c+=arr[k];return b>a?c/(b-a):0}
+function metrics(s,t,dur=8){return {E:Math.round(100*frac(s.sun,t,dur)),D:Math.round(100*frac(s.earth,t,dur))}}
+buildSeries(state.mast);
+const fmtDate=t=>{const d=new Date(Date.UTC(2026,10,14,18,40)+t*864e5);return d.toLocaleDateString('fr-CA',{day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'}).replace('.','')+' · '+d.toISOString().slice(11,16)+' UTC'};
+const dayLabel=t=>{const d=new Date(Date.UTC(2026,10,14)+t*864e5);return d.toLocaleDateString('fr-CA',{day:'numeric',month:'short',timeZone:'UTC'}).replace('.','')};
+const verdict=(E,D)=>{const m=Math.min(E,D);return m>=65?['Viable','var(--ok)',`Énergie ${E} % et liaison Terre ${D} % : la mission peut fonctionner presque en continu.`]:m>=45?['Limite','var(--warn)',`Énergie ${E} % et liaison Terre ${D} % : prévoir une batterie et des plages sans contact.`]:['Non viable','var(--bad)',`Énergie ${E} % et liaison Terre ${D} % : trop de temps dans l'ombre ou sans visibilité de la Terre.`]};
+
+/* ======================= WEBGL ======================= */
+const VS=`#version 300 es
+in vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
+function glInit(canvas){
+  const gl=canvas.getContext('webgl2',{antialias:false,alpha:false,preserveDrawingBuffer:false});
+  if(!gl)return null;
+  const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+  return gl;
+}
+function glProg(gl,fs){
+  const mk=(t,src)=>{const s=gl.createShader(t);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))console.error(gl.getShaderInfoLog(s));return s};
+  const pr=gl.createProgram();gl.attachShader(pr,mk(gl.VERTEX_SHADER,VS));gl.attachShader(pr,mk(gl.FRAGMENT_SHADER,fs));gl.linkProgram(pr);
+  if(!gl.getProgramParameter(pr,gl.LINK_STATUS))console.error(gl.getProgramInfoLog(pr));
+  const loc=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  const u={};return {pr,u:n=>u[n]||(u[n]=gl.getUniformLocation(pr,n))};
+}
+const COMMON=`
+float h31(vec3 p){p=fract(p*.3183099+.1);p*=17.;return fract(p.x*p.y*p.z*(p.x+p.y+p.z));}
+float h21(vec2 p){p=fract(p*vec2(.3183099,.3678794)+.1);p*=17.;return fract(p.x*p.y*(p.x+p.y));}
+float vn3(vec3 x){vec3 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);
+ return mix(mix(mix(h31(i),h31(i+vec3(1,0,0)),f.x),mix(h31(i+vec3(0,1,0)),h31(i+vec3(1,1,0)),f.x),f.y),
+            mix(mix(h31(i+vec3(0,0,1)),h31(i+vec3(1,0,1)),f.x),mix(h31(i+vec3(0,1,1)),h31(i+vec3(1,1,1)),f.x),f.y),f.z);}
+float vn2(vec2 x){vec2 i=floor(x),f=fract(x);f=f*f*(3.-2.*f);
+ return mix(mix(h21(i),h21(i+vec2(1,0)),f.x),mix(h21(i+vec2(0,1)),h21(i+vec2(1,1)),f.x),f.y);}
+vec3 stars(vec2 uv){vec2 g=floor(uv*vec2(1100.,620.));float r=h21(g);float s=step(.9986,r);
+ float b=h21(g+7.3);return vec3(.78,.82,.95)*s*(.18+.6*b*b);}
+`;
+const MOON_FS=`#version 300 es
+precision highp float;out vec4 o;
+uniform vec2 uRes,uC,uSunS;uniform float uR;uniform vec3 uD,uU,uRt,uSun;
+${COMMON}
+float fbm3(vec3 p){float a=.5,s=0.;for(int i=0;i<5;i++){s+=a*vn3(p);p*=2.03;a*=.5;}return s;}
+float crater(vec3 p,float sc,float pix){
+ float fade=smoothstep(1.2,5.,(.1/sc)/pix); if(fade<=0.)return 0.;
+ vec3 q=p*sc+sc*.37,i=floor(q),f=fract(q);
+ float pr=h31(i+17.);if(pr<.62)return 0.;
+ vec3 c=vec3(h31(i+3.1),h31(i+7.7),h31(i+11.3))*.5+.25;
+ float rad=.09+.2*pr*pr*h31(i+23.);
+ vec3 w=(vec3(vn3(q*2.7),vn3(q*2.7+3.),vn3(q*2.7+7.))-.5)*.2;
+ float d=length(f-c+w)/rad;
+ float bowl=d<1.?-pow(1.-d*d,1.6)*.55:0.;float rim=exp(-pow((d-1.02)*4.2,2.))*.32;
+ return (bowl+rim)*rad/sc*fade;}
+float relief(vec3 p,float pix){return .006*fbm3(p*6.)+.0016*fbm3(p*26.)+.0005*fbm3(p*95.)+.00012*fbm3(p*340.)+crater(p,5.,pix)+crater(p,14.,pix)+crater(p,40.,pix)+crater(p,120.,pix)+crater(p,380.,pix);}
+uniform vec3 uE;uniform vec2 uSL;uniform float uEA,uEB,uSpin;
+vec4 earth(vec2 px){
+ vec2 d=(px-uE.xy)/uE.z;float r2=dot(d,d);
+ float a=1.-smoothstep(1.-2.5/(uE.z*.5*uRes.y),1.,sqrt(r2));
+ vec3 n=vec3(d,sqrt(max(1.-r2,0.)));
+ float cs=cos(uSpin),sn=sin(uSpin);
+ vec3 q=vec3(n.x*cs+n.z*sn,n.y,-n.x*sn+n.z*cs);
+ float land=smoothstep(.5,.54,fbm3(q*2.4+3.)*.75+fbm3(q*6.)*.25);
+ float cl=smoothstep(.55,.82,fbm3(q*3.4+11.+vec3(uSpin*.25,0.,0.)));
+ vec3 sea=vec3(.03,.14,.38),ln=mix(vec3(.12,.3,.14),vec3(.52,.45,.3),smoothstep(.55,.75,fbm3(q*5.+1.)));
+ vec3 base=mix(sea,ln,land);base=mix(base,vec3(.92),cl*.7);
+ vec3 L=normalize(vec3(uSL,.45));
+ float lit=smoothstep(-.05,.25,dot(n,L));
+ vec3 c=base*(lit*1.15+.03);
+ c+=vec3(.25,.5,1.)*pow(1.-n.z,3.)*(.15+lit);
+ return vec4(c,a*uEA);}
+void main(){
+ vec2 px=(gl_FragCoord.xy-.5*uRes)/(.5*uRes.y);
+ vec3 col=stars(gl_FragCoord.xy/uRes);
+ float dS=length(px-uSunS);
+ col+=vec3(1.,.82,.5)*(.5*exp(-dS*4.5)+.22*exp(-dS*1.4))+vec3(1.,.97,.9)*smoothstep(.05,.03,dS);
+ vec4 E=earth(px);if(uEB>.5)col=mix(col,E.rgb,E.a);
+ vec2 s=(px-uC)/uR;float rr=dot(s,s);float pix=1./(uR*.5*uRes.y);
+ float edge=1.-smoothstep(1.-2.5*pix/1.,1.,sqrt(rr));
+ if(rr<1.){
+  float z=sqrt(1.-rr);vec3 n=s.x*uRt+s.y*uU+z*uD;vec3 p=n;
+  float h=relief(p,pix);
+  float sx=dFdx(h)/(pix),sy=dFdy(h)/(pix);
+  vec3 nb=normalize(n-.9*(sx*uRt+sy*uU));
+  float big=fbm3(p*2.2),mar=smoothstep(.52,.62,fbm3(p*1.3+5.));
+  float alb=.5+.28*(big-.5)-.2*mar+.9*h*12.;
+  alb=clamp(alb,.12,.9);
+  float nd=dot(n,uSun);
+  float term=mix(smoothstep(-.03,.07,nd),1.,smoothstep(.25,.6,uR*.1+.0));
+  float lit=max(dot(nb,uSun),0.)*term;
+  float amb=.014+.05*smoothstep(1.5,4.,uR);
+  vec3 m=vec3(alb,alb*.985,alb*.955)*(lit*1.3+amb);
+  col=mix(col,m,edge);
+ }
+ if(uEB<=.5)col=mix(col,E.rgb,E.a);
+ o=vec4(col,1.);}`;
+const TERR_FS=`#version 300 es
+precision highp float;out vec4 o;
+uniform vec2 uRes;uniform vec3 uCam,uSun;uniform float uYaw,uPitch,uSeed,uLit;
+${COMMON}
+float cr2(vec2 p,float sc,float amp){
+ vec2 q=p*sc,i=floor(q),f=fract(q);
+ if(h21(i+17.)<.5)return 0.;
+ vec2 c=vec2(h21(i+3.1),h21(i+7.7))*.46+.27;
+ float rad=.16+.2*h21(i+23.);float d=length(f-c)/rad;
+ float bowl=d<1.?-(1.-d*d)*.85:0.;float rim=exp(-pow((d-1.06)*5.,2.))*.5;
+ return (bowl+rim)*rad*amp/sc*.5;}
+float H(vec2 p){p+=uSeed*vec2(37.1,12.7);
+ float h=0.,a=1.;vec2 q=p*.28;
+ for(int i=0;i<4;i++){h+=a*vn2(q);q=q*2.07+vec2(1.7,9.2);a*=.45;}
+ return h*1.1+cr2(p,.55,1.2)+cr2(p+4.,1.4,1.)+cr2(p+9.,3.2,.9);}
+void main(){
+ vec2 uv=(gl_FragCoord.xy-.5*uRes)/(.5*uRes.y);
+ vec3 f=vec3(cos(uPitch)*sin(uYaw),sin(uPitch),cos(uPitch)*cos(uYaw));
+ vec3 uu=normalize(cross(f,vec3(0,1,0))),vv=cross(uu,f);
+ vec3 ro=vec3(uCam.x,H(uCam.xz)+uCam.y,uCam.z);
+ vec3 rd=normalize(uv.x*uu+uv.y*vv+1.6*f);
+ float sd=dot(rd,uSun);
+ vec3 col=stars(gl_FragCoord.xy/uRes)*.9;
+ if(uLit>0.){col+=vec3(1.,.82,.5)*(.55*pow(max(sd,0.),180.)+.25*pow(max(sd,0.),14.))+vec3(1.)*smoothstep(.9996,.9999,sd);}
+ float t=.05;bool hit=false;
+ for(int i=0;i<120;i++){vec3 p=ro+rd*t;float hh=p.y-H(p.xz);if(hh<.0015*t){hit=true;break;}t+=max(.012,hh*.55);if(t>60.)break;}
+ if(hit){
+  vec3 p=ro+rd*t;float e=.003*t+.0008;
+  vec3 n=normalize(vec3(H(p.xz-vec2(e,0))-H(p.xz+vec2(e,0)),2.*e,H(p.xz-vec2(0,e))-H(p.xz+vec2(0,e))));
+  float sh=1.;float tt=.03;
+  if(uLit>0.){for(int i=0;i<64;i++){vec3 q=p+n*.004+uSun*tt;float hh=q.y-H(q.xz);sh=min(sh,10.*hh/tt);tt+=clamp(hh*.8,.04,1.1);if(sh<.001||tt>40.)break;}}
+  sh=clamp(sh,0.,1.);
+  float dif=max(dot(n,uSun),0.)*sh*uLit;
+  float g=.5+.1*vn2(p.xz*9.)+.08*vn2(p.xz*40.);
+  vec3 alb=vec3(g,g*.975,g*.94);
+  vec3 c=alb*(dif*2.1+.035)+vec3(.0,.005,.012);
+  col=mix(c,col*.0+vec3(.004,.006,.01),smoothstep(30.,60.,t));
+ }
+ o=vec4(col,1.);}`;
+
+function sizeCanvas(cv,scale){
+  const dpr=Math.min(devicePixelRatio||1,1.5)*scale;const w=Math.max(2,Math.round(cv.clientWidth*dpr)),h=Math.max(2,Math.round(cv.clientHeight*dpr));
+  if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;}
+  return [cv.width,cv.height];
+}
+
+/* ======================= PAGE 1 : GLOBE ======================= */
+const moonCv=$('#moon'), moonGL=glInit(moonCv), moonP=moonGL&&glProg(moonGL,MOON_FS);
+const zst={z:0,target:0,lon:-0.25};
+const markersEl=$('#markers'), tip=$('#tip'), bracket=$('#bracket');
+const qOf=(colat,lon)=>{const t=colat*D2R,l=lon*D2R;return [Math.sin(t)*Math.cos(l),-Math.cos(t),Math.sin(t)*Math.sin(l)]};
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2], cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+const norm=a=>{const l=Math.hypot(...a)||1;return a.map(x=>x/l)};
+SITES.forEach(s=>{
+  s.q=qOf(s.colat,s.lon);
+  const b=document.createElement('button');b.className='mk';b.type='button';b.setAttribute('aria-label',s.name);
+  b.innerHTML=`<span>${String(s.i+1).padStart(2,'0')} · ${s.name}</span>`;
+  b.addEventListener('mouseenter',()=>showTip(s,b));b.addEventListener('focus',()=>showTip(s,b));
+  b.addEventListener('click',()=>{state.site=s.i;zst.target=2;syncSite();});
+  markersEl.appendChild(b);s.mk=b;
+});
+function showTip(s,b){
+  if(zst.z<.85)return;
+  const m=metrics(s,state.t),v=verdict(m.E,m.D);
+  tip.innerHTML=`<h3>${s.name}</h3><dl class="kv"><dt>Énergie · 8 j</dt><dd>${m.E} %</dd><dt>Liaison Terre</dt><dd>${m.D} %</dd><dt>Verdict</dt><dd style="color:${v[1]}">${v[0]}</dd></dl><button class="btn sm" data-open="${s.i}">Ouvrir le site</button>`;
+  const r=b.getBoundingClientRect(),pr=$('#p1').getBoundingClientRect();
+  tip.style.left=clamp(r.left-pr.left+24,12,pr.width-290)+'px';tip.style.top=clamp(r.top-pr.top-40,70,pr.height-250)+'px';
+  tip.classList.add('on');tip._s=s.i;
+}
+tip.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(b){state.site=+b.dataset.open;location.hash='#site';}});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.tip,.mk'))tip.classList.remove('on')});
+function camBasis(phi,lon){
+  const d=[Math.cos(phi)*Math.cos(lon),Math.sin(phi),Math.cos(phi)*Math.sin(lon)];
+  const u=[-Math.sin(phi)*Math.cos(lon),Math.cos(phi),-Math.sin(phi)*Math.sin(lon)];
+  return {d,u,r:cross(u,d)};
+}
+function sunVec(t){const Ls=TAU*t/SYN+1.0,dec=.027*Math.sin(TAU*t/346);return [Math.cos(dec)*Math.cos(Ls),Math.sin(dec),Math.cos(dec)*Math.sin(Ls)]}
+let dirty1=true,lastIdle1=0;
+function renderMoon(){
+  if(!moonGL||!$('#p1').classList.contains('on'))return;
+  const z=zst.z,k=sm(clamp(z,0,1)),k2=sm(clamp(z-1,0,1));
+  const phi=lerp(-45,-90,k)*D2R;
+  const B=camBasis(phi,zst.lon);
+  const R=Math.exp(z<=1?lerp(Math.log(.72),Math.log(5.2),k):lerp(Math.log(5.2),Math.log(24),k2));
+  const site=SITES[state.site];
+  const pole=[0,-1,0];
+  let foc=z<=1?norm(B.d.map((v,i)=>lerp(v,pole[i],k))):norm(pole.map((v,i)=>lerp(v,site.q[i],k2)));
+  const [W,Hh]=sizeCanvas(moonCv,.85), asp=W/Hh;
+  const tx=lerp(.38*asp*.35,0.18*asp,k), ty=0; // cible à l'écran (unités demi-hauteur)
+  const C=[tx-R*dot(foc,B.r),ty-R*dot(foc,B.u)];
+  const sun=sunVec(state.t);
+  let sx=dot(sun,B.r),sy=dot(sun,B.u),sl=Math.hypot(sx,sy)||1;const dist=Math.max(1.7,sl*1.7);
+  const sunS=[sx/sl*dist*asp*.62,sy/sl*dist*.85];
+  const gl=moonGL;gl.viewport(0,0,W,Hh);gl.useProgram(moonP.pr);
+  gl.uniform2f(moonP.u('uRes'),W,Hh);gl.uniform2f(moonP.u('uC'),C[0],C[1]);gl.uniform2f(moonP.u('uSunS'),sunS[0],sunS[1]);
+  gl.uniform1f(moonP.u('uR'),R);gl.uniform3fv(moonP.u('uD'),B.d);gl.uniform3fv(moonP.u('uU'),B.u);gl.uniform3fv(moonP.u('uRt'),B.r);gl.uniform3fv(moonP.u('uSun'),sun);
+  // Terre : tourne sur elle-même et autour de la Lune (période de libration), comme le Soleil
+  const th=TAU*state.t/LIB+2.2, eR=.13, eA=.9*sm(clamp((.5-z)/.4,0,1));
+  const ex=C[0]+asp*(.46+.2*Math.cos(th)), ey=C[1]+.62*Math.sin(th);
+  gl.uniform3f(moonP.u('uE'),ex,ey,eR);gl.uniform2f(moonP.u('uSL'),sx/sl,sy/sl);
+  gl.uniform1f(moonP.u('uEA'),eA);gl.uniform1f(moonP.u('uEB'),1);gl.uniform1f(moonP.u('uSpin'),TAU*state.t+performance.now()/1000*.12);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+  const et=$('#earthTag1'),cw0=moonCv.clientWidth,ch0=moonCv.clientHeight;
+  et.style.opacity=0;et.style.left=(ex/asp*.5*cw0+cw0/2)+'px';et.style.top=(ch0/2-ey*.5*ch0+eR*.5*ch0+8)+'px';
+  // marqueurs
+  const cw=moonCv.clientWidth,ch=moonCv.clientHeight;
+  SITES.forEach(s=>{
+    const vx=dot(s.q,B.r),vy=dot(s.q,B.u),vis=dot(s.q,B.d)>.02&&z>.55;
+    const X=(C[0]+R*vx)/asp*.5*cw+cw/2, Y=ch/2-(C[1]+R*vy)*.5*ch;
+    s.mk.style.display=vis?'block':'none';
+    s.mk.style.left=X+'px';s.mk.style.top=Y+'px';
+    s.mk.classList.toggle('sel',s.i===state.site&&z>1.2);
+    s.mk.classList.toggle('lab',z>1.5);
+    s.sx=X;s.sy=Y;
+  });
+  const sel=SITES[state.site];
+  bracket.classList.toggle('on',z>1.75);bracket.style.left=sel.sx+'px';bracket.style.top=sel.sy+'px';
+  // UI selon le zoom
+  $('#intro').classList.toggle('hidden-intro',z>.25);
+  $('#crumbs').classList.toggle('on',z>.25);
+  $('#cr2').textContent=z>.25?'Pôle Sud':'';$('#cr3').textContent=z>1.4?'› '+sel.name:'';
+  $$('#rail [data-z]').forEach(b=>b.setAttribute('aria-current',String(Math.round(zst.target)===+b.dataset.z)));
+  if(z<.85)tip.classList.remove('on');
+}
+function loop1(){
+  const dz=zst.target-zst.z;
+  if(Math.abs(dz)>.0005){zst.z+=dz*(reduce?1:.075);dirty1=true;}
+  const nw=performance.now();
+  if(!reduce&&zst.z<.3&&nw-lastIdle1>100){lastIdle1=nw;dirty1=true;}
+  if(dirty1){dirty1=false;renderMoon();}
+  requestAnimationFrame(loop1);
+}
+$('#goPole').onclick=()=>{zst.target=1};
+$('#goTour').onclick=()=>{location.hash='#site';setTimeout(()=>startTour(),350)};
+$$('#rail [data-z]').forEach(b=>b.onclick=()=>{zst.target=+b.dataset.z});
+$('#zin').onclick=()=>{zst.target=clamp(Math.round(zst.target)+1,0,2)};
+$('#zout').onclick=()=>{zst.target=clamp(Math.round(zst.target)-1,0,2)};
+moonCv.addEventListener('wheel',e=>{e.preventDefault();zst.target=clamp(zst.target-e.deltaY*.0012,0,2);},{passive:false});
+let drag=null;
+moonCv.addEventListener('pointerdown',e=>{drag=e.clientX;moonCv.setPointerCapture(e.pointerId)});
+moonCv.addEventListener('pointermove',e=>{if(drag!==null&&zst.z<1.1){zst.lon+=(e.clientX-drag)*.006;drag=e.clientX;dirty1=true;}});
+moonCv.addEventListener('pointerup',()=>drag=null);
+addEventListener('resize',()=>{dirty1=true;dirty2=true;drawLanes()});
+
+/* ======================= PAGE 2 : SITE ======================= */
+const terCv=$('#terrain'), terGL=glInit(terCv), terP=terGL&&glProg(terGL,TERR_FS);
+let dirty2=true, tour=null, tourTimer=null;
+const list=$('#siteList');
+SITES.forEach(s=>{
+  const li=document.createElement('li');
+  li.innerHTML=`<button type="button" data-i="${s.i}"><span class="n">${String(s.i+1).padStart(2,'0')}</span><span class="nm">${s.name}</span><span class="bar" title="Part de temps ensoleillé"><i></i></span></button>`;
+  list.appendChild(li);s.li=li.firstChild;
+});
+list.addEventListener('click',e=>{const b=e.target.closest('button[data-i]');if(b){stopTour();state.site=+b.dataset.i;syncSite();}});
+function updateList(){SITES.forEach(s=>{s.li.setAttribute('aria-current',String(s.i===state.site));s.li.querySelector('.bar i').style.width=Math.round(100*frac(s.sun,0,30))+'%'})}
+$$('#viewSeg button').forEach(b=>b.onclick=()=>{state.view=b.dataset.v;$$('#viewSeg button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));dirty2=true});
+function syncSite(){dirty1=true;dirty2=true;updatePanel();updateList();}
+function updatePanel(){
+  const s=SITES[state.site],t=state.t,m=metrics(s,t),v=verdict(m.E,m.D);
+  $('#capName').textContent=s.name;
+  $('#capSub').textContent=`Région ${s.i+1} sur 13 · rayon d'un site : 100 m · position illustrative`;
+  $('#vDot').style.background=v[1];$('#vTxt').textContent=v[0];$('#vTxt').style.color=v[1];$('#vWhy').textContent=v[2];
+  $('#mE').textContent=m.E+' %';$('#mEb').style.width=m.E+'%';$('#mEs').textContent='du temps avec le Soleil au-dessus de l\'horizon';
+  $('#mD').textContent=m.D+' %';$('#mDb').style.width=m.D+'%';$('#mDs').textContent='du temps avec la Terre visible, en liaison directe';
+  const nh=Math.round(s.night);$('#mN').textContent=nh+' h';$('#mNs').textContent=nh>72?'à battre avec une batterie de '+Math.round(nh/24)+' jours':'sur 30 jours';
+  const se=sunEl(s,t)-0,ee=earthEl(s,t);
+  $('#mS').textContent=(se-s.mask>0?se.toFixed(1):'0')+'°';
+  $('#mSs').textContent=se>s.mask?`au-dessus de l'horizon · ${timeToChange(s.sun,t)}`:`sous l'horizon · ${timeToChange(s.sun,t)}`;
+  $('#mT').textContent=(ee>s.emask?ee.toFixed(1):'0')+'°';
+  $('#mTs').textContent=ee>s.emask?`visible · ${timeToChange(s.earth,t)}`:`cachée · ${timeToChange(s.earth,t)}`;
+  drawLanes();
+}
+function timeToChange(arr,t){const k0=Math.min(N-1,Math.floor(t/STEP)),cur=arr[k0];let k=k0;while(k<N&&arr[k]===cur)k++;const d=(k-k0)*STEP;if(k>=N)return 'long';const h=d*24;const w=cur?'coucher':'lever';return h>=48?`${w} dans ${Math.floor(d)} j ${Math.round((d%1)*24)} h`:`${w} dans ${Math.round(h)} h`}
+function drawLanes(){
+  const cv=$('#lanes');if(!cv||!$('#p2').classList.contains('on'))return;
+  const dpr=Math.min(devicePixelRatio||1,2),w=cv.clientWidth,h=cv.clientHeight;cv.width=w*dpr;cv.height=h*dpr;
+  const c=cv.getContext('2d');c.scale(dpr,dpr);c.clearRect(0,0,w,h);
+  const s=SITES[state.site],lanes=[['Soleil','#ffc766',s.sun],['Terre','#6fa8ff',s.earth],['Les deux','#4ad295',null]],lh=16,gap=7;
+  c.font='500 12px Barlow,system-ui,sans-serif';
+  lanes.forEach(([nm,col,arr],i)=>{
+    const y=i*(lh+gap)+2;c.fillStyle='rgba(255,255,255,.06)';c.fillRect(0,y,w,lh);c.fillStyle=col;
+    let k=0;const total=30/STEP;
+    while(k<total){const v=arr?arr[k]:(s.sun[k]&&s.earth[k]);if(v){let e=k;while(e<total&&(arr?arr[e]:(s.sun[e]&&s.earth[e])))e++;c.fillRect(k/total*w,y,Math.max(1,(e-k)/total*w),lh);k=e}else k++}
+  });
+  // fenêtre 8 j + curseur
+  const x0=state.t/30*w,x1=Math.min(w,(state.t+8)/30*w);
+  c.fillStyle='rgba(255,255,255,.08)';c.fillRect(x0,0,x1-x0,h);
+  c.strokeStyle='#fff';c.lineWidth=1;c.beginPath();c.moveTo(x0+.5,0);c.lineTo(x0+.5,h);c.stroke();
+  c.fillStyle='#a3acba';c.textAlign='left';
+  [0,10,20,30].forEach(d=>{c.fillText(dayLabel(d),clamp(d/30*w+3,0,w-34),h-2)});
+}
+$('#lanes').addEventListener('pointerdown',function(e){const mv=ev=>{const r=this.getBoundingClientRect();setT(clamp((ev.clientX-r.left)/r.width*30,0,30))};mv(e);this.setPointerCapture(e.pointerId);this.onpointermove=mv;this.onpointerup=()=>{this.onpointermove=null}});
+$('#mast').oninput=e=>{state.mast=+e.target.value;$('#mastO').textContent=state.mast+' m';$('#fM').value=state.mast;$('#oM').textContent=state.mast+' m';buildSeries(state.mast);updatePanel();updateList();renderHeat()};
+function body(tagEl,lblEl,az,el,yaw,pitch,asp,w,h,name,extra){
+  const f=[Math.cos(pitch)*Math.sin(yaw),Math.sin(pitch),Math.cos(pitch)*Math.cos(yaw)];
+  const uu=norm(cross(f,[0,1,0])),vv=cross(uu,f);
+  const A=az*D2R,E=Math.max(el,-8)*D2R;const dir=[Math.cos(E)*Math.sin(A),Math.sin(E),Math.cos(E)*Math.cos(A)];
+  const zf=dot(dir,f);
+  if(zf<=.05){tagEl.style.display='none';return}
+  const ux=1.6*dot(dir,uu)/zf,uy=1.6*dot(dir,vv)/zf;
+  const X=w/2+ux*.5*h,Y=h/2-uy*.5*h;
+  if(X<20||X>w-20||Y<20||Y>h-110){tagEl.style.display='none';return}
+  tagEl.style.display='flex';tagEl.style.left=X+'px';tagEl.style.top=Y+'px';
+  lblEl.innerHTML=`${name}<small>${extra}</small>`;
+}
+function renderTerrain(){
+  if(!terGL||!$('#p2').classList.contains('on'))return;
+  const s=SITES[state.site],t=state.t;
+  const sa=sunAz(s,t),se=sunEl(s,t)-s.mask*0, ea=earthAz(s,t),ee=earthEl(s,t);
+  const lit=se>s.mask?1:0, sunVis=Math.max(se,s.mask*0.6+.4);
+  const orbit=state.view==='orbit',clock=performance.now()/1000;
+  const sunDirEl=clamp(Math.max(sunVis,0.8)*1.8,1,12)*D2R;
+  const sun=[Math.cos(sunDirEl)*Math.sin(sa*D2R),Math.sin(sunDirEl),Math.cos(sunDirEl)*Math.cos(sa*D2R)];
+  let yaw,pitch,cam;
+  if(orbit){const a=(sa*D2R)+1.25+(tour?clock*.06:Math.sin(clock*.05)*.12);yaw=a+Math.PI;pitch=-.32;cam=[Math.sin(a)*4.6,1.5,Math.cos(a)*4.6];}
+  else{yaw=sa*D2R+Math.PI*0+.0+ (tour?Math.sin(clock*.12)*.28:Math.sin(clock*.06)*.1);pitch=.03;cam=[0,.11,0];}
+  // altitude du sol sous la caméra (évite d'être enterré) : approximé via léger relèvement
+  cam[1]+=0.0;
+  const [W,Hh]=sizeCanvas(terCv,orbit?.6:.6),gl=terGL;
+  gl.viewport(0,0,W,Hh);gl.useProgram(terP.pr);
+  gl.uniform2f(terP.u('uRes'),W,Hh);gl.uniform3fv(terP.u('uCam'),cam);gl.uniform3fv(terP.u('uSun'),sun);
+  gl.uniform1f(terP.u('uYaw'),yaw);gl.uniform1f(terP.u('uPitch'),pitch);gl.uniform1f(terP.u('uSeed'),s.i+1);gl.uniform1f(terP.u('uLit'),lit);
+  gl.drawArrays(gl.TRIANGLES,0,3);
+  const cw=terCv.clientWidth,ch=terCv.clientHeight;
+  body($('#sunTag'),$('#sunLbl'),sa,sunDirEl/D2R,yaw,pitch,cw/ch,cw,ch,'Soleil',lit?`${se.toFixed(1)}° au-dessus de l'horizon`:'sous l\'horizon');
+  body($('#earthTag'),$('#earthLbl'),ea,Math.max(ee,.6),yaw,pitch,cw/ch,cw,ch,'Terre',ee>s.emask?`${ee.toFixed(1)}° · liaison possible`:'sous l\'horizon');
+}
+let lastFrame=0;
+function loop2(){
+  if($('#p2').classList.contains('on')){
+    const now=performance.now();
+    if(tour||state.playing||dirty2||state.view==='lander'||true){if(now-lastFrame>(tour?50:90)){lastFrame=now;renderTerrain();dirty2=false}}
+  }
+  requestAnimationFrame(loop2);
+}
+/* --- visite guidée --- */
+function startTour(){
+  stopTour();tour={i:0};$('#tourBtn').setAttribute('aria-pressed','true');$('#tourBtn span').textContent='Arrêter la visite';$('#segInfo').hidden=false;
+  const step=()=>{if(!tour)return;state.site=tour.i;syncSite();$('#segTxt').textContent=`Segment ${tour.i+1} / 13`;
+    const b=$('#segBar');b.style.transition='none';b.style.width='0';requestAnimationFrame(()=>requestAnimationFrame(()=>{b.style.transition='width 7s linear';b.style.width='100%'}));
+    tour.i=(tour.i+1)%13;tourTimer=setTimeout(step,7000)};
+  step();
+}
+function stopTour(){tour=null;clearTimeout(tourTimer);$('#tourBtn').setAttribute('aria-pressed','false');$('#tourBtn span').textContent='Visite guidée';$('#segInfo').hidden=true}
+$('#tourBtn').onclick=()=>tour?stopTour():startTour();
+
+/* ======================= PAGE 3 : COMPARER ======================= */
+const COLS=10, COLSTEP=3;
+const F={dur:$('#fDur'),E:$('#fE'),D:$('#fD'),M:$('#fM')};
+function renderHeat(){
+  const dur=+F.dur.value,minE=+F.E.value,minD=+F.D.value;
+  $('#oDur').textContent=dur+' jours';$('#oE').textContent=minE+' %';$('#oD').textContent=minD+' %';$('#oM').textContent=F.M.value+' m';
+  $('#cmpSub').textContent=`Début de la mission, sur ${COLS*COLSTEP} jours · durée ${dur} j · énergie ≥ ${minE} % · liaison Terre ≥ ${minD} %`;
+  const heat=$('#heat');let h='<div></div>';
+  for(let c=0;c<COLS;c++)h+=`<div class="dh">${dayLabel(c*COLSTEP)}</div>`;
+  const cells=[];
+  SITES.forEach(s=>{
+    h+=`<button class="rn" type="button" data-go="${s.i}"><span>${String(s.i+1).padStart(2,'0')}</span>${s.name}</button>`;
+    for(let c=0;c<COLS;c++){const t0=c*COLSTEP,m=metrics(s,t0,dur),sc=Math.min(m.E,m.D),pass=m.E>=minE&&m.D>=minD,near=!pass&&m.E>=minE-8&&m.D>=minD-8;
+      cells.push({s,t0,m,sc,pass});
+      h+=`<button class="cell ${pass?'pass':near?'near':'fail'}${pass&&sc>=Math.max(minE,minD)+14?' hi':''}" data-site="${s.i}" data-t="${t0}" title="${s.name} · ${dayLabel(t0)} · énergie ${m.E} % · liaison ${m.D} %">${sc}</button>`}
+  });
+  heat.innerHTML=h;
+  const top=cells.filter(c=>c.pass).sort((a,b)=>(b.m.E+b.m.D)-(a.m.E+a.m.D)).slice(0,3);
+  $$('#heat .cell').forEach(el=>{const c=cells.find(x=>x.s.i===+el.dataset.site&&x.t0===+el.dataset.t);if(top[0]===c)el.classList.add('best')});
+  $('#rankList').innerHTML=top.length?top.map((c,i)=>`<button class="rk" type="button" data-site="${c.s.i}" data-t="${c.t0}"><div class="no up">${i===0?'Meilleure combinaison':'Alternative '+i}</div><div class="nm">${c.s.name}</div><div class="dt">${dayLabel(c.t0)} → ${dayLabel(c.t0+dur)}</div><div class="two"><span>Énergie <b>${c.m.E} %</b></span><span>Liaison <b>${c.m.D} %</b></span></div></button>`).join(''):'<p class="empty">Aucun créneau ne répond à ces critères. Réduisez la durée ou les seuils.</p>';
+}
+Object.values(F).forEach(el=>el.addEventListener('input',()=>{if(el===F.M){state.mast=+F.M.value;$('#mast').value=state.mast;$('#mastO').textContent=state.mast+' m';buildSeries(state.mast);updateList()}renderHeat()}));
+$('#p3').addEventListener('click',e=>{
+  const g=e.target.closest('[data-go]'),c=e.target.closest('[data-site]');
+  if(g){state.site=+g.dataset.go;location.hash='#site'}
+  else if(c){state.site=+c.dataset.site;setT(+c.dataset.t,true);location.hash='#site'}
+});
+$('#printBtn').onclick=()=>print();
+
+/* ======================= TEMPS, ROUTAGE ======================= */
+function setT(t,quiet){state.t=clamp(t,0,30);$('#tsl').value=state.t;$('#dateTxt').textContent=fmtDate(state.t);dirty1=true;dirty2=true;updatePanel();if(!quiet)tip.classList.remove('on')}
+$('#tsl').oninput=e=>setT(+e.target.value);
+const PLAY='<path d="M3 1.5v11l9-5.5z"/>',PAUSE='<path d="M2.5 1.5h3v11h-3zM8.5 1.5h3v11h-3z"/>';
+$('#play').onclick=()=>{state.playing=!state.playing;$('#playIc').innerHTML=state.playing?PAUSE:PLAY;$('#play').setAttribute('aria-label',state.playing?'Pause':'Lecture')};
+let lastT=performance.now();
+setInterval(()=>{const n=performance.now(),dt=(n-lastT)/1000;lastT=n;if(state.playing&&!reduce){let t=state.t+dt*1.1;if(t>=30)t=0;setT(t,true)}$('#utc').textContent=new Date().toISOString().slice(11,19)+' UTC'},120);
+function route(){
+  const h=location.hash.replace('#','')||'globe',map={globe:'p1',site:'p2',comparer:'p3'},id=map[h]||'p1';
+  $$('.page').forEach(p=>p.classList.toggle('on',p.id===id));
+  $$('.nav a').forEach(a=>a.setAttribute('aria-current',a.dataset.p===id?'page':'false'));
+  $('#timebar').style.display=id==='p3'?'none':'flex';
+  if(id!=='p2')stopTour();
+  dirty1=dirty2=true;
+  if(id==='p2'){updatePanel();updateList()}
+  if(id==='p3')renderHeat();
+  requestAnimationFrame(()=>{renderMoon();renderTerrain();drawLanes()});
+}
+addEventListener('hashchange',route);
+setT(0,true);updateList();updatePanel();renderHeat();route();loop1();loop2();
+if(!moonGL||!terGL){document.body.insertAdjacentHTML('beforeend','<p style="position:fixed;left:32px;top:90px;z-index:30" class="dim">WebGL 2 est requis pour cette maquette.</p>')}
+</script>
+</body>
+</html>
