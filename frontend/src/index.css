@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --color-space-950: #0a0e1a;
+  --color-space-900: #111729;
+  --color-moon-100: #e8ecf5;
+}
+
+body {
+  @apply bg-space-950 text-moon-100;
+}
