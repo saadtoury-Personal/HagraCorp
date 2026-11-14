@@ -90,7 +90,8 @@ public static class Geometry
     public static double EarthAngularRadiusDeg(double earthRangeKm)
     {
         // TODO: atan(EarthRadiusKm / earthRangeKm), in degrees
-        throw new NotImplementedException();
+        var x = Math.Atan(EarthRadiusKm / earthRangeKm) * 180 / Math.PI;
+        return x ;
     }
 
     /// <summary>
