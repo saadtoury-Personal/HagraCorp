@@ -48,18 +48,33 @@ public sealed class Ephemeris
     /// <summary>Values at any time between Start and End (linear interpolation between the two hourly rows).</summary>
     public EphemSample At(DateTime utc)
     {
-        // TODO:
-        // 1. throw ArgumentOutOfRangeException if utc is outside [Start, End]
-        // 2. hours = (utc - Start).TotalHours; i = (int)floor(hours); f = hours - i
-        //    (if i is the last index, return Samples[i])
-        // 3. a = Samples[i], b = Samples[i + 1]
-        // 4. NEVER interpolate longitudes directly (359 -> 1 would pass through 180).   MATH-REVIEW
-        //    Instead, for the Sun and then for the Earth:
-        //      va = Geometry.UnitVector(a lat, a lon); vb = Geometry.UnitVector(b lat, b lon)
-        //      v  = va + f * (vb - va)      (component by component)
-        //      (lat, lon) = Geometry.ToLatLon(v)
-        // 5. range = a.EarthRangeKm + f * (b.EarthRangeKm - a.EarthRangeKm)
-        // 6. return new EphemSample(utc, sunLat, sunLon, earthLat, earthLon, range)
-        throw new NotImplementedException();
+        if (utc < Start || utc > End)
+            throw new ArgumentOutOfRangeException(nameof(utc), utc, "utc is outside the ephemeris range");
+
+        double hours = (utc - Start).TotalHours;
+        int i = (int)Math.Floor(hours);
+        double f = hours - i;
+        if (i >= Samples.Count - 1)
+            return Samples[^1];
+
+        var a = Samples[i];
+        var b = Samples[i + 1];
+
+        // MATH-REVIEW: never interpolate longitudes directly (359 -> 1 would pass through 180).
+        var (sunLat, sunLon) = Lerp(a.SubSunLatDeg, a.SubSunLonDeg, b.SubSunLatDeg, b.SubSunLonDeg, f);
+        var (earthLat, earthLon) = Lerp(a.SubEarthLatDeg, a.SubEarthLonDeg, b.SubEarthLatDeg, b.SubEarthLonDeg, f);
+        double range = a.EarthRangeKm + f * (b.EarthRangeKm - a.EarthRangeKm);
+
+        return new EphemSample(utc, sunLat, sunLon, earthLat, earthLon, range);
+    }
+
+    /// <summary>Interpolates between two (lat, lon) points through their 3D unit vectors.</summary>
+    private static (double LatDeg, double LonDeg) Lerp(
+        double latA, double lonA, double latB, double lonB, double f)
+    {
+        var va = Geometry.UnitVector(latA, lonA);
+        var vb = Geometry.UnitVector(latB, lonB);
+        var v = (X: va.X + f * (vb.X - va.X), Y: va.Y + f * (vb.Y - va.Y), Z: va.Z + f * (vb.Z - va.Z));
+        return Geometry.ToLatLon(v);
     }
 }

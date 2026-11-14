@@ -43,6 +43,51 @@ public class EphemerisTests
     }
 
     [Fact]
+    public void At_ExactHour_ReturnsThatRow()
+    {
+        var eph = new Ephemeris(new[] { Row(0, 10, 20, 30, 40, 380000), Row(1, 11, 21, 31, 41, 381000) });
+        var s = eph.At(Row(0).Utc);
+        Assert.Equal(10, s.SubSunLatDeg, 9);
+        Assert.Equal(20, s.SubSunLonDeg, 9);
+        Assert.Equal(30, s.SubEarthLatDeg, 9);
+        Assert.Equal(40, s.SubEarthLonDeg, 9);
+        Assert.Equal(380000, s.EarthRangeKm, 9);
+    }
+
+    [Fact]
+    public void At_LastSample_ReturnsLastRow()
+    {
+        var eph = new Ephemeris(new[] { Row(0), Row(1, 11, 21, 31, 41, 381000) });
+        var s = eph.At(Row(1).Utc);
+        Assert.Equal(11, s.SubSunLatDeg);
+        Assert.Equal(381000, s.EarthRangeKm);
+    }
+
+    [Fact]
+    public void At_OutsideRange_Throws()
+    {
+        var eph = new Ephemeris(new[] { Row(1), Row(2) });
+        Assert.Throws<ArgumentOutOfRangeException>(() => eph.At(Row(0).Utc));
+        Assert.Throws<ArgumentOutOfRangeException>(() => eph.At(Row(3).Utc));
+    }
+
+    [Fact]
+    public void At_LongitudeWrap_PassesThroughZeroNotOneEighty()
+    {
+        var eph = new Ephemeris(new[] { Row(0, 0, 359, 0, 359), Row(1, 0, 1, 0, 1) });
+        var s = eph.At(Row(0).Utc.AddMinutes(30));
+        Assert.True(s.SubSunLonDeg < 0.001 || s.SubSunLonDeg > 359.999, $"sun lon = {s.SubSunLonDeg}");
+        Assert.True(s.SubEarthLonDeg < 0.001 || s.SubEarthLonDeg > 359.999, $"earth lon = {s.SubEarthLonDeg}");
+    }
+
+    [Fact]
+    public void At_RangeInterpolatesLinearly()
+    {
+        var eph = new Ephemeris(new[] { Row(0, range: 380000), Row(1, range: 382000) });
+        Assert.Equal(381000, eph.At(Row(0).Utc.AddMinutes(30)).EarthRangeKm, 6);
+    }
+
+    [Fact]
     public void Constructor_StoresSamplesAndExposesStartEnd()
     {
         var eph = new Ephemeris(new[] { Row(0), Row(1), Row(2) });
