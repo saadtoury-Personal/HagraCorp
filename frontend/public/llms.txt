@@ -1,0 +1,36 @@
+# LunarNav: Lunar Landing Site Navigator
+
+> LunarNav compares Moon south-pole landing sites and dates by how long the Sun (power) and the Earth (direct radio link) stay above the real terrain, and ranks fallback sites when a launch slips. Built for NASA Space Apps 2026 by team HagraCorp (Sherbrooke).
+
+Key facts:
+
+- 32 candidate sites near the lunar south pole (NASA Lunar Surface Data Book coordinates); 31 have a real terrain skyline, Apollo 11 is kept as a flat-horizon reference.
+- Sun and Earth positions: JPL Horizons, hourly, Moon Mean Earth frame (DE421). The app's timeline covers 90 days from 14 Nov 2026.
+- Terrain: NASA LOLA LDEM_80S_80M (80 m per pixel), one skyline per site of 720 elevations (every 0.5 degrees of azimuth), for an observer 2 m and 10 m above the ground.
+- Rules: the Sun is "up" while its upper edge clears the skyline; the Earth is "in view" while any part of its disc clears it. Shares are percentages of the stay.
+- Results were checked against NASA Goddard's PGDA illumination maps (product 69).
+- Figures marked "Server" come from the LunarNav API; "Bundled data" means computed in the browser from the same Horizons table and skylines; "Assumed" marks a mission choice the user can change.
+
+## Pages
+
+- [Globe](/): 3D Moon with the Sun and Earth in their real directions; pick one of the 32 regions.
+- [Site](/site): one site over time: sunlight and Earth-link shares, horizon panorama, landing accuracy within 500 m, what hides the Sun, battery over the stay.
+- [Compare](/compare): grid of sites by start date for a mission (duration, minimum sunlight, minimum Earth link, mast height), the three best windows, and a ranking that holds over 2000 weightings.
+- [Slip](/slip): if the launch slips by some weeks, which sites still work and when the original site works again.
+- [Method](/method): rules, data sources, validation against NASA PGDA, limits and a glossary.
+- [Contact](/contact): the team.
+
+## API
+
+- [API documentation (Swagger)](https://lunarnav-api.onrender.com/swagger/index.html): free hosting, the first call can take up to a minute while the server wakes.
+- [Site list](https://lunarnav-api.onrender.com/api/sites): ids, names, coordinates (latDeg, lonDeg east-positive), terrain flag.
+- `GET /api/sites/{id}/metrics?at=ISO&stayDays=6&mast=2`: sunlight and Earth-link shares, countdowns, longest dark spell.
+- `GET /api/sites/{id}/timeline?from=ISO&days=30&stepMinutes=60&mast=2`: hourly Sun and Earth azimuth, elevation and visible fraction.
+- `GET /api/fallback?date=YYYY-MM-DD&slipWeeks=2&stayDays=6&requireEarth=true&mast=2`: sites ranked after a launch slip.
+- `GET /api/ranking?date=ISO&stayDays=6&mast=2`: robust ranking over 2000 weightings.
+- `GET /api/sites/{id}/blockers`, `/battery`, `/uncertainty`, `/export.csv`, and `GET /api/validation`.
+
+## Optional
+
+- Mast heights: the data exists for 2 m and 10 m; the app interpolates heights in between, the API rounds to 2 or 10.
+- Angles are in degrees, longitude east-positive, south pole latitude -90, times UTC.
