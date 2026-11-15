@@ -14,10 +14,13 @@ public static class Tools
     /// <summary>Loads data/LDEM_80S_80M.IMG (110 MB of 16-bit little-endian integers) into memory.</summary>
     public static Dem LoadDem(string imgPath)
     {
-        var bytes = File.ReadAllBytes(imgPath);
-        if (bytes.Length != 7600 * 7600 * 2)
-            throw new InvalidDataException($"{imgPath}: expected {7600 * 7600 * 2} bytes, got {bytes.Length}");
-        return new Dem(MemoryMarshal.Cast<byte, short>(bytes).ToArray());
+        using var file = File.OpenRead(imgPath);
+        if (file.Length != 7600L * 7600 * 2)
+            throw new InvalidDataException($"{imgPath}: expected {7600 * 7600 * 2} bytes, got {file.Length}");
+        // Read straight into the final array: one 115 MB copy in memory, not two (Render's free plan has 512 MB).
+        var dn = new short[7600 * 7600];
+        file.ReadExactly(MemoryMarshal.AsBytes(dn.AsSpan()));
+        return new Dem(dn);
     }
 
     /// <summary>Writes masks/{id}_{mast}m.json, heatmap_{mast}m.json and uncertainty_{mast}m.json for every site, masts 2 and 10.</summary>
@@ -57,10 +60,59 @@ public static class Tools
             Write(Path.Combine(dataDir, $"uncertainty_{mast}m.json"), uncertainty);
         }
 
+        WriteManifest(dataDir, Path.GetFileName(demPath));
+
         void Write<T>(string path, T value)
         {
             File.WriteAllText(path, JsonSerializer.Serialize(value, json));
             Console.WriteLine($"wrote {path}");
         }
+    }
+
+    /// <summary>One data file: its SHA-256, where it comes from and the command that produced it.</summary>
+    public record ManifestEntry(string Path, long Bytes, string Sha256, string Source, string Command);
+
+    /// <summary>Writes manifest.json listing every data file with its SHA-256, so anyone can check the data was not changed.
+    /// Run by Precompute, or alone with: dotnet run --project LunarNav.Api -- manifest LunarNav.Web/wwwroot/data</summary>
+    public static IReadOnlyList<ManifestEntry> WriteManifest(string dataDir, string demName = "LDEM_80S_80M.IMG")
+    {
+        const string precompute = "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data";
+        var lola = $"NASA LOLA {Path.GetFileNameWithoutExtension(demName)} (PDS) + ephem.csv";
+        var entries = Directory.EnumerateFiles(dataDir, "*.*", SearchOption.AllDirectories)
+            .Select(f => Path.GetRelativePath(dataDir, f).Replace('\\', '/'))
+            .Where(p => p != "manifest.json" && !Path.GetFileName(p).StartsWith('.'))   // skip .DS_Store and other hidden files
+            .Order(StringComparer.Ordinal)
+            .Select(p =>
+            {
+                var full = Path.Combine(dataDir, p);
+                var (source, command) = p switch
+                {
+                    "sites.json" => ("NASA Lunar Surface Data Book ACD-50044 Table A2-2, NASA Artemis III candidate regions", "written by hand"),
+                    "validation.json" => ("C# product code vs NASA PGDA product 69 and the Python reimplementation (tools/validation)",
+                        "dotnet run -c Release --project LunarNav.Api -- validate ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data ../tools/validation LunarNav.Web/wwwroot/data/validation.json"),
+                    "rules.json" =>("LunarNav team: thresholds, each marked assumed or validated", "written by hand"),
+                    "ephem.csv" =>("JPL Horizons (DE441), hourly sub-solar and sub-Earth points 2026-2030", "python fetch_ephem.py"),
+                    _ when p.StartsWith("masks/") || p.StartsWith("heatmap_") || p.StartsWith("uncertainty_") => (lola, precompute),
+                    _ => ("unknown", "unknown"),
+                };
+                return new ManifestEntry(p, new FileInfo(full).Length, Sha256(full), source, command);
+            })
+            .ToList();
+
+        var path = Path.Combine(dataDir, "manifest.json");
+        File.WriteAllText(path, JsonSerializer.Serialize(new { files = entries },
+            new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            {
+                WriteIndented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            }));
+        Console.WriteLine($"wrote {path}");
+        return entries;
+    }
+
+    private static string Sha256(string path)
+    {
+        using var stream = File.OpenRead(path);
+        return Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(stream));
     }
 }

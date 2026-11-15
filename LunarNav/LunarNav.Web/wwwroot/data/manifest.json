@@ -1,0 +1,508 @@
+{
+  "files": [
+    {
+      "path": "ephem.csv",
+      "bytes": 3142303,
+      "sha256": "b1093c651c5d99b37cfede64a4f960a5af0da12c4928bf95bbb8b27847b0478a",
+      "source": "JPL Horizons (DE441), hourly sub-solar and sub-Earth points 2026-2030",
+      "command": "python fetch_ephem.py"
+    },
+    {
+      "path": "heatmap_10m.json",
+      "bytes": 890666,
+      "sha256": "b4809fdbc808e215908bb057f598a15ff0cfb5dcf8a9b0773a829f8429d60b36",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "heatmap_2m.json",
+      "bytes": 874281,
+      "sha256": "1a6bd2c31bb36a56a23bad8331fc80c28c184d6798163b614f78658462b2a758",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/amundsen-1_10m.json",
+      "bytes": 6920,
+      "sha256": "08bc6a3e27809eae43407ff9f8aac7fe2dd4ad2c85a430ee8ccdf330e7029ee6",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/amundsen-1_2m.json",
+      "bytes": 6925,
+      "sha256": "e4844e1c484080d5cba40573401e9d415ed1e44a3ee83c466eee0225b373183a",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/amundsen-rim_10m.json",
+      "bytes": 7290,
+      "sha256": "b68db952657a8dfe8bd2c91d5dccede84b91ab4020076d7ecbd1274057333cff",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/amundsen-rim_2m.json",
+      "bytes": 7180,
+      "sha256": "e778a2e889f24181f4bebb093201f443be55bf8e9b65830a5b75e0307299a9cd",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/apollo11_10m.json",
+      "bytes": 1441,
+      "sha256": "c3d1b0400180d503b8f9ddb855b5fd32b9580df4a174fa6c6a283437f2b96e8b",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/apollo11_2m.json",
+      "bytes": 1441,
+      "sha256": "c3d1b0400180d503b8f9ddb855b5fd32b9580df4a174fa6c6a283437f2b96e8b",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/cabeus-exterior-wall-1_10m.json",
+      "bytes": 7071,
+      "sha256": "a8cab492de6392fcd135a1684c338b57f2b1aa1d431021bab68e42db24f43a19",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/cabeus-exterior-wall-1_2m.json",
+      "bytes": 7025,
+      "sha256": "776674cc5db3b1c2c3777da94dbbeda2d77d217d093de153c6114864b34993d2",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/connecting-ridge-extension_10m.json",
+      "bytes": 7347,
+      "sha256": "3c474f7869adabd03e6bd93bef89e50b1b2ef5f614a015c40df7cbec3091e952",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/connecting-ridge-extension_2m.json",
+      "bytes": 7329,
+      "sha256": "28066a5bccb88e9e39e837ab011cc55ab675225bc4f58122e8fc7b3f5b7551a8",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/connecting-ridge_10m.json",
+      "bytes": 7873,
+      "sha256": "bbcb03bdcaad2db15f7a18baf62fb86d5410b1229a6553dffad9d9db737430a8",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/connecting-ridge_2m.json",
+      "bytes": 7586,
+      "sha256": "4566c7fe3fc7702c6f158cf893dfc1ef77ab358d1b8c35878aec61faee3ec930",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/de-gerlache-kocher-massif_10m.json",
+      "bytes": 7637,
+      "sha256": "97fca0ab9008027aaa74ce78a57c4dc3531bebe4b25af11334da048ccc20a73d",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/de-gerlache-kocher-massif_2m.json",
+      "bytes": 7623,
+      "sha256": "76a8168f6e98ce56a00231a35dc6032ef859822c3bffeedf5d035ecdf527dcc6",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/de-gerlache-rim-1_10m.json",
+      "bytes": 7857,
+      "sha256": "9f53c8ead42ca7e38b0061ea63ba3213fbb237109eda668cef4ba873a35762b1",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/de-gerlache-rim-1_2m.json",
+      "bytes": 7756,
+      "sha256": "6e72cb3ad36c0b66fb6923ce97dd8dcc9114e8edf41bec1717b084d1767af097",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/de-gerlache-rim-2_10m.json",
+      "bytes": 7692,
+      "sha256": "54302821a45565098a5f2afd13dfd5c1fa9a01c7bbd34cf819de1dc320ca9b7b",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/de-gerlache-rim-2_2m.json",
+      "bytes": 7707,
+      "sha256": "2308bc5115be451f0ae8dc5ed1860e5dadc0c5d0617e534446ad3238f431a49e",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/faustini-rim-a_10m.json",
+      "bytes": 7485,
+      "sha256": "b86e5992e6e1fd40814c5a18ccafa06db62cb3348f016eda8a6a5034fea95533",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/faustini-rim-a_2m.json",
+      "bytes": 7416,
+      "sha256": "c0ecf1d27b2cf2933502048e93fdbe3d54c623a769e79f17de14f2eb94c4edac",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/haworth_10m.json",
+      "bytes": 7594,
+      "sha256": "885c68f3caf761c12cfe5f1650fdfda6b7b2c5605c3a4215a579d8c1a31f9df0",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/haworth_2m.json",
+      "bytes": 7459,
+      "sha256": "c6994e1c39df362fd604a50b40ede081ce6a342a171a9579b7334ae239eea71d",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/idelson-l-crater-1_10m.json",
+      "bytes": 7254,
+      "sha256": "c239a2c3669f80c74a796eec74cc99e486b506e2dc6cb9202e087afccdff56ef",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/idelson-l-crater-1_2m.json",
+      "bytes": 7213,
+      "sha256": "8cad96ce1948740423bbc2547e092107597190e15356570ad0cc71862ee1e1a6",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/im2-athena_10m.json",
+      "bytes": 7555,
+      "sha256": "9cd91a624dfb9b684e09d5eea67abbb0fef28610977782a2371ab6a1513b824e",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/im2-athena_2m.json",
+      "bytes": 7525,
+      "sha256": "a02e05b13d5e00fe72a03b896b67ed1a059b35b555a31ae0208027697bcddcce",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/leibnitz-beta-plateau_10m.json",
+      "bytes": 7394,
+      "sha256": "14737d37f2ac86f8201ccde208e7c9f9d7b7c56d3c178f4ec49c3a63b9fdfade",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/leibnitz-beta-plateau_2m.json",
+      "bytes": 7323,
+      "sha256": "c7a4780ddb9d8aef7be2657cdb84c39578eb0347bef99023979f00de8d727917",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/malapert-crater-1_10m.json",
+      "bytes": 6850,
+      "sha256": "03edc9bd16c563a0f48fda9ba475d6e55419199484618db2852839586775375c",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/malapert-crater-1_2m.json",
+      "bytes": 6876,
+      "sha256": "5b1ec3407d1877f221b24020a66549c64fbf2fdcf8c7b2d54aa218685e69db29",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/malapert-massif_10m.json",
+      "bytes": 7517,
+      "sha256": "5244b01b2bec6267ebccde06ac756f7d3825822863741c7f2c254340d6cbec7b",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/malapert-massif_2m.json",
+      "bytes": 7516,
+      "sha256": "8ec35f2f6442e8e9286fa6f9576b84c605331e0f77e47429b6d37f4c385aabfb",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/mons-mouton-plateau_10m.json",
+      "bytes": 7675,
+      "sha256": "94924858b94d3539646be1fddb7a4240c69cbfb65b85f447b07f4dd622c495c1",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/mons-mouton-plateau_2m.json",
+      "bytes": 7660,
+      "sha256": "821dc7166461100fe01933a3c05efb75bc1bd8e6df17f6e67faf0628bf50cbec",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/mons-mouton_10m.json",
+      "bytes": 7557,
+      "sha256": "b9c66a121e2517e09a388ad10131d23525eeac21f9bb9d9b497a9b77d0b3464b",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/mons-mouton_2m.json",
+      "bytes": 7483,
+      "sha256": "e43ec81fdd6d81cf3c784055941e53f74ec7b27f1f1b7ded2639419b3cfa2989",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/nobile-rim-1_10m.json",
+      "bytes": 7820,
+      "sha256": "0102b35c7a51fdb95a6ccea0a0d7f205edd170658e9f4f040eebcbaa439f4489",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/nobile-rim-1_2m.json",
+      "bytes": 7837,
+      "sha256": "d745dfd5dacc36543e52b09be049808c4d88bab311c2cdb2ddbd891e16395f22",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/nobile-rim-2_10m.json",
+      "bytes": 7533,
+      "sha256": "0c2589457c2b12320880d854c7b5c695b9d59729165412f9e94c09f53863a95c",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/nobile-rim-2_2m.json",
+      "bytes": 7342,
+      "sha256": "c0aae1ab5a691a84b7b38a49117e0d7febddda2cfd14adf24f65998e3c125832",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/peak-near-cabeus-b_10m.json",
+      "bytes": 7774,
+      "sha256": "bdbb01be5d4a0be6326ee5a5409039770ba2b86aaf114338644a6110c2364a4a",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/peak-near-cabeus-b_2m.json",
+      "bytes": 7678,
+      "sha256": "e0da9d94e99d98db038a919d4d9ba6b819a4bcf9189b917de6fd86ebcb8654af",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/peak-near-shackleton_10m.json",
+      "bytes": 7825,
+      "sha256": "1cd5b47778ec33265462590a4a4ea412677e6280303c7045c27a9cbaeee4bd9f",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/peak-near-shackleton_2m.json",
+      "bytes": 7956,
+      "sha256": "87a56201ce5beabe34ce509df4ab6d47545dcc736173cc61bad1359da0596a55",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shackleton-rim-b_10m.json",
+      "bytes": 7584,
+      "sha256": "f69ddf7e3825b01c449080ca50e981398dbfa527bdcde846fa5116d25e8138df",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shackleton-rim-b_2m.json",
+      "bytes": 7565,
+      "sha256": "183e90eb7c4c7d52cccb91f485155f59cf8bbd8555ee3be3959e8a3b5fb95677",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shackleton-rim_10m.json",
+      "bytes": 7107,
+      "sha256": "48c64e5848068502253cfe6c7654d80be479ab9582fc83570fafb46fa4b704a9",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shackleton-rim_2m.json",
+      "bytes": 7129,
+      "sha256": "bb40d2f82cd91de68ad3e3155481e2c5aeb52e51df0be6dd645cc8ee22456d47",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker-rim-a_10m.json",
+      "bytes": 7269,
+      "sha256": "25cbaa3fa389c557fc0f582cf9091ea79ae00eeffabcc8c5d60bc4193b976a64",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker-rim-a_2m.json",
+      "bytes": 7190,
+      "sha256": "1f8192c9b5fbc2b23952c45133d5dfde373719c4192374eb5b07bb906d94fceb",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker-rim-b_10m.json",
+      "bytes": 7125,
+      "sha256": "daa3f97f15abcf551a1a34bc356aa569b03c1f9f1b4d47bdaad9ab838c8bd4cf",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker-rim-b_2m.json",
+      "bytes": 7093,
+      "sha256": "fa0923be9ab6cfb6dbfc6df3f72d46576c8cbf28181ad0ff777dcb53cc355849",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker-rim-c_10m.json",
+      "bytes": 7493,
+      "sha256": "36d3fc85749ef2341185a322a54349c7798f2ab181355e320fca48b83694c54a",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker-rim-c_2m.json",
+      "bytes": 7298,
+      "sha256": "618378294e772e31df5cac4f6ed366c06b6eb9a1eea411f092ee7d4627f7ead5",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker-rim-d_10m.json",
+      "bytes": 7605,
+      "sha256": "e890df10a6dca7eef76cc3f26c3d3193315182d8af604277155ec280f6502485",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker-rim-d_2m.json",
+      "bytes": 7500,
+      "sha256": "b28a4a40f78efbd5518d3b6b899517ba7a852dab09e63da4aa44c33b833cf54b",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker-rim-e_10m.json",
+      "bytes": 7240,
+      "sha256": "30e3b280270dc1e260697ffa6e286874d789d938712ca280f217ae8a721b8e70",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker-rim-e_2m.json",
+      "bytes": 7197,
+      "sha256": "8363a77918aa839a8f667dd10b8f80b24b87460096f2e637312866fd6fa72fef",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker-rim-f_10m.json",
+      "bytes": 7526,
+      "sha256": "5eb9e6f8ab62c349ab748761e68d73a2a7c7230bc93da0a11b7840976a0a5ec9",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker-rim-f_2m.json",
+      "bytes": 7469,
+      "sha256": "f5c483c50d59d32933011453e3dcc8fc2b143a75e5f1f8f8b97245c91e41322e",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker_10m.json",
+      "bytes": 7538,
+      "sha256": "13f18de43b7fb75de6aace4b83ef4dc7e86de714996b5b4683d8bcd222dc3fe1",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/shoemaker_2m.json",
+      "bytes": 7372,
+      "sha256": "5433b84ba3a3db5ada13f1fc154f1373da44838bbe598872ec953ef248a6f7c6",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/slater-plain_10m.json",
+      "bytes": 7992,
+      "sha256": "c109e746c67eee3be2b11b6e1729a284c90ae6e6b04452431827e6f87ca423f1",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "masks/slater-plain_2m.json",
+      "bytes": 8200,
+      "sha256": "1f58e37564bb670d7cd2a72d7f7f59ba8c3f1e9fdebd752aaa423e55b22ca2c7",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "rules.json",
+      "bytes": 2949,
+      "sha256": "232741ea6d8149798252f516cc2921e01f502fe03b722869a84b5cbf311525dc",
+      "source": "LunarNav team: thresholds, each marked assumed or validated",
+      "command": "written by hand"
+    },
+    {
+      "path": "sites.json",
+      "bytes": 6534,
+      "sha256": "434286b127fa5ce23266cedbb15d7bbdb2066b4050b9c64bc77303b4e00f5599",
+      "source": "NASA Lunar Surface Data Book ACD-50044 Table A2-2, NASA Artemis III candidate regions",
+      "command": "written by hand"
+    },
+    {
+      "path": "uncertainty_10m.json",
+      "bytes": 187500,
+      "sha256": "7748286e1599b9b9bc1cb90d6b3c9e771326bd475b03bf0881367bac2ccad0b4",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "uncertainty_2m.json",
+      "bytes": 186686,
+      "sha256": "97917c0fa926759798a6d337a7df0aac3a9aa1d65ba2853b28a0d89e57f96652",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "validation.json",
+      "bytes": 57431,
+      "sha256": "b10b79c10894bfff639d4deced7eb0e77fb86c6e138e0bd4851392a798a3cae0",
+      "source": "C# product code vs NASA PGDA product 69 and the Python reimplementation (tools/validation)",
+      "command": "dotnet run -c Release --project LunarNav.Api -- validate ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data ../tools/validation LunarNav.Web/wwwroot/data/validation.json"
+    }
+  ]
+}

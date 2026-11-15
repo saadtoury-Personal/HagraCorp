@@ -11,6 +11,21 @@ if (args is ["precompute", ..])
     Console.Error.WriteLine("usage: precompute <demPath> <dataDir>");
     return 1;
 }
+if (args is ["validate", var vDem, var vData, var vDir, var vOut, .. var vRest] && vRest.Length <= 1)
+{
+    Validation.Run(vDem, vData, vDir, vOut, vRest.FirstOrDefault());
+    return 0;
+}
+if (args is ["validate", ..])
+{
+    Console.Error.WriteLine("usage: validate <demPath> <dataDir> <validationDir> <out.json> [ephem.csv]");
+    return 1;
+}
+if (args is ["manifest", var manifestDir])
+{
+    Tools.WriteManifest(manifestDir);
+    return 0;
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,8 +55,9 @@ var api = app.MapGroup("/api");
 
 api.MapGet("/health", (AppData data) => Results.Ok(new { status = "ok", sites = data.Sites.Count })).WithName("Health");
 
-api.MapGet("/about", () => Results.Ok(new
+api.MapGet("/about", (AppData data) => Results.Ok(new
 {
+    rules = data.Rules,
     precision = new[]
     {
         "Sun up = the Sun's upper edge is above the terrain (no atmosphere, so no refraction). Earth in view = any part of the Earth is visible. Other rules: sunRule=edge|center|full, earthRule=any|center on /metrics.",
@@ -154,7 +170,43 @@ api.MapGet("/sites/{id}/timeline", (string id, AppData data, DateTime? from, int
         start, start.AddDays(days), TimeSpan.FromMinutes(stepMinutes))));
 }).WithName("GetSiteTimeline");
 
-api.MapGet("/heatmap", (AppData data, int mast = 2) =>
+api.MapGet("/sites/{id}/export.csv", (string id, AppData data, DateTime? from, int days = 30, int mast = 2) =>
+{
+    if (BadMast(mast) is { } bad)
+        return bad;
+    if (days is <= 0 or > 366)
+        return Results.BadRequest("days must be in 1..366");
+    var site = data.FindSite(id);
+    if (site is null)
+        return Results.NotFound($"unknown site '{id}'");
+
+    var start = Utc(from);
+    return Guard(() =>
+    {
+        var points = Analysis.Timeline(data.Ephemeris, site, data.MaskOrFlat(site, mast), start, start.AddDays(days), TimeSpan.FromHours(1));
+        var inv = System.Globalization.CultureInfo.InvariantCulture;
+        var csv = new System.Text.StringBuilder()
+            .AppendLine($"# LunarNav hourly series, site {site.Id} ({site.LatDeg.ToString(inv)}, {site.LonDeg.ToString(inv)}), mast {mast} m, terrain {(site.Terrain ? "NASA LOLA LDEM_80S_80M" : "none (flat horizon)")}")
+            .AppendLine("# ephemeris: JPL Horizons (DE441) via ephem.csv; frame: Moon Mean Earth (ME); angles in degrees, azimuth clockwise from north; times UTC")
+            .AppendLine("# rules: Sun up = upper edge above the terrain; Earth in view = any part visible; frac = visible fraction of the disk 0..1; power = index 0..1 for a vertical Sun-tracking panel")
+            .AppendLine("utc,sunAzDeg,sunElDeg,sunFrac,earthAzDeg,earthElDeg,earthFrac,power");
+        foreach (var p in points)
+            csv.AppendLine(string.Join(',', p.T.ToString("yyyy-MM-ddTHH:mm:ssZ", inv),
+                F(p.SunAz), F(p.SunEl), F(p.SunFrac), F(p.EarthAz), F(p.EarthEl), F(p.EarthFrac), F(p.Power)));
+        return Results.File(System.Text.Encoding.UTF8.GetBytes(csv.ToString()), "text/csv", $"{site.Id}_{mast}m.csv");
+
+        string F(double v) => v.ToString("0.####", inv);
+    });
+}).WithName("ExportSiteCsv");
+
+api.MapGet("/validation", (AppData data) =>
+{
+    var path = Path.Combine(data.DataDir, "validation.json");
+    // Full path: Results.File treats a relative path as a file under wwwroot, not on disk (DataDir=data at deployment).
+    return File.Exists(path) ? Results.File(Path.GetFullPath(path), "application/json") : Results.NotFound("validation.json not produced yet");
+}).WithName("GetValidation");
+
+api.MapGet("/heatmap",(AppData data, int mast = 2) =>
 {
     if (BadMast(mast) is { } bad)
         return bad;

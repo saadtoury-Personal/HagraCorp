@@ -12,6 +12,7 @@ public sealed class AppData
     private readonly string _dataDir;
     private readonly Lazy<Ephemeris> _ephemeris;
     private readonly Lazy<Dem?> _dem;
+    private readonly Lazy<JsonElement?> _rules;
 
     /// <param name="demPath">LOLA map for custom points; missing file = custom points disabled (503).</param>
     public AppData(string dataDir, string? demPath = null)
@@ -30,8 +31,18 @@ public sealed class AppData
             using var reader = new StreamReader(Path.Combine(_dataDir, "ephem.csv"));
             return Ephemeris.ParseCsv(reader);
         });
+        _rules = new Lazy<JsonElement?>(() =>
+        {
+            var rulesPath = Path.Combine(_dataDir, "rules.json");
+            return File.Exists(rulesPath) ? JsonDocument.Parse(File.ReadAllText(rulesPath)).RootElement.Clone() : null;
+        });
         _dem = new Lazy<Dem?>(() => demPath is not null && File.Exists(demPath) ? Tools.LoadDem(demPath) : null);
     }
+
+    public string DataDir => _dataDir;
+
+    /// <summary>rules.json (thresholds marked assumed / validated), or null when the file is missing.</summary>
+    public JsonElement? Rules => _rules.Value;
 
     public Ephemeris Ephemeris => _ephemeris.Value;
 
