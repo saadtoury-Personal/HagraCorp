@@ -7,7 +7,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import ours
 
 R = 1737400.0
-PG = sys.argv[1]
+PG = sys.argv[1] if __name__ == "__main__" else None   # ours_ported.py imports this file for skyline() only
 MAPS = {"85S_060M": (5058, 60.0, 2528.5), "75S_120M": (7624, 120.0, 3811.5)}  # lines, m/px, offset (from the .LBL files)
 
 def xy(lat, lon):
