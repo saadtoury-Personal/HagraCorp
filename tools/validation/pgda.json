@@ -1,0 +1,1512 @@
+[
+ {
+  "siteId": "peak-near-cabeus-b",
+  "lat": -83.5925,
+  "lon": -68.454,
+  "85S_060M": {
+   "sun": null,
+   "earth": null
+  },
+  "75S_120M": {
+   "sun": [
+    56.06,
+    32.54,
+    61.52
+   ],
+   "earth": [
+    67.32,
+    31.53,
+    99.51
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 55.14,
+   "sunEdge": 56.11,
+   "sunFull": 53.94,
+   "sunMeanFrac": 55.12,
+   "earthEdge": 70.82,
+   "earthCentre": 65.56,
+   "earthFull": 60.71,
+   "earthMeanFrac": 65.6
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    30.87,
+    57.8
+   ],
+   "earth": [
+    23.66,
+    87.23
+   ]
+  }
+ },
+ {
+  "siteId": "haworth",
+  "lat": -86.3354,
+  "lon": -23.3339,
+  "85S_060M": {
+   "sun": [
+    53.3,
+    45.71,
+    55.2
+   ],
+   "earth": [
+    79.58,
+    73.48,
+    80.16
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    54.18,
+    47.86,
+    56.86
+   ],
+   "earth": [
+    78.77,
+    69.79,
+    80.32
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 52.51,
+   "sunEdge": 53.32,
+   "sunFull": 51.54,
+   "sunMeanFrac": 52.49,
+   "earthEdge": 78.3,
+   "earthCentre": 71.95,
+   "earthFull": 66.53,
+   "earthMeanFrac": 72.06
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    49.18,
+    56.18
+   ],
+   "earth": [
+    71.95,
+    80.66
+   ]
+  }
+ },
+ {
+  "siteId": "malapert-massif",
+  "lat": -85.9119,
+  "lon": -4.157,
+  "85S_060M": {
+   "sun": [
+    55.84,
+    51.04,
+    59.75
+   ],
+   "earth": [
+    100.0,
+    76.19,
+    100.0
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    57.83,
+    48.43,
+    58.64
+   ],
+   "earth": [
+    100.0,
+    73.51,
+    100.0
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 58.76,
+   "sunEdge": 59.79,
+   "sunFull": 57.77,
+   "sunMeanFrac": 58.76,
+   "earthEdge": 100.0,
+   "earthCentre": 100.0,
+   "earthFull": 86.85,
+   "earthMeanFrac": 97.63
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    50.9,
+    59.79
+   ],
+   "earth": [
+    79.99,
+    100.0
+   ]
+  }
+ },
+ {
+  "siteId": "mons-mouton-plateau",
+  "lat": -84.5635,
+  "lon": 37.9959,
+  "85S_060M": {
+   "sun": [
+    54.18,
+    49.7,
+    56.57
+   ],
+   "earth": [
+    94.5,
+    84.82,
+    100.0
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    54.92,
+    48.48,
+    57.7
+   ],
+   "earth": [
+    100.0,
+    78.05,
+    100.0
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 52.05,
+   "sunEdge": 53.42,
+   "sunFull": 50.76,
+   "sunMeanFrac": 52.07,
+   "earthEdge": 100.0,
+   "earthCentre": 100.0,
+   "earthFull": 91.0,
+   "earthMeanFrac": 99.3
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    50.78,
+    56.27
+   ],
+   "earth": [
+    82.27,
+    100.0
+   ]
+  }
+ },
+ {
+  "siteId": "mons-mouton",
+  "lat": -85.4781,
+  "lon": 31.0203,
+  "85S_060M": {
+   "sun": [
+    51.96,
+    29.09,
+    63.0
+   ],
+   "earth": [
+    55.63,
+    46.26,
+    74.1
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    58.48,
+    44.16,
+    67.38
+   ],
+   "earth": [
+    56.33,
+    45.3,
+    76.81
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 55.74,
+   "sunEdge": 60.4,
+   "sunFull": 50.89,
+   "sunMeanFrac": 55.7,
+   "earthEdge": 62.87,
+   "earthCentre": 58.17,
+   "earthFull": 53.63,
+   "earthMeanFrac": 58.19
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    46.25,
+    62.29
+   ],
+   "earth": [
+    50.65,
+    73.66
+   ]
+  }
+ },
+ {
+  "siteId": "nobile-rim-1",
+  "lat": -85.1394,
+  "lon": 36.5272,
+  "85S_060M": {
+   "sun": [
+    58.1,
+    48.63,
+    61.68
+   ],
+   "earth": [
+    69.46,
+    57.78,
+    79.85
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    64.99,
+    33.54,
+    64.99
+   ],
+   "earth": [
+    74.2,
+    54.58,
+    81.14
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 61.46,
+   "sunEdge": 63.43,
+   "sunFull": 59.48,
+   "sunMeanFrac": 61.48,
+   "earthEdge": 70.23,
+   "earthCentre": 64.97,
+   "earthFull": 60.12,
+   "earthMeanFrac": 65.02
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    36.72,
+    63.43
+   ],
+   "earth": [
+    50.78,
+    79.74
+   ]
+  }
+ },
+ {
+  "siteId": "nobile-rim-2",
+  "lat": -83.8179,
+  "lon": 59.076,
+  "85S_060M": {
+   "sun": null,
+   "earth": null
+  },
+  "75S_120M": {
+   "sun": [
+    51.24,
+    37.38,
+    52.66
+   ],
+   "earth": [
+    62.12,
+    40.66,
+    71.7
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 48.94,
+   "sunEdge": 51.07,
+   "sunFull": 46.85,
+   "sunMeanFrac": 48.94,
+   "earthEdge": 60.02,
+   "earthCentre": 55.38,
+   "earthFull": 50.85,
+   "earthMeanFrac": 55.39
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    35.63,
+    51.07
+   ],
+   "earth": [
+    46.95,
+    62.95
+   ]
+  }
+ },
+ {
+  "siteId": "de-gerlache-rim-2",
+  "lat": -88.632,
+  "lon": -68.0601,
+  "85S_060M": {
+   "sun": [
+    35.7,
+    35.7,
+    62.22
+   ],
+   "earth": [
+    61.3,
+    61.28,
+    61.32
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    44.62,
+    39.52,
+    65.05
+   ],
+   "earth": [
+    61.29,
+    60.21,
+    61.33
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 49.24,
+   "sunEdge": 53.14,
+   "sunFull": 44.74,
+   "sunMeanFrac": 49.15,
+   "earthEdge": 61.85,
+   "earthCentre": 57.15,
+   "earthFull": 52.62,
+   "earthMeanFrac": 57.17
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    40.67,
+    62.84
+   ],
+   "earth": [
+    61.3,
+    61.87
+   ]
+  }
+ },
+ {
+  "siteId": "slater-plain",
+  "lat": -87.2638,
+  "lon": 127.5189,
+  "85S_060M": {
+   "sun": [
+    58.83,
+    36.43,
+    58.83
+   ],
+   "earth": [
+    49.71,
+    33.7,
+    49.74
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    56.67,
+    46.72,
+    63.18
+   ],
+   "earth": [
+    48.27,
+    41.32,
+    49.76
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 54.3,
+   "sunEdge": 57.61,
+   "sunFull": 50.74,
+   "sunMeanFrac": 54.27,
+   "earthEdge": 50.12,
+   "earthCentre": 45.59,
+   "earthFull": 40.91,
+   "earthMeanFrac": 45.56
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    48.21,
+    59.37
+   ],
+   "earth": [
+    43.29,
+    50.4
+   ]
+  }
+ },
+ {
+  "siteId": "shackleton-rim",
+  "lat": -89.7668,
+  "lon": -171.87,
+  "85S_060M": {
+   "sun": [
+    10.96,
+    9.88,
+    12.03
+   ],
+   "earth": [
+    11.07,
+    9.7,
+    12.36
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    11.49,
+    9.44,
+    13.78
+   ],
+   "earth": [
+    11.89,
+    9.06,
+    15.28
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 8.82,
+   "sunEdge": 10.88,
+   "sunFull": 6.57,
+   "sunMeanFrac": 8.79,
+   "earthEdge": 9.8,
+   "earthCentre": 5.15,
+   "earthFull": 1.57,
+   "earthMeanFrac": 5.18
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    9.29,
+    12.43
+   ],
+   "earth": [
+    7.39,
+    11.65
+   ]
+  }
+ },
+ {
+  "siteId": "connecting-ridge",
+  "lat": -89.4632,
+  "lon": -137.49,
+  "85S_060M": {
+   "sun": [
+    43.87,
+    36.67,
+    76.95
+   ],
+   "earth": [
+    39.05,
+    33.85,
+    57.25
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    66.33,
+    26.15,
+    83.9
+   ],
+   "earth": [
+    52.4,
+    31.13,
+    58.14
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 38.01,
+   "sunEdge": 41.52,
+   "sunFull": 35.2,
+   "sunMeanFrac": 38.14,
+   "earthEdge": 39.42,
+   "earthCentre": 34.42,
+   "earthFull": 28.94,
+   "earthMeanFrac": 34.36
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    34.09,
+    78.27
+   ],
+   "earth": [
+    31.15,
+    56.6
+   ]
+  }
+ },
+ {
+  "siteId": "im2-athena",
+  "lat": -84.7906,
+  "lon": 29.1957,
+  "85S_060M": {
+   "sun": [
+    45.1,
+    40.26,
+    46.89
+   ],
+   "earth": [
+    92.08,
+    79.51,
+    93.12
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    46.84,
+    42.57,
+    47.04
+   ],
+   "earth": [
+    93.07,
+    79.4,
+    93.36
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 44.66,
+   "sunEdge": 46.33,
+   "sunFull": 43.35,
+   "sunMeanFrac": 44.7,
+   "earthEdge": 93.12,
+   "earthCentre": 81.26,
+   "earthFull": 74.34,
+   "earthMeanFrac": 81.74
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    41.84,
+    46.56
+   ],
+   "earth": [
+    82.97,
+    93.75
+   ]
+  }
+ },
+ {
+  "siteId": "amundsen-rim",
+  "lat": -84.2287,
+  "lon": 69.44396,
+  "85S_060M": {
+   "sun": null,
+   "earth": null
+  },
+  "75S_120M": {
+   "sun": [
+    38.2,
+    34.8,
+    41.66
+   ],
+   "earth": [
+    54.17,
+    49.44,
+    60.41
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 34.26,
+   "sunEdge": 35.65,
+   "sunFull": 32.85,
+   "sunMeanFrac": 34.25,
+   "earthEdge": 54.22,
+   "earthCentre": 49.57,
+   "earthFull": 44.9,
+   "earthMeanFrac": 49.57
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    34.24,
+    39.28
+   ],
+   "earth": [
+    49.92,
+    60.03
+   ]
+  }
+ },
+ {
+  "siteId": "shackleton-rim-b",
+  "lat": -89.5244,
+  "lon": 56.30993,
+  "85S_060M": {
+   "sun": [
+    35.54,
+    34.03,
+    39.97
+   ],
+   "earth": [
+    53.82,
+    53.74,
+    53.88
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    35.99,
+    15.94,
+    37.34
+   ],
+   "earth": [
+    53.85,
+    53.7,
+    53.96
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 35.25,
+   "sunEdge": 39.79,
+   "sunFull": 31.53,
+   "sunMeanFrac": 35.39,
+   "earthEdge": 54.5,
+   "earthCentre": 49.93,
+   "earthFull": 45.32,
+   "earthMeanFrac": 49.93
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    38.8,
+    41.3
+   ],
+   "earth": [
+    54.38,
+    54.59
+   ]
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-a",
+  "lat": -88.0792,
+  "lon": 11.88866,
+  "85S_060M": {
+   "sun": [
+    22.78,
+    21.63,
+    23.66
+   ],
+   "earth": [
+    47.61,
+    47.52,
+    47.71
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    22.96,
+    21.07,
+    25.18
+   ],
+   "earth": [
+    47.62,
+    47.41,
+    47.82
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 19.23,
+   "sunEdge": 22.88,
+   "sunFull": 15.37,
+   "sunMeanFrac": 19.22,
+   "earthEdge": 48.2,
+   "earthCentre": 43.43,
+   "earthFull": 38.51,
+   "earthMeanFrac": 43.42
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    21.57,
+    24.11
+   ],
+   "earth": [
+    48.05,
+    48.33
+   ]
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-b",
+  "lat": -88.3828,
+  "lon": 16.58734,
+  "85S_060M": {
+   "sun": [
+    18.76,
+    16.35,
+    18.86
+   ],
+   "earth": [
+    51.07,
+    48.43,
+    51.72
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    18.9,
+    14.71,
+    21.7
+   ],
+   "earth": [
+    51.39,
+    45.77,
+    51.78
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 15.81,
+   "sunEdge": 18.22,
+   "sunFull": 13.36,
+   "sunMeanFrac": 15.81,
+   "earthEdge": 51.54,
+   "earthCentre": 46.9,
+   "earthFull": 42.16,
+   "earthMeanFrac": 46.88
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    15.93,
+    18.79
+   ],
+   "earth": [
+    46.77,
+    52.4
+   ]
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-c",
+  "lat": -88.9645,
+  "lon": 37.23483,
+  "85S_060M": {
+   "sun": [
+    12.7,
+    12.7,
+    19.44
+   ],
+   "earth": [
+    30.9,
+    30.9,
+    35.49
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    17.88,
+    16.4,
+    25.1
+   ],
+   "earth": [
+    35.86,
+    33.23,
+    39.36
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 10.77,
+   "sunEdge": 13.3,
+   "sunFull": 8.74,
+   "sunMeanFrac": 10.79,
+   "earthEdge": 24.44,
+   "earthCentre": 16.71,
+   "earthFull": 1.65,
+   "earthMeanFrac": 15.86
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    10.86,
+    21.09
+   ],
+   "earth": [
+    24.44,
+    38.09
+   ]
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-d",
+  "lat": -88.632,
+  "lon": 74.62375,
+  "85S_060M": {
+   "sun": [
+    33.31,
+    28.18,
+    33.31
+   ],
+   "earth": [
+    51.46,
+    46.48,
+    51.46
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    33.9,
+    23.42,
+    33.98
+   ],
+   "earth": [
+    51.71,
+    45.78,
+    51.77
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 28.16,
+   "sunEdge": 33.09,
+   "sunFull": 23.14,
+   "sunMeanFrac": 28.15,
+   "earthEdge": 52.37,
+   "earthCentre": 47.86,
+   "earthFull": 43.27,
+   "earthMeanFrac": 47.85
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    23.05,
+    33.09
+   ],
+   "earth": [
+    45.44,
+    52.37
+   ]
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-e",
+  "lat": -87.9458,
+  "lon": 71.27421,
+  "85S_060M": {
+   "sun": [
+    18.12,
+    16.32,
+    18.51
+   ],
+   "earth": [
+    49.02,
+    48.97,
+    49.07
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    18.48,
+    17.62,
+    19.12
+   ],
+   "earth": [
+    49.05,
+    48.95,
+    49.16
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 13.92,
+   "sunEdge": 18.07,
+   "sunFull": 10.53,
+   "sunMeanFrac": 14.08,
+   "earthEdge": 49.75,
+   "earthCentre": 45.25,
+   "earthFull": 40.68,
+   "earthMeanFrac": 45.25
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    16.94,
+    18.5
+   ],
+   "earth": [
+    49.67,
+    49.82
+   ]
+  }
+ },
+ {
+  "siteId": "faustini-rim-a",
+  "lat": -87.8897,
+  "lon": 90.0,
+  "85S_060M": {
+   "sun": [
+    30.42,
+    21.16,
+    30.42
+   ],
+   "earth": [
+    50.79,
+    50.77,
+    50.81
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    31.92,
+    26.92,
+    41.19
+   ],
+   "earth": [
+    50.8,
+    50.76,
+    50.83
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 26.05,
+   "sunEdge": 29.73,
+   "sunFull": 22.32,
+   "sunMeanFrac": 26.04,
+   "earthEdge": 51.45,
+   "earthCentre": 46.95,
+   "earthFull": 42.38,
+   "earthMeanFrac": 46.94
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    22.94,
+    29.73
+   ],
+   "earth": [
+    51.41,
+    51.46
+   ]
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-f",
+  "lat": -87.3417,
+  "lon": 60.25512,
+  "85S_060M": {
+   "sun": [
+    25.08,
+    22.6,
+    26.48
+   ],
+   "earth": [
+    46.67,
+    46.63,
+    46.7
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    25.8,
+    23.05,
+    33.42
+   ],
+   "earth": [
+    46.65,
+    46.6,
+    46.7
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 21.18,
+   "sunEdge": 25.41,
+   "sunFull": 17.41,
+   "sunMeanFrac": 21.23,
+   "earthEdge": 47.31,
+   "earthCentre": 42.73,
+   "earthFull": 37.99,
+   "earthMeanFrac": 42.72
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    23.41,
+    26.55
+   ],
+   "earth": [
+    47.26,
+    47.34
+   ]
+  }
+ },
+ {
+  "siteId": "cabeus-exterior-wall-1",
+  "lat": -86.9243,
+  "lon": -71.5651,
+  "85S_060M": {
+   "sun": [
+    14.03,
+    0.0,
+    22.0
+   ],
+   "earth": [
+    37.42,
+    0.0,
+    37.58
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    14.61,
+    0.0,
+    22.91
+   ],
+   "earth": [
+    37.5,
+    0.0,
+    37.84
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 15.63,
+   "sunEdge": 18.79,
+   "sunFull": 12.91,
+   "sunMeanFrac": 15.72,
+   "earthEdge": 38.11,
+   "earthCentre": 33.01,
+   "earthFull": 27.33,
+   "earthMeanFrac": 32.94
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    0.0,
+    22.55
+   ],
+   "earth": [
+    2.38,
+    38.3
+   ]
+  }
+ },
+ {
+  "siteId": "amundsen-1",
+  "lat": -83.9046,
+  "lon": 89.53545,
+  "85S_060M": {
+   "sun": null,
+   "earth": null
+  },
+  "75S_120M": {
+   "sun": [
+    3.72,
+    3.43,
+    3.97
+   ],
+   "earth": [
+    37.58,
+    37.51,
+    37.61
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 1.52,
+   "sunEdge": 3.5,
+   "sunFull": 0.4,
+   "sunMeanFrac": 1.63,
+   "earthEdge": 38.08,
+   "earthCentre": 32.89,
+   "earthFull": 27.11,
+   "earthMeanFrac": 32.82
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    3.32,
+    3.69
+   ],
+   "earth": [
+    38.04,
+    38.12
+   ]
+  }
+ },
+ {
+  "siteId": "idelson-l-crater-1",
+  "lat": -84.5397,
+  "lon": 126.9045,
+  "85S_060M": {
+   "sun": [
+    25.32,
+    25.03,
+    25.48
+   ],
+   "earth": [
+    24.72,
+    22.7,
+    25.28
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    25.25,
+    22.76,
+    25.71
+   ],
+   "earth": [
+    25.04,
+    11.31,
+    25.35
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 22.0,
+   "sunEdge": 25.12,
+   "sunFull": 18.77,
+   "sunMeanFrac": 22.0,
+   "earthEdge": 24.83,
+   "earthCentre": 17.11,
+   "earthFull": 3.74,
+   "earthMeanFrac": 16.24
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    24.77,
+    25.43
+   ],
+   "earth": [
+    21.27,
+    25.7
+   ]
+  }
+ },
+ {
+  "siteId": "malapert-crater-1",
+  "lat": -84.8034,
+  "lon": 8.387032,
+  "85S_060M": {
+   "sun": null,
+   "earth": null
+  },
+  "75S_120M": {
+   "sun": [
+    10.02,
+    9.97,
+    10.1
+   ],
+   "earth": [
+    52.05,
+    51.97,
+    52.16
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 8.82,
+   "sunEdge": 10.07,
+   "sunFull": 7.38,
+   "sunMeanFrac": 8.78,
+   "earthEdge": 52.76,
+   "earthCentre": 48.26,
+   "earthFull": 43.66,
+   "earthMeanFrac": 48.24
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    10.04,
+    10.14
+   ],
+   "earth": [
+    52.7,
+    52.87
+   ]
+  }
+ },
+ {
+  "siteId": "peak-near-shackleton",
+  "lat": -88.811,
+  "lon": 123.6901,
+  "85S_060M": {
+   "sun": [
+    70.18,
+    17.02,
+    85.96
+   ],
+   "earth": [
+    55.94,
+    44.24,
+    56.45
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    72.3,
+    44.92,
+    77.96
+   ],
+   "earth": [
+    55.93,
+    52.44,
+    60.63
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 52.94,
+   "sunEdge": 60.03,
+   "sunFull": 46.43,
+   "sunMeanFrac": 53.04,
+   "earthEdge": 57.49,
+   "earthCentre": 52.92,
+   "earthFull": 48.44,
+   "earthMeanFrac": 52.94
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    42.82,
+    73.76
+   ],
+   "earth": [
+    54.15,
+    61.3
+   ]
+  }
+ },
+ {
+  "siteId": "de-gerlache-rim-1",
+  "lat": -88.6834,
+  "lon": -67.9321,
+  "85S_060M": {
+   "sun": [
+    49.0,
+    33.1,
+    61.27
+   ],
+   "earth": [
+    61.26,
+    61.04,
+    61.29
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    58.02,
+    49.19,
+    71.9
+   ],
+   "earth": [
+    61.27,
+    61.18,
+    61.31
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 48.71,
+   "sunEdge": 53.99,
+   "sunFull": 42.67,
+   "sunMeanFrac": 48.59,
+   "earthEdge": 61.86,
+   "earthCentre": 57.18,
+   "earthFull": 52.62,
+   "earthMeanFrac": 57.19
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    48.13,
+    66.63
+   ],
+   "earth": [
+    58.07,
+    61.89
+   ]
+  }
+ },
+ {
+  "siteId": "leibnitz-beta-plateau",
+  "lat": -85.4266,
+  "lon": 31.74276,
+  "85S_060M": {
+   "sun": [
+    20.42,
+    14.7,
+    26.55
+   ],
+   "earth": [
+    39.14,
+    35.2,
+    43.0
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    18.78,
+    17.07,
+    35.8
+   ],
+   "earth": [
+    36.64,
+    36.64,
+    46.41
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 17.76,
+   "sunEdge": 21.16,
+   "sunFull": 14.18,
+   "sunMeanFrac": 17.7,
+   "earthEdge": 40.16,
+   "earthCentre": 35.24,
+   "earthFull": 29.93,
+   "earthMeanFrac": 35.2
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    14.12,
+    27.11
+   ],
+   "earth": [
+    35.64,
+    42.84
+   ]
+  }
+ },
+ {
+  "siteId": "de-gerlache-kocher-massif",
+  "lat": -85.8296,
+  "lon": -116.322,
+  "85S_060M": {
+   "sun": [
+    67.6,
+    27.84,
+    78.55
+   ],
+   "earth": [
+    60.56,
+    37.89,
+    60.57
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    69.98,
+    36.01,
+    81.3
+   ],
+   "earth": [
+    53.57,
+    33.98,
+    60.57
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 73.58,
+   "sunEdge": 78.53,
+   "sunFull": 68.68,
+   "sunMeanFrac": 73.58,
+   "earthEdge": 61.02,
+   "earthCentre": 56.36,
+   "earthFull": 51.8,
+   "earthMeanFrac": 56.37
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    31.08,
+    78.53
+   ],
+   "earth": [
+    35.3,
+    61.04
+   ]
+  }
+ },
+ {
+  "siteId": "shoemaker",
+  "lat": -87.1835,
+  "lon": 62.83502,
+  "85S_060M": {
+   "sun": [
+    34.24,
+    32.05,
+    35.57
+   ],
+   "earth": [
+    43.62,
+    43.13,
+    43.84
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    35.12,
+    31.5,
+    36.03
+   ],
+   "earth": [
+    43.58,
+    42.55,
+    43.9
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 31.5,
+   "sunEdge": 33.11,
+   "sunFull": 29.85,
+   "sunMeanFrac": 31.49,
+   "earthEdge": 44.36,
+   "earthCentre": 39.65,
+   "earthFull": 34.72,
+   "earthMeanFrac": 39.63
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    32.6,
+    36.51
+   ],
+   "earth": [
+    43.86,
+    44.59
+   ]
+  }
+ },
+ {
+  "siteId": "connecting-ridge-extension",
+  "lat": -89.0324,
+  "lon": -101.999,
+  "85S_060M": {
+   "sun": [
+    35.19,
+    31.85,
+    35.28
+   ],
+   "earth": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "75S_120M": {
+   "sun": [
+    35.37,
+    19.79,
+    36.66
+   ],
+   "earth": [
+    0.0,
+    0.0,
+    0.0
+   ]
+  },
+  "maskRecomputeMaxAbsDiffDeg": 0.0,
+  "ours0m": {
+   "sunCentre": 32.34,
+   "sunEdge": 34.46,
+   "sunFull": 29.97,
+   "sunMeanFrac": 32.27,
+   "earthEdge": 0.0,
+   "earthCentre": 0.0,
+   "earthFull": 0.0,
+   "earthMeanFrac": 0.0
+  },
+  "ours0mEdge3x3": {
+   "sun": [
+    32.28,
+    36.08
+   ],
+   "earth": [
+    0.0,
+    0.0
+   ]
+  }
+ }
+]

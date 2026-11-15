@@ -1,0 +1,174 @@
+[
+ {
+  "near": "connecting-ridge",
+  "bestLat": -89.4749,
+  "bestLon": -137.4431,
+  "distM": 354,
+  "pgdaSunPct": 88.44,
+  "ours0m": {
+   "sunCentre": 81.03,
+   "sunEdge": 86.54,
+   "sunFull": 74.5,
+   "sunMeanFrac": 80.87,
+   "earthEdge": 58.63,
+   "earthCentre": 54.04,
+   "earthFull": 49.55,
+   "earthMeanFrac": 54.06,
+   "longestSunlitDays": 204.6,
+   "longestDarkDays": 8.3
+  },
+  "ours2m": {
+   "sunCentre": 85.37,
+   "sunEdge": 89.82,
+   "sunFull": 79.66,
+   "sunMeanFrac": 85.17,
+   "earthEdge": 58.63,
+   "earthCentre": 54.04,
+   "earthFull": 49.55,
+   "earthMeanFrac": 54.06,
+   "longestSunlitDays": 232.9,
+   "longestDarkDays": 5.7
+  },
+  "ours10m": {
+   "sunCentre": 89.79,
+   "sunEdge": 93.48,
+   "sunFull": 84.73,
+   "sunMeanFrac": 89.58,
+   "earthEdge": 58.66,
+   "earthCentre": 54.06,
+   "earthFull": 49.58,
+   "earthMeanFrac": 54.08,
+   "longestSunlitDays": 246.7,
+   "longestDarkDays": 3.2
+  }
+ },
+ {
+  "near": "shackleton-rim",
+  "bestLat": -89.7843,
+  "bestLon": -155.9041,
+  "distM": 1962,
+  "pgdaSunPct": 85.46,
+  "ours0m": {
+   "sunCentre": 74.9,
+   "sunEdge": 79.37,
+   "sunFull": 69.5,
+   "sunMeanFrac": 74.73,
+   "earthEdge": 57.25,
+   "earthCentre": 52.71,
+   "earthFull": 48.2,
+   "earthMeanFrac": 52.72,
+   "longestSunlitDays": 170.3,
+   "longestDarkDays": 11.0
+  },
+  "ours2m": {
+   "sunCentre": 83.43,
+   "sunEdge": 87.95,
+   "sunFull": 78.66,
+   "sunMeanFrac": 83.47,
+   "earthEdge": 57.29,
+   "earthCentre": 52.75,
+   "earthFull": 48.25,
+   "earthMeanFrac": 52.76,
+   "longestSunlitDays": 176.3,
+   "longestDarkDays": 8.7
+  },
+  "ours10m": {
+   "sunCentre": 87.26,
+   "sunEdge": 91.11,
+   "sunFull": 82.35,
+   "sunMeanFrac": 87.12,
+   "earthEdge": 57.31,
+   "earthCentre": 52.77,
+   "earthFull": 48.26,
+   "earthMeanFrac": 52.78,
+   "longestSunlitDays": 176.4,
+   "longestDarkDays": 2.7
+  }
+ },
+ {
+  "near": "peak-near-shackleton",
+  "bestLat": -88.8089,
+  "bestLon": 123.7561,
+  "distM": 76,
+  "pgdaSunPct": 85.96,
+  "ours0m": {
+   "sunCentre": 69.66,
+   "sunEdge": 79.18,
+   "sunFull": 62.88,
+   "sunMeanFrac": 70.14,
+   "earthEdge": 56.02,
+   "earthCentre": 51.5,
+   "earthFull": 46.98,
+   "earthMeanFrac": 51.51,
+   "longestSunlitDays": 175.1,
+   "longestDarkDays": 19.4
+  },
+  "ours2m": {
+   "sunCentre": 84.79,
+   "sunEdge": 88.29,
+   "sunFull": 80.84,
+   "sunMeanFrac": 84.77,
+   "earthEdge": 59.83,
+   "earthCentre": 55.19,
+   "earthFull": 50.65,
+   "earthMeanFrac": 55.21,
+   "longestSunlitDays": 175.1,
+   "longestDarkDays": 5.7
+  },
+  "ours10m": {
+   "sunCentre": 85.49,
+   "sunEdge": 88.55,
+   "sunFull": 82.47,
+   "sunMeanFrac": 85.55,
+   "earthEdge": 61.32,
+   "earthCentre": 56.65,
+   "earthFull": 52.07,
+   "earthMeanFrac": 56.66,
+   "longestSunlitDays": 175.1,
+   "longestDarkDays": 5.7
+  }
+ },
+ {
+  "near": "de-gerlache-rim-1",
+  "bestLat": -88.6646,
+  "bestLon": -68.3956,
+  "distM": 656,
+  "pgdaSunPct": 82.69,
+  "ours0m": {
+   "sunCentre": 73.58,
+   "sunEdge": 76.84,
+   "sunFull": 70.2,
+   "sunMeanFrac": 73.54,
+   "earthEdge": 61.96,
+   "earthCentre": 57.24,
+   "earthFull": 52.72,
+   "earthMeanFrac": 57.27,
+   "longestSunlitDays": 28.7,
+   "longestDarkDays": 12.9
+  },
+  "ours2m": {
+   "sunCentre": 79.88,
+   "sunEdge": 82.7,
+   "sunFull": 76.35,
+   "sunMeanFrac": 79.78,
+   "earthEdge": 62.0,
+   "earthCentre": 57.28,
+   "earthFull": 52.75,
+   "earthMeanFrac": 57.3,
+   "longestSunlitDays": 172.1,
+   "longestDarkDays": 10.8
+  },
+  "ours10m": {
+   "sunCentre": 83.89,
+   "sunEdge": 87.45,
+   "sunFull": 80.28,
+   "sunMeanFrac": 83.92,
+   "earthEdge": 62.02,
+   "earthCentre": 57.31,
+   "earthFull": 52.77,
+   "earthMeanFrac": 57.33,
+   "longestSunlitDays": 175.1,
+   "longestDarkDays": 7.0
+  }
+ }
+]

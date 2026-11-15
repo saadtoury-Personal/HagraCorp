@@ -1,0 +1,2 @@
+# App data is hashed in manifest.json: keep its bytes identical on every machine (no CRLF conversion).
+LunarNav.Web/wwwroot/data/** -text
