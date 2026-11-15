@@ -22,15 +22,17 @@ const ZOOM_MIN = 0.6
 const ZOOM_MAX = 1.8
 
 /**
- * At true scale the Earth and Sun are far outside the Moon views, so each gets a badge on a fixed row above the Moon.
- * The badge's position is the body's longitude around the Moon relative to where the camera looks from, so it moves at a constant speed
- * while the clock runs. Behind the Moon is the middle of the row (the badge fades out there); behind the camera is the edge,
- * where the badge leaves on one side and comes back on the other.
+ * The Sun and Earth go round the Moon in their real directions (Horizons table, Moon-fixed frame), on two rings drawn around it.
+ * Distances are for display only: at true scale both would be far off screen. The label badges are plain DOM that follow the
+ * projected 3D positions; the Moon hides a badge while its body is behind it, and the Sun's light (SunLight) comes from the same direction.
  */
 export type Body = 'earth' | 'sun'
 type BadgeRefs = Record<Body, { box: HTMLDivElement | null }>
 
-const wrapPi = (a: number) => a - Math.PI * 2 * Math.floor((a + Math.PI) / (Math.PI * 2))
+/** Display radii of the two orbits, in Moon radii. */
+const ORBIT_R: Record<Body, number> = { sun: 1.95, earth: 1.5 }
+const ORBIT_COLOR: Record<Body, string> = { sun: '#ffc766', earth: '#6fa8ff' }
+
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x))
 
 /** Plain DOM write, outside React: this runs every frame. */
@@ -40,47 +42,49 @@ function paint(box: HTMLElement, x: number, y: number, opacity: number) {
   box.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`
 }
 
-/** Moves the Earth and Sun badges (plain DOM, drawn over the canvas by MoonScene). */
+/** A thin ring in the Moon's equatorial plane. The Moon hides the part behind it, like the real orbit would be. */
+function OrbitRing({ body }: { body: Body }) {
+  const geometry = useMemo(() => {
+    const pts: Vector3[] = []
+    for (let i = 0; i < 160; i++) {
+      const a = (i / 160) * Math.PI * 2
+      pts.push(new Vector3(Math.cos(a) * ORBIT_R[body], 0, Math.sin(a) * ORBIT_R[body]))
+    }
+    return new BufferGeometry().setFromPoints(pts)
+  }, [body])
+  return (
+    <lineLoop geometry={geometry}>
+      <lineBasicMaterial color={ORBIT_COLOR[body]} transparent opacity={0.3} depthWrite={false} />
+    </lineLoop>
+  )
+}
+
+/** Moves the Earth and Sun badges to where those bodies are on their rings, and fades them out while the Moon is in front of them. */
 function SkyBadges({ refs }: { refs: RefObject<BadgeRefs> }) {
   const { camera, size } = useThree()
-  const right = useMemo(() => new Vector3(), [])
-  const flat = useMemo(() => new Vector3(), [])
+  const pos = useMemo(() => new Vector3(), [])
   const ray = useMemo(() => new Vector3(), [])
+  const hit = useMemo(() => new Vector3(), [])
   useFrame(() => {
     const t = useScenario.getState().day
     camera.updateMatrixWorld()
-    right.setFromMatrixColumn(camera.matrixWorld, 0)
     const cam = camera.position
-    const camLon = Math.atan2(cam.z, cam.x)
-    // Which way east-ward longitude runs across the screen (it flips when the camera turns upside down in the Region view): eased, so the badge never jumps.
-    const toward = clamp01(Math.abs(-Math.sin(camLon) * right.x + Math.cos(camLon) * right.z) * 4) * Math.sign(-Math.sin(camLon) * right.x + Math.cos(camLon) * right.z || 1)
-    const narrow = size.width < 640
-    const left = narrow ? 36 : size.width >= 768 ? size.width * 0.5 : 56 // wide screens: the left half carries the headline, so the track stays over the Moon
-    const rightEdge = narrow ? size.width - 36 : size.width - 170
-    const cx = (left + rightEdge) / 2
-    const halfW = (rightEdge - left) / 2
-    // On a phone the headline and buttons fill the screen, so both badges share a slim row just under the header.
-    const rows: Record<Body, number> = narrow ? { sun: 78, earth: 78 } : { sun: 100, earth: 150 }
-    const e = earthVec(t)
-    const sv = sunVec(t)
-    const bodies: [Body, number, number][] = [
-      ['earth', e[0], e[2]],
-      ['sun', sv[0], sv[2]],
-    ]
-    for (const [key, dx, dz] of bodies) {
+    const dirs: Record<Body, [number, number, number]> = { earth: earthVec(t), sun: sunVec(t) }
+    for (const key of ['earth', 'sun'] as Body[]) {
       const box = refs.current[key].box
       if (!box) continue
-      const u = wrapPi(Math.atan2(dz, dx) - camLon - Math.PI) // 0 = straight behind the Moon, plus or minus pi = behind the camera
-      const x = cx + toward * (u / Math.PI) * halfW // the badge drifts left and comes back in from the right
-      // Behind the Moon: seen along the equator, the Moon (radius 1) hides a body whose line of sight passes through it.
-      ray.set(dx, 0, dz).normalize()
-      flat.set(cam.x, 0, cam.z)
-      const along = -flat.dot(ray)
-      const closest = along > 0 ? flat.addScaledVector(ray, along).length() : 99
-      const hidden = clamp01((closest - 1) / 0.35) // fades out as it slips behind the limb
-      const edge = clamp01((Math.PI - Math.abs(u)) / 0.16) // and out and in again where it wraps from one side to the other
-      const opacity = hidden * edge
-      paint(box, x, rows[key], opacity)
+      const d = dirs[key]
+      pos.set(d[0], d[1], d[2]).multiplyScalar(ORBIT_R[key])
+      // Moon in front of it: the line from the camera to the body passes through the Moon (radius 1) before reaching the body.
+      ray.copy(pos).sub(cam)
+      const len = ray.length()
+      ray.divideScalar(len)
+      const along = -cam.dot(ray)
+      const closest = along > 0 && along < len ? hit.copy(cam).addScaledVector(ray, along).length() : 99
+      const behindMoon = clamp01((closest - 1) / 0.25) // fades out as it slips behind the limb
+      pos.project(camera)
+      const inView = pos.z < 1 ? clamp01((1 - Math.max(Math.abs(pos.x), Math.abs(pos.y))) / 0.1) : 0
+      paint(box, (pos.x * 0.5 + 0.5) * size.width, (-pos.y * 0.5 + 0.5) * size.height, behindMoon * inView)
     }
   })
   return null
@@ -360,7 +364,7 @@ export default function MoonScene({ level, sunOpen, onPickSun, onSelect, onOpen 
     const body = (
       <>
         <span className={`block rounded-full ${disc}`} />
-        <span className="scene-label max-sm:sr-only">{label}</span>
+        <span className="scene-label">{label}</span>
       </>
     )
     return (
@@ -394,12 +398,14 @@ export default function MoonScene({ level, sunOpen, onPickSun, onSelect, onOpen 
       <Controls view={view} level={level} />
       <SunLight />
       <Moon />
+      <OrbitRing body="sun" />
+      <OrbitRing body="earth" />
       <SkyBadges refs={badgeRefs} />
       {SITES.map((s) => (
         <Marker key={s.i} i={s.i} level={level} onSelect={onSelect} onOpen={onOpen} />
       ))}
     </Canvas>
-      <div className="pointer-events-none absolute inset-0 z-[15]">
+      <div className="pointer-events-none absolute inset-0 z-[6]">
         {badge('earth', 'Earth', 'size-6 bg-[radial-gradient(circle_at_35%_30%,#9cc4ff,#2b5fb8_60%,#0c1f45)]')}
         {badge('sun', 'Sun', 'size-5 bg-sun shadow-[0_0_14px_3px_rgb(255_199_102/0.55)]')}
       </div>
