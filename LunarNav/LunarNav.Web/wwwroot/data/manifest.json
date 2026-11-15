@@ -9,15 +9,15 @@
     },
     {
       "path": "heatmap_10m.json",
-      "bytes": 578863,
-      "sha256": "edb0356f7a4de117c723004fbe552774f61e4a33d606d846ab96f90e4c6247fe",
+      "bytes": 890666,
+      "sha256": "b4809fdbc808e215908bb057f598a15ff0cfb5dcf8a9b0773a829f8429d60b36",
       "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
       "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
     },
     {
       "path": "heatmap_2m.json",
-      "bytes": 567102,
-      "sha256": "a8fc9080d53b01d23fc0bce8b1f73851a39fd686ffd720359f5fd1d7446b8f37",
+      "bytes": 874281,
+      "sha256": "1a6bd2c31bb36a56a23bad8331fc80c28c184d6798163b614f78658462b2a758",
       "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
       "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
     },
@@ -482,6 +482,20 @@
       "sha256": "434286b127fa5ce23266cedbb15d7bbdb2066b4050b9c64bc77303b4e00f5599",
       "source": "NASA Lunar Surface Data Book ACD-50044 Table A2-2, NASA Artemis III candidate regions",
       "command": "written by hand"
+    },
+    {
+      "path": "uncertainty_10m.json",
+      "bytes": 187500,
+      "sha256": "7748286e1599b9b9bc1cb90d6b3c9e771326bd475b03bf0881367bac2ccad0b4",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "uncertainty_2m.json",
+      "bytes": 186686,
+      "sha256": "97917c0fa926759798a6d337a7df0aac3a9aa1d65ba2853b28a0d89e57f96652",
+      "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
+      "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
     }
   ]
 }
