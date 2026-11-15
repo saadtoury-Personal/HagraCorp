@@ -1,5 +1,5 @@
 import { earthMaskAt, idxAt, metrics, SITES, SUN_EDGE_DEG, sunMaskAt, timeToChange, verdict, type Series } from '../../lib/sites'
-import { signed, toneClass } from '../../lib/format'
+import { categoryLabel, coords, signed, toneClass } from '../../lib/format'
 import ServerPanel from './ServerPanel'
 
 type Props = { site: number; series: Series; day: number; dur: number; mast: number; minD: number; onMast: (m: number) => void }
@@ -48,6 +48,13 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
       <Row label="Longest night" value={`${night} h`} sub={`longest continuous shadow in the next 90 days (${(night / 24).toFixed(1)} days)`} />
       <Row label="Sun now" value={`${signed(s.sEl[k])}°`} sub={`${s.sEl[k] + SUN_EDGE_DEG > sunHorizon ? 'above' : 'below'} the local horizon (${sunHorizon.toFixed(1)}°), ${timeToChange(series.sun, day)}`} />
       <Row label="Earth now" value={`${signed(s.eEl[k])}°`} sub={`${s.eEl[k] > earthHorizon ? 'in view' : 'hidden'} (horizon ${earthHorizon.toFixed(1)}°), ${timeToChange(series.earth, day)}`} />
+
+      <section aria-label="Location" className="mt-5 border-t border-line-soft pt-4">
+        <span className="lab">Location</span>
+        <p className="mt-1 text-[22px] font-light">{coords(s.lat, s.lonE)}</p>
+        <p className="text-[13px] text-dim">{categoryLabel(s.category)} · from the project's site list</p>
+        {s.notes && <p className="mt-2 text-[13px] text-dim">{s.notes}</p>}
+      </section>
 
       <ServerPanel siteId={s.id} day={day} dur={dur} mast={mast} />
 

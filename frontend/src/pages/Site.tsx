@@ -6,7 +6,7 @@ import DetailsPanel from '../features/site/DetailsPanel'
 import Flyover from '../features/site/Flyover'
 import Horizon from '../features/site/Horizon'
 import Lanes from '../features/site/Lanes'
-import { pad2, toneClass } from '../lib/format'
+import { categoryLabel, coords, pad2, toneClass } from '../lib/format'
 import { frac, getSeries, metrics, SITES, verdict } from '../lib/sites'
 import { SPAN_DAYS } from '../lib/ephemeris'
 import { useScenario } from '../store/scenario'
@@ -103,6 +103,9 @@ export default function Site() {
         <header className="pointer-events-none">
           <h1 className="max-w-[14em] text-[clamp(24px,3.8vw,52px)] font-light uppercase leading-[1.12] tracking-[0.16em] [text-shadow:0_1px_16px_#000]">{s.name}</h1>
           <p className="mt-2 text-sm text-dim">Region {site + 1} of {SITES.length}, landing site radius 100 m, horizon from the LOLA terrain map</p>
+          <p className="mt-1 text-sm text-dim [text-shadow:0_1px_8px_#000]">
+            {coords(s.lat, s.lonE)} · {categoryLabel(s.category)}
+          </p>
           {tour && (
             <div className="mt-3 flex items-center gap-3 text-xs uppercase tracking-[0.16em] text-dim">
               <span>

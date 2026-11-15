@@ -6,7 +6,7 @@ import bodies from '../../data/bodies.json'
 import { sunAxis } from '../../lib/earthOrientation'
 import { earthQuaternion } from './earthPose'
 import { earthDistKm, earthVec, sunVec } from '../../lib/ephemeris'
-import { toneClass } from '../../lib/format'
+import { coords, toneClass } from '../../lib/format'
 import { getSeries, metrics, SITES, verdict } from '../../lib/sites'
 import { useScenario } from '../../store/scenario'
 import { EARTH_R, kmToUnits, MODEL_URLS, MOON_KM, normalise, SUN_DIST, SUN_R, SUN_ROTATION_DAYS } from './models'
@@ -508,7 +508,8 @@ function Marker({ i, level, onSelect, onOpen }: { i: number; level: Level; onSel
         </button>
         {open && (
           <div className="absolute left-9 top-1/2 z-10 w-64 -translate-y-1/2 border border-line bg-bg p-4 text-left" role="group" aria-label={`${s.name} summary`}>
-            <h3 className="mb-3 text-lg font-normal leading-tight">{s.name}</h3>
+            <h3 className="text-lg font-normal leading-tight">{s.name}</h3>
+            <p className="mb-3 mt-1 text-[13px] text-dim">{coords(s.lat, s.lonE)}</p>
             <dl className="mb-3 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1.5 text-sm">
               <dt className="text-dim">Sunlight, {dur} d</dt>
               <dd className="text-right font-medium">{m.E}%</dd>

@@ -38,7 +38,7 @@ const norm = (a: Vec3): Vec3 => {
 }
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x))
 
-type SiteRow = { id: string; name: string; latDeg: number; lonDeg: number; category: string; terrain: boolean }
+type SiteRow = { id: string; name: string; latDeg: number; lonDeg: number; category: string; terrain: boolean; notes?: string }
 const SITE_DEF = sitesJson as SiteRow[]
 
 export type Site = {
@@ -49,6 +49,8 @@ export type Site = {
   lat: number
   lonE: number
   category: string
+  /** Source and caveats written with the site in the repo's sites.json (21 of the 32 have one). */
+  notes?: string
   /** false = flat horizon (Apollo 11, outside the polar terrain map) */
   terrain: boolean
   /** Unit vector from the Moon's centre to the site, Moon-fixed frame. */
@@ -107,7 +109,7 @@ for (let k = 0; k < N; k++) {
 }
 export const bodiesAt = (t: number) => ({ sun: sunVec(t), earth: earthVec(t) })
 
-export const SITES: Site[] = SITE_DEF.map(({ id, name, latDeg: lat, lonDeg: lonE, category, terrain }, i) => {
+export const SITES: Site[] = SITE_DEF.map(({ id, name, latDeg: lat, lonDeg: lonE, category, terrain, notes }, i) => {
   const q = toVec(lat, lonE)
   const P: Vec3 = [0, 1, 0]
   const pq = dot(P, q)
@@ -116,7 +118,7 @@ export const SITES: Site[] = SITE_DEF.map(({ id, name, latDeg: lat, lonDeg: lonE
   const sky2 = skyline(id, MAST_LO)
   const sky10 = skyline(id, MAST_HI)
   const s: Site = {
-    i, id, name, lat, lonE, category, terrain, q, n, e, sky2, sky10,
+    i, id, name, lat, lonE, category, terrain, notes, q, n, e, sky2, sky10,
     sEl: new Float32Array(N), sMk2: new Float32Array(N), sMk10: new Float32Array(N),
     eEl: new Float32Array(N), eMk2: new Float32Array(N), eMk10: new Float32Array(N),
   }
