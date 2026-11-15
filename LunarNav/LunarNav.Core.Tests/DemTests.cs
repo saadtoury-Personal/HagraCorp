@@ -78,10 +78,13 @@ public class DemTests
         Assert.Equal(0.0, h);
     }
 
-    [Fact]
-    public void Constructor_RightLength_DoesNotThrow()
+    [Theory]
+    [InlineData(-95)]
+    [InlineData(95)]
+    public void TryHeightM_LatitudeBeyond90_ReturnsFalse(double lat)
     {
         var dem = SmallDem(new short[16]);
-        Assert.NotNull(dem);
+        Assert.False(dem.TryHeightM(lat, 0, out var h));
+        Assert.Equal(0.0, h);
     }
 }

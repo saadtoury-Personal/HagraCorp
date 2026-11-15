@@ -64,6 +64,12 @@ public sealed class Dem
     /// <summary>Terrain height in meters at a point. Returns false when the point is outside the map.</summary>
     public bool TryHeightM(double latDeg, double lonDeg, out double heightM)
     {
+        if (Math.Abs(latDeg) > 90)
+        {
+            heightM = 0;
+            return false;
+        }
+
         var (line, sample) = LatLonToPixel(latDeg, lonDeg);
         int l0 = (int)Math.Floor(line);
         int s0 = (int)Math.Floor(sample);
