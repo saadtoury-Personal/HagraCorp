@@ -11,8 +11,12 @@ export const SPAN = 90 // days shown in the UI
 const DAYS = 110 // samples run past SPAN so a window starting on day 90 is complete
 export const N = Math.round(DAYS / STEP)
 const MOON_KM = bodies.moonRadiusKm
-/** The Sun counts as up when its upper edge clears the horizon (team document: "we test its upper edge"). Apparent radius from the Moon, degrees (Geometry.cs). */
-export const SUN_EDGE_DEG = bodies.sunAngularRadiusDeg
+// Same rules as the server (LunarNav.Core/Analysis.cs), so the numbers do not jump when the server comes and goes:
+// "Sun up" = at least half of its disk above the terrain, which is its centre above the horizon;
+// "Earth in view" = any part of its disk above the terrain, and its apparent radius follows its distance (Geometry.cs).
+export const sunUpAt = (elDeg: number, horizonDeg: number) => elDeg >= horizonDeg
+export const earthRadiusDeg = (distMoons: number) => (Math.atan(bodies.earthRadiusKm / bodies.moonRadiusKm / distMoons) * 180) / Math.PI
+export const earthUpAt = (elDeg: number, horizonDeg: number, distMoons: number) => elDeg + earthRadiusDeg(distMoons) > horizonDeg
 /** Earth-Moon distance in lunar radii at day t, from the Horizons table. */
 export const earthDistMoons = (t: number) => earthDistKm(t) / MOON_KM
 
@@ -146,8 +150,8 @@ export function getSeries(mast: number): Series[] {
     const sun = new Uint8Array(N)
     const earth = new Uint8Array(N)
     for (let k = 0; k < N; k++) {
-      sun[k] = s.sEl[k] + SUN_EDGE_DEG > sunMaskAt(s, k, mast) ? 1 : 0
-      earth[k] = s.eEl[k] > earthMaskAt(s, k, mast) ? 1 : 0
+      sun[k] = sunUpAt(s.sEl[k], sunMaskAt(s, k, mast)) ? 1 : 0
+      earth[k] = earthUpAt(s.eEl[k], earthMaskAt(s, k, mast), Dx[k]) ? 1 : 0
     }
     let run = 0
     let best = 0

@@ -2,6 +2,7 @@ import { ArrowRightIcon, CheckCircleIcon, XCircleIcon } from '@phosphor-icons/re
 import { useMemo, type MouseEvent } from 'react'
 import { useNavigate } from 'react-router'
 import Field from '../components/Field'
+import ServerRanking from '../features/slip/ServerRanking'
 import { dateLabel, dayLabel, pad2 } from '../lib/format'
 import { calendar, lastStart, nextWorking, rankSites, type Outcome } from '../lib/slip'
 import { getSeries, SITES } from '../lib/sites'
@@ -208,6 +209,8 @@ export default function Slip() {
             </ol>
           </details>
         </div>
+
+        <ServerRanking planned={planned} delayDays={delay} dur={dur} mast={mast} open={open} />
       </section>
     </div>
   )

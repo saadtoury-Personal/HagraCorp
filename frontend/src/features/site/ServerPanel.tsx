@@ -1,45 +1,19 @@
-import { useEffect, useState } from 'react'
-import { fetchMetrics, serverMast, type ServerMetrics } from '../../lib/api'
-import { dayToDate } from '../../lib/ephemeris'
+import { serverMast, type ServerMetrics } from '../../lib/api'
 import { useServer } from '../../store/server'
 
-type Props = { siteId: string; day: number; dur: number; mast: number }
+type Props = { dur: number; mast: number; /** undefined: server off, null: waiting for the answer. */ server: ServerMetrics | null | undefined }
 
 const hours = (h: number | null) => (h == null ? 'none soon' : h < 48 ? `${h.toFixed(0)} h` : `${(h / 24).toFixed(1)} d`)
 
 /** The server's own answers for this site, date, stay and mast, computed from the full 80 m LOLA terrain and JPL Horizons. */
-export default function ServerPanel({ siteId, day, dur, mast }: Props) {
+export default function ServerPanel({ dur, mast, server: m }: Props) {
   const status = useServer((s) => s.status)
   const about = useServer((s) => s.about)
-  const [m, setM] = useState<ServerMetrics | null>(null)
-  const [failed, setFailed] = useState(false)
-  const at = Math.round(day * 4) / 4 // a quarter-day grid, so dragging the time bar does not call the server for every pixel
-
-  useEffect(() => {
-    if (status !== 'online') return
-    const ctl = new AbortController()
-    const id = setTimeout(() => {
-      fetchMetrics(siteId, dayToDate(at), dur, mast, ctl.signal).then(
-        (r) => {
-          setM(r)
-          setFailed(false)
-        },
-        (e) => {
-          if (!ctl.signal.aborted) setFailed(true)
-          void e
-        },
-      )
-    }, 250)
-    return () => {
-      clearTimeout(id)
-      ctl.abort()
-    }
-  }, [status, siteId, at, dur, mast])
 
   if (status !== 'online') {
     return (
       <p className="mt-5 border-t border-line-soft pt-4 text-[13px] text-faint">
-        The LunarNav server is not reachable, so the figures above come from the data bundled with the app (same Horizons table and LOLA horizon masks).
+        The LunarNav server is not reachable, so every figure here comes from the data bundled with the app (same Horizons table and LOLA horizon masks, same rules as the server).
       </p>
     )
   }
@@ -60,8 +34,7 @@ export default function ServerPanel({ siteId, day, dur, mast }: Props) {
         <span className="lab">From the server</span>
         <span className="text-xs text-faint">{serverMast(mast)} m mast, 80 m terrain pixel</span>
       </div>
-      {failed && !m && <p className="mt-2 text-[13px] text-dim">The server did not answer for this site.</p>}
-      {!m && !failed && <p className="mt-2 text-[13px] text-dim">Asking the server</p>}
+      {!m && <p className="mt-2 text-[13px] text-dim">Asking the server</p>}
       {m && (
         <dl className="mt-2 text-sm">
           {rows.map(([k, v]) => (

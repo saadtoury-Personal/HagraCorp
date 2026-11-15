@@ -39,3 +39,12 @@ export function fetchMetrics(siteId: string, at: Date, stayDays: number, mastM: 
   const q = new URLSearchParams({ at: at.toISOString(), stayDays: String(stayDays), mast: String(serverMast(mastM)) })
   return getJson<ServerMetrics>(`/api/sites/${encodeURIComponent(siteId)}/metrics?${q}`, signal)
 }
+
+export type FallbackEntry = { siteId: string; windowHours: number; viable: boolean; nearestViableDate: string | null; robustness: number }
+export type Fallback = { originalDate: string; slippedDate: string; ranked: FallbackEntry[] }
+
+/** Sites ranked by the continuous Sunlight window on the slipped date (precomputed slip heatmap on the server). */
+export function fetchFallback(date: Date, slipWeeks: number, stayDays: number, requireEarth: boolean, mastM: number, signal?: AbortSignal) {
+  const q = new URLSearchParams({ date: date.toISOString(), slipWeeks: String(slipWeeks), stayDays: String(stayDays), requireEarth: String(requireEarth), mast: String(serverMast(mastM)) })
+  return getJson<Fallback>(`/api/fallback?${q}`, signal)
+}
