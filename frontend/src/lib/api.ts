@@ -102,6 +102,24 @@ export function fetchBattery(siteId: string, at: Date, stayDays: number, mastM: 
   return getJson<Battery>(`/api/sites/${encodeURIComponent(siteId)}/battery?${q}`, signal)
 }
 
+/** GET /api/sites/{id}/blockers (Analysis.Blockers): Sun hours lost to the terrain over [from, to), the 10-degree sectors that hide it most,
+ * and the Sun hours a 10 m mast wins back over 2 m. */
+export type Blocker = { azFromDeg: number; azToDeg: number; hours: number; horizonElDeg: number }
+export type Blockers = { siteId: string; mastM: number; from: string; to: string; sunHoursFlat: number; sunHours: number; lostHours: number; lostPct: number; top: Blocker[]; mast10GainHours: number }
+export function fetchBlockers(siteId: string, from: Date, to: Date, mastM: number, signal?: AbortSignal) {
+  const q = new URLSearchParams({ from: from.toISOString(), to: to.toISOString(), mast: String(serverMast(mastM)) })
+  return getJson<Blockers>(`/api/sites/${encodeURIComponent(siteId)}/blockers?${q}`, signal)
+}
+
+/** GET /api/ranking (Analysis.RobustRanking): terrain sites ranked over 2000 random weightings of Sun, Earth and longest night.
+ * firstPct = share of weightings where the site comes first; paretoOptimal = no other site beats it on all three at once. */
+export type RankEntry = { siteId: string; sunPct: number; earthPct: number; longestDarkHours: number; paretoOptimal: boolean; firstPct: number; meanRank: number }
+export type Ranking = { date: string; stayDays: number; weightings: number; ranked: RankEntry[] }
+export function fetchRanking(date: Date, stayDays: number, mastM: number, signal?: AbortSignal) {
+  const q = new URLSearchParams({ date: date.toISOString(), stayDays: String(stayDays), mast: String(serverMast(mastM)) })
+  return getJson<Ranking>(`/api/ranking?${q}`, signal)
+}
+
 /** GET /api/validation: the C# check against NASA PGDA product 69, with thresholds fixed before the run. Only the fields the app shows are typed. */
 type Stat = { n: number; within: number; bias: number; rmse: number; r: number; maxAbs: number; maxAbsSite: string }
 type SiteCheck = { ours0m: number; pgda: number; diff: number; verdict: string }

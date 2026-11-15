@@ -9,6 +9,9 @@ import { getSeries, metrics, SITES } from '../lib/sites'
 import SourceTag from '../components/SourceTag'
 import { useSiteMetrics } from '../lib/useSiteMetrics'
 import { useScenario } from '../store/scenario'
+import { fetchRanking, serverMast, type RankEntry, type Ranking } from '../lib/api'
+import { dayToDate } from '../lib/ephemeris'
+import { useServerData } from '../lib/useServerData'
 
 const COLS = 10
 const COL_STEP = 9 // 10 start dates over 90 days (a human lander stays viable about 90 days, per the 2023 white paper)
@@ -26,6 +29,54 @@ function PickStats({ site, id, t0, dur, mast }: { site: number; id: string; t0: 
       </span>
       <SourceTag source={m.source} />
     </div>
+  )
+}
+
+/**
+ * Server S12: for one landing date, which sites stay on top whatever weight you give to sunlight, Earth link and the longest night
+ * (2000 random weightings). Shown only when the server answers: it has no bundled equivalent.
+ */
+function RobustRanking({ t0, dur, mast, onOpen }: { t0: number; dur: number; mast: number; onOpen: (site: number, day: number) => void }) {
+  const res = useServerData<Ranking>(`${t0}|${dur}|${serverMast(mast)}`, (sig) => fetchRanking(dayToDate(t0), dur, mast, sig))
+  if (res.state === 'offline' || res.state === 'error') return null
+  const r = res.data
+  const rows = (r?.ranked ?? []).slice(0, 5).flatMap((e) => {
+    const s = SITES.find((x) => x.id === e.siteId)
+    return s ? [{ e, s }] : []
+  })
+  const key = (e: RankEntry) => `${e.sunPct.toFixed(1)}|${e.earthPct.toFixed(1)}|${e.longestDarkHours.toFixed(1)}`
+  const tied = (e: RankEntry) => (r?.ranked ?? []).some((o) => o !== e && key(o) === key(e))
+  return (
+    <section aria-label="Robust ranking" className="mt-8 border-t border-line pt-6">
+      <h2 className="mb-2.5 flex flex-wrap items-center gap-3 text-xl font-light uppercase leading-tight tracking-[0.16em]">
+        Robust ranking <Tag kind="server" />
+      </h2>
+      <p className="text-sm text-dim">
+        Landing on {dayLabel(t0)} for {dur} d: the sites that stay on top whatever weight you give to sunlight, Earth link and the longest night{r ? ` (${r.weightings.toLocaleString('en-US')} weightings tried)` : ''}.
+      </p>
+      {res.state === 'loading' && <p className="mt-4 text-sm text-faint">Asking the server</p>}
+      <ol className="mt-3">
+        {rows.map(({ e, s }, i) => (
+          <li key={e.siteId}>
+            <button type="button" onClick={() => onOpen(s.i, t0)} className="group grid w-full grid-cols-[22px_1fr_auto] items-baseline gap-2 border-t border-line-soft py-3 text-left">
+              <span className="text-xs text-faint">{i + 1}</span>
+              <span>
+                <span className="group-hover:underline group-hover:underline-offset-4">{s.name}</span>
+                <span className="block text-[13px] text-dim">
+                  Sun {e.sunPct.toFixed(0)}%, Earth {e.earthPct.toFixed(0)}%, longest night {e.longestDarkHours.toFixed(0)} h
+                </span>
+              </span>
+              <span className="text-right text-[13px]">
+                {/* Identical scores: the server's tie-break hands "first" to one of them arbitrarily, so say tied instead. */}
+                <b className="font-medium">{tied(e) ? 'Tied' : `${e.firstPct.toFixed(0)}%`}</b>
+                <span className="block text-xs text-faint">{e.paretoOptimal ? 'no site beats it outright' : 'another site does better'}</span>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
+      {rows.length > 0 && <p className="mt-2 text-xs text-faint">Right column: share of weightings where the site comes first; tied when another site has the very same scores.</p>}
+    </section>
   )
 }
 
@@ -163,6 +214,7 @@ export default function Compare() {
             <p className="py-5 text-sm text-dim">No window meets these needs. Shorten the mission, lower the thresholds or raise the mast.</p>
           )}
         </div>
+        <RobustRanking t0={top[0]?.t0 ?? 0} dur={dur} mast={mast} onOpen={open} />
       </aside>
     </div>
   )

@@ -4,6 +4,7 @@ import SourceTag from '../../components/SourceTag'
 import Term from '../../components/Term'
 import { useSiteMetrics } from '../../lib/useSiteMetrics'
 import BatteryPanel from './BatteryPanel'
+import BlockersPanel from './BlockersPanel'
 import ServerPanel from './ServerPanel'
 import Uncertainty from './Uncertainty'
 
@@ -70,6 +71,7 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
 
       <ServerPanel dur={dur} mast={mast} server={m.server} />
       <Uncertainty siteId={s.id} mast={mast} />
+      <BlockersPanel siteId={s.id} day={day} dur={dur} mast={mast} />
       <BatteryPanel siteId={s.id} day={day} dur={dur} mast={mast} />
 
       <div className="mt-5">
