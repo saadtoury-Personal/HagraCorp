@@ -4,8 +4,8 @@ import { create } from 'zustand'
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { AdditiveBlending, CanvasTexture, Mesh, PerspectiveCamera, Quaternion, Vector3, type DirectionalLight, type Group, type Material, type MeshStandardMaterial } from 'three'
 import { sunAxis } from '../../lib/earthOrientation'
-import { sunVec } from '../../lib/ephemeris'
-import { coords, toneClass } from '../../lib/format'
+import { ageDays, libration, phaseName, subSolarLonE, sunVec } from '../../lib/ephemeris'
+import { coords, dateLabel, toneClass } from '../../lib/format'
 import SourceTag from '../../components/SourceTag'
 import { SITES, verdict } from '../../lib/sites'
 import { useSiteMetrics } from '../../lib/useSiteMetrics'
@@ -366,6 +366,32 @@ function SunLight() {
   )
 }
 
+const VIEW_TEXT = ['the whole Moon', 'the south pole', 'one candidate region'] as const
+
+/**
+ * Text alternative for the 3D view, for screen readers: what it shows and where the Sun and Earth are on the date in the time bar.
+ * Set on the canvas element itself (role img) and refreshed once per simulated day, not every frame.
+ */
+function SceneLabel({ level }: { level: Level }) {
+  const canvas = useThree((s) => s.gl.domElement)
+  const day = useScenario((s) => Math.floor(s.day))
+  const site = useScenario((s) => s.site)
+  useEffect(() => {
+    const age = ageDays(day)
+    const lon = subSolarLonE(day)
+    const lib = libration(day)
+    const text =
+      `3D view of ${VIEW_TEXT[level]}, seen from below the south pole, on ${dateLabel(day)}. ` +
+      `${phaseName(age)}: the Sun shines down on longitude ${Math.abs(lon).toFixed(0)} degrees ${lon >= 0 ? 'east' : 'west'}, ` +
+      `so it skims the horizon at the south pole. Earth hangs over the near side, ${Math.abs(lib.lon).toFixed(0)} degrees ${lib.lon >= 0 ? 'east' : 'west'} of centre. ` +
+      `The ${SITES.length} candidate landing regions are buttons on the surface${level === 2 ? `; ${SITES[site].name} is selected` : ''}. ` +
+      'Drag or use the arrow keys to turn the Moon, scroll or plus and minus to zoom.'
+    canvas.setAttribute('role', 'img')
+    canvas.setAttribute('aria-label', text)
+  }, [canvas, day, level, site])
+  return null
+}
+
 /** Dev only: warns if any body is ever drawn twice (one mesh each, the Sun's one halo, one Sun light). */
 function DoublesCheck() {
   const scene = useThree((s) => s.scene)
@@ -473,8 +499,8 @@ export default function MoonScene({ level, onSelect, onOpen }: { level: Level; o
       dpr={[1, 2]}
       camera={{ fov: 28, near: 0.05, far: 200, position: [0, 0, 7] }}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
-      aria-label="The Moon seen from the south with the candidate regions near the pole"
     >
+      <SceneLabel level={level} />
       <Clock />
       <color attach="background" args={['#050608']} />
       <Sky />

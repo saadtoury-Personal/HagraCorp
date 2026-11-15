@@ -28,7 +28,8 @@ type Scenario = {
 export const useScenario = create<Scenario>((set) => ({
   site: 0,
   day: 17, // waning gibbous: the visible hemisphere is lit, so the first screen is not a black disc
-  playing: false,
+  // Time runs on arrival, except for people who ask their system for reduced motion.
+  playing: !(typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches),
   dur: 6, // team plan: 6 days (at 14 days only 3% of cells are viable); NASA white paper: about 6 to 6.5 days
   minE: 90,
   minD: 50,
