@@ -48,3 +48,11 @@ export function fetchFallback(date: Date, slipWeeks: number, stayDays: number, r
   const q = new URLSearchParams({ date: date.toISOString(), slipWeeks: String(slipWeeks), stayDays: String(stayDays), requireEarth: String(requireEarth), mast: String(serverMast(mastM)) })
   return getJson<Fallback>(`/api/fallback?${q}`, signal)
 }
+
+/** Sky state at one time for a site (LunarNav.Core TimelinePoint): disk fractions are the share of the disk above the terrain, power a 0..1 index for a Sun-tracking panel. */
+export type TimelinePoint = { t: string; sunAz: number; sunEl: number; sunFrac: number; earthAz: number; earthEl: number; earthFrac: number; power: number }
+
+export function fetchTimeline(siteId: string, from: Date, days: number, stepMinutes: number, mastM: number, signal?: AbortSignal) {
+  const q = new URLSearchParams({ from: from.toISOString(), days: String(days), stepMinutes: String(stepMinutes), mast: String(serverMast(mastM)) })
+  return getJson<TimelinePoint[]>(`/api/sites/${encodeURIComponent(siteId)}/timeline?${q}`, signal)
+}

@@ -1,9 +1,13 @@
 import { CaretLeftIcon, CaretRightIcon, PlayIcon, StopIcon, XIcon } from '@phosphor-icons/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router'
+import InfoTip from '../components/InfoTip'
+import Term from '../components/Term'
 import TimeBar from '../components/TimeBar'
 import DetailsPanel from '../features/site/DetailsPanel'
-import Flyover from '../features/site/Flyover'
+import ElevationChart from '../features/site/ElevationChart'
+import OrbitDiagram from '../features/site/OrbitDiagram'
+import { useSky } from '../lib/sky'
 import Horizon from '../features/site/Horizon'
 import Lanes from '../features/site/Lanes'
 import { categoryLabel, coords, pad2, toneClass } from '../lib/format'
@@ -13,13 +17,20 @@ import { useScenario } from '../store/scenario'
 
 const TOUR_MS = 7000
 
-/** Orbit and Lander fly over the terrain (WebGL); Panorama and Polar draw the horizon and sky tracks (SVG). */
-type Mode = 'orbit' | 'lander' | 'panorama' | 'polar'
+/** Four views of the same site and dates, all drawn from data (SVG): the horizon, the sky dome, the elevation curves and the Earth-Moon orbit. */
+type Mode = 'panorama' | 'polar' | 'elevation' | 'orbit'
+/** One sentence on how to read each view, shown under the title. */
+const MODE_HELP: Record<Mode, string> = {
+  panorama: 'The horizon around the lander. The gold line is the Sun\u2019s path and the blue line Earth\u2019s during the stay: each can be used only while above the dark skyline.',
+  polar: 'The whole sky seen from straight above the lander: the centre is overhead and the edge is the horizon. Gold is the Sun\u2019s path, blue is Earth\u2019s.',
+  elevation: 'How high the Sun (gold) and Earth (blue) climb. Dashed lines are the hills blocking the view in the same direction: a body is usable while its solid line is above its dashed line.',
+  orbit: 'The Moon on its orbit around Earth on the chosen date. The gold arc is how far the Moon travels during the stay, which decides the lighting.',
+}
 const MODES: [Mode, string][] = [
-  ['orbit', 'Orbit'],
-  ['lander', 'Lander'],
   ['panorama', 'Panorama'],
   ['polar', 'Polar'],
+  ['elevation', 'Elevation'],
+  ['orbit', 'Orbit'],
 ]
 
 function Seg({ children, label }: { children: React.ReactNode; label: string }) {
@@ -39,8 +50,8 @@ export default function Site() {
   const m = metrics(sr, day, dur)
   const v = verdict(m.E, m.D)
 
-  const [mode, setMode] = useState<Mode>('orbit')
-  const flyover = mode === 'orbit' || mode === 'lander'
+  const sky = useSky(site, s.id, day, mast)
+  const [mode, setMode] = useState<Mode>('panorama')
   const [drawer, setDrawer] = useState<'regions' | 'details' | null>(null)
   const [params, setParams] = useSearchParams()
   const [tour, setTour] = useState(params.get('tour') === '1')
@@ -85,26 +96,23 @@ export default function Site() {
   ]
 
   return (
-    <div className="relative flex h-dvh min-h-[640px] flex-col overflow-hidden">
-      <div className="relative min-h-0 flex-1 overflow-hidden bg-black">
-        {flyover ? (
-          <div className="absolute inset-0">
-            <Flyover site={site} day={day} mast={mast} low={mode === 'lander'} tour={tour} />
-          </div>
-        ) : (
-          <div className="absolute inset-x-0 bottom-[170px] top-0 md:bottom-[150px]">
-            <div className="mx-auto size-full max-w-[1400px] pt-52 lg:pt-16">
-              <Horizon site={site} day={day} dur={dur} mast={mast} mode={mode === 'polar' ? 'orbit' : 'lander'} />
-            </div>
-          </div>
-        )}
-
-        <div className="pointer-events-none absolute inset-x-5 top-20 z-30 flex flex-col gap-3 md:inset-x-9 lg:flex-row lg:items-start lg:justify-between">
+    <div className="relative flex min-h-dvh flex-col">
+      <div className="relative flex flex-1 flex-col overflow-hidden bg-black pb-[170px] md:pb-[150px]">
+        <div className="pointer-events-none relative z-30 flex shrink-0 flex-col gap-3 px-5 pt-20 md:px-9 lg:flex-row lg:items-start lg:justify-between">
         <header className="pointer-events-none">
           <h1 className="max-w-[14em] text-[clamp(24px,3.8vw,52px)] font-light uppercase leading-[1.12] tracking-[0.16em] [text-shadow:0_1px_16px_#000]">{s.name}</h1>
-          <p className="mt-2 text-sm text-dim">Region {site + 1} of {SITES.length}, landing site radius 100 m, horizon from the LOLA terrain map</p>
-          <p className="mt-1 text-sm text-dim [text-shadow:0_1px_8px_#000]">
+          <p className="mt-2 text-sm text-dim [text-shadow:0_1px_8px_#000]">Region {site + 1} of {SITES.length}</p>
+          <p className="mt-1 text-sm text-ink [text-shadow:0_1px_8px_#000]">
             {coords(s.lat, s.lonE)} · {categoryLabel(s.category)}
+          </p>
+          <p className="mt-2 max-w-[46ch] text-sm leading-snug text-ink [text-shadow:0_1px_8px_#000]">
+            {v.why}{' '}
+            <InfoTip label="How to read this view">
+              <b className="mb-1 block font-medium text-ink">How to read this view</b>
+              {MODE_HELP[mode]}
+              <b className="mb-1 mt-3 block font-medium text-ink">Right now</b>
+              {Math.round(sky.sunFrac * 100)}% of the Sun is above the terrain and Earth is {Math.round(sky.earthFrac * 100)}% in view ({sky.source === 'server' ? 'figures from the server' : 'figures from the bundled data'}).
+            </InfoTip>
           </p>
           {tour && (
             <div className="mt-3 flex items-center gap-3 text-xs uppercase tracking-[0.16em] text-dim">
@@ -118,7 +126,7 @@ export default function Site() {
           )}
         </header>
 
-        <div className="pointer-events-auto flex flex-wrap gap-2.5 lg:justify-end">
+        <div className="pointer-events-auto flex gap-2 overflow-x-auto [scrollbar-width:none] max-lg:-mx-5 max-lg:px-5 lg:flex-wrap lg:justify-end lg:gap-2.5 lg:overflow-visible [&>*]:shrink-0 [&::-webkit-scrollbar]:hidden">
           <Seg label="Region">
             <button type="button" className={segBtn} aria-label="Previous region" onClick={() => go(site - 1)}>
               <CaretLeftIcon size={14} />
@@ -152,10 +160,24 @@ export default function Site() {
         </div>
         </div>
 
+        <div className={`relative ${mode === 'polar' ? 'h-[clamp(320px,64vh,680px)]' : 'h-[clamp(300px,46vh,560px)]'}`}>
+          <div className="mx-auto size-full max-w-[1400px]">
+            {mode === 'elevation' ? (
+              <ElevationChart site={site} day={day} dur={dur} mast={mast} />
+            ) : mode === 'orbit' ? (
+              <OrbitDiagram day={day} dur={dur} />
+            ) : (
+              <Horizon site={site} day={day} dur={dur} mast={mast} mode={mode === 'polar' ? 'orbit' : 'lander'} />
+            )}
+          </div>
+        </div>
+
         <dl className="absolute inset-x-5 bottom-[0px] z-[4] grid grid-cols-2 border-t border-line md:inset-x-9 md:grid-cols-4">
           {stats.map(([k, val, tone], i) => (
             <div key={k} className={`py-2.5 pr-4 ${i % 2 ? 'border-l border-line-soft pl-4' : ''} ${i > 1 ? 'border-t border-line-soft md:border-t-0' : ''} md:border-l md:pl-5 md:first:border-l-0 md:first:pl-0`}>
-              <dt className="lab">{k}</dt>
+              <dt className="lab">
+                <Term>{k}</Term>
+              </dt>
               <dd className={`text-[26px] font-light leading-tight [text-shadow:0_1px_12px_#000] ${tone}`}>{val}</dd>
             </div>
           ))}

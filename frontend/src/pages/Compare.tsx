@@ -2,6 +2,7 @@ import { CheckIcon } from '@phosphor-icons/react'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router'
 import Field from '../components/Field'
+import MobileFold from '../components/MobileFold'
 import { dayLabel, pad2 } from '../lib/format'
 import { getSeries, metrics, SITES } from '../lib/sites'
 import SourceTag from '../components/SourceTag'
@@ -58,7 +59,8 @@ export default function Compare() {
 
   return (
     <div className="grid min-h-dvh grid-cols-1 border-line-soft pt-16 lg:grid-cols-[300px_1fr_330px]">
-      <form className="border-b border-line-soft p-7 lg:border-b-0 lg:border-r" aria-label="Mission needs" onSubmit={(e) => e.preventDefault()}>
+      <form className="border-b border-line-soft p-5 sm:p-7 lg:border-b-0 lg:border-r" aria-label="Mission needs" onSubmit={(e) => e.preventDefault()}>
+        <MobileFold summary={<><b className="font-medium">Your mission</b>: {dur} days, sunlight at least {minE}%, Earth link at least {minD}%, mast {mast} m</>}>
         <h2 className="mb-2.5 text-2xl font-light uppercase leading-tight tracking-[0.16em]">Your mission</h2>
         <p className="text-sm text-dim">Describe what you need. The tool ranks the best windows.</p>
         <Field id="fDur" label="Duration" value={dur} out={`${dur} days`} min={2} max={14} step={0.5} onChange={(v) => set({ dur: v })} />
@@ -69,9 +71,10 @@ export default function Compare() {
           Export sheet
         </button>
         <p className="mt-6 text-[13px] text-faint">The 2023 NASA white paper suggests a first landing site sunlit for about 6 to 6.5 days, so that is the default.</p>
+        </MobileFold>
       </form>
 
-      <section className="min-w-0 p-7" aria-label="Sites by date">
+      <section className="min-w-0 p-5 sm:p-7 max-lg:order-3" aria-label="Sites by date">
         <h2 className="mb-2.5 text-2xl font-light uppercase leading-tight tracking-[0.16em]">Sites and dates</h2>
         <p className="text-sm text-dim">
           Mission start over the next {COLS * COL_STEP} days, {dur} d long, sunlight at least {minE}%, Earth link at least {minD}%
@@ -138,7 +141,7 @@ export default function Compare() {
         </ul>
       </section>
 
-      <aside className="border-t border-line-soft p-7 lg:border-l lg:border-t-0" aria-label="Best combinations">
+      <aside className="border-t border-line-soft p-5 sm:p-7 lg:border-l lg:border-t-0 max-lg:order-2" aria-label="Best combinations">
         <h2 className="mb-2.5 text-2xl font-light uppercase leading-tight tracking-[0.16em]">Recommended</h2>
         <p className="text-sm text-dim">The three best windows for your mission.</p>
         <div className="mt-5">

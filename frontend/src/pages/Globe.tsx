@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
+import SunMonitor from '../features/globe/Monitors'
+import Term from '../components/Term'
+import SceneLoading from '../components/SceneLoading'
 import SiteFooter from '../components/SiteFooter'
 import TimeBar from '../components/TimeBar'
 import MoonScene, { type Level } from '../features/globe/MoonScene'
@@ -27,7 +30,9 @@ function Readouts() {
     <dl className="grid grid-cols-2 border-t border-line lg:grid-cols-4">
       {items.map(([k, v, sub], i) => (
         <div key={k} className={`py-3 pr-4 ${i % 2 ? 'border-l border-line-soft pl-4' : ''} ${i > 1 ? 'border-t border-line-soft lg:border-t-0' : ''} lg:border-l lg:pl-5 lg:first:border-l-0 lg:first:pl-0`}>
-          <dt className="lab">{k}</dt>
+          <dt className="lab">
+            <Term>{k}</Term>
+          </dt>
           <dd className="mt-0.5 text-2xl font-light tracking-tight">{v}</dd>
           <dd className="hidden text-[13px] text-dim sm:block">{sub}</dd>
         </div>
@@ -77,6 +82,7 @@ function Facts() {
 
 export default function Globe() {
   const [level, setLevel] = useState<Level>(0)
+  const [sunOpen, setSunOpen] = useState(false)
   const site = useScenario((s) => s.site)
   const set = useScenario((s) => s.set)
   const navigate = useNavigate()
@@ -93,7 +99,8 @@ export default function Globe() {
       <div className="absolute inset-0">
         <MoonScene
           level={level}
-          focus="system"
+          sunOpen={sunOpen}
+          onPickSun={() => setSunOpen((o) => !o)}
           onSelect={select}
           onOpen={(i) => {
             set({ site: i })
@@ -101,6 +108,7 @@ export default function Globe() {
           }}
         />
       </div>
+      <SceneLoading what="the Moon" />
       <div className="pointer-events-none absolute inset-y-0 left-0 z-[5] w-full bg-gradient-to-r from-bg/85 via-bg/40 to-transparent md:w-2/3" aria-hidden />
 
       <main className="pointer-events-none relative z-10 flex flex-1 flex-col justify-between px-5 pb-4 pt-20 md:px-9">
@@ -114,6 +122,13 @@ export default function Globe() {
             <p className="mt-4 max-w-[46ch] text-[17px] font-light text-dim [text-shadow:0_1px_12px_#000] md:mt-6">
               Where to land, and when. Compare candidate sites by how long the Sun and Earth stay above the horizon.
             </p>
+            <p className="mt-3 hidden max-w-[46ch] text-sm text-faint [text-shadow:0_1px_12px_#000] md:block">
+              A lander needs sunlight for power and a view of Earth for radio. Near the Moon’s south pole the Sun skims the horizon, so both depend on the site and the date. Tap the Sun or Earth to see them up close.
+            </p>
+            <details className="pointer-events-auto mt-3 max-w-[46ch] text-sm text-dim md:hidden">
+              <summary className="flex min-h-11 cursor-pointer items-center text-xs font-medium uppercase tracking-[0.14em] [text-shadow:0_1px_8px_#000]">What am I looking at?</summary>
+              <p className="pb-2 [text-shadow:0_1px_12px_#000]">A lander needs sunlight for power and a view of Earth for radio. Near the Moon’s south pole the Sun skims the horizon, so both depend on the site and the date. Tap the Sun or Earth to see them up close.</p>
+            </details>
             <div className="pointer-events-auto mt-6 flex flex-wrap gap-3 md:mt-8">
               <button type="button" className="btn" onClick={() => changeLevel(1)}>
                 Explore the South Pole
@@ -152,7 +167,13 @@ export default function Globe() {
         </div>
       </main>
 
-      <div className="absolute right-5 top-1/2 z-10 flex -translate-y-1/2 flex-col items-end md:right-9" role="group" aria-label="Zoom level">
+      {sunOpen && (
+        <div className="absolute right-5 top-20 z-10 md:right-36">
+          <SunMonitor onClose={() => setSunOpen(false)} />
+        </div>
+      )}
+
+      <div className="absolute z-10 flex items-center gap-5 max-sm:hidden sm:max-md:bottom-[300px] sm:max-md:left-5 md:right-9 md:top-1/2 md:-translate-y-1/2 md:flex-col md:items-end md:gap-0" role="group" aria-label="Zoom level">
         {LEVELS.map((name, i) => (
           <button
             key={name}

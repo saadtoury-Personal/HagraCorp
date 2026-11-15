@@ -2,6 +2,7 @@ import { ArrowRightIcon, CheckCircleIcon, XCircleIcon } from '@phosphor-icons/re
 import { useMemo, type MouseEvent } from 'react'
 import { useNavigate } from 'react-router'
 import Field from '../components/Field'
+import MobileFold from '../components/MobileFold'
 import ServerRanking from '../features/slip/ServerRanking'
 import { dateLabel, dayLabel, pad2 } from '../lib/format'
 import { calendar, lastStart, nextWorking, rankSites, type Outcome } from '../lib/slip'
@@ -88,7 +89,8 @@ export default function Slip() {
 
   return (
     <div className="grid min-h-dvh grid-cols-1 pt-16 lg:grid-cols-[300px_1fr]">
-      <form className="border-b border-line-soft p-7 lg:border-b-0 lg:border-r" aria-label="Plan and delay" onSubmit={(e) => e.preventDefault()}>
+      <form className="border-b border-line-soft p-5 sm:p-7 lg:border-b-0 lg:border-r" aria-label="Plan and delay" onSubmit={(e) => e.preventDefault()}>
+        <MobileFold summary={<><b className="font-medium">{SITES[site].name}</b>, landing {dayLabel(planned)}, slip {delay} days, stay {dur} days</>}>
         <h2 className={H2}>The plan</h2>
         <p className="text-sm text-dim">Choose where and when you meant to land, then slide the delay.</p>
         <div className="mt-6">
@@ -112,9 +114,10 @@ export default function Slip() {
         <Field id="fD" label="Minimum Earth link" value={minD} out={`${minD}%`} min={20} max={90} step={1} onChange={(v) => set({ minD: v })} />
         <Field id="fB" label="Battery lasts" value={maxDark} out={`${maxDark} h`} min={12} max={240} step={6} onChange={(v) => set({ maxDark: v })} />
         <Field id="fM" label="Mast height" value={mast} out={`${mast} m`} min={0} max={10} step={0.5} onChange={(v) => set({ mast: v })} />
+        </MobileFold>
       </form>
 
-      <section className="min-w-0 p-7 lg:p-9" aria-label="What a slip changes">
+      <section className="min-w-0 p-5 sm:p-7 lg:p-9" aria-label="What a slip changes">
         <h2 className={H2}>Slip navigator</h2>
         <p className="max-w-[60ch] text-sm text-dim">If the launch slips, does the site still work, and if not, what is the next best choice?</p>
 

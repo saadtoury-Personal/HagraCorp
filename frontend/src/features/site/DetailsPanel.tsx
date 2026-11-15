@@ -1,6 +1,7 @@
 import { earthDistMoons, earthMaskAt, earthUpAt, idxAt, SITES, sunMaskAt, sunUpAt, timeToChange, verdict, type Series } from '../../lib/sites'
 import { categoryLabel, coords, signed, toneClass } from '../../lib/format'
 import SourceTag from '../../components/SourceTag'
+import Term from '../../components/Term'
 import { useSiteMetrics } from '../../lib/useSiteMetrics'
 import ServerPanel from './ServerPanel'
 
@@ -9,7 +10,9 @@ type Props = { site: number; series: Series; day: number; dur: number; mast: num
 function Row({ label, value, sub, bar }: { label: string; value: string; sub: string; bar?: { pct: number; color: string } }) {
   return (
     <div className="grid grid-cols-[1fr_auto] items-baseline gap-x-3.5 gap-y-0.5 border-b border-line-soft py-4">
-      <span className="lab">{label}</span>
+      <span className="lab">
+        <Term>{label}</Term>
+      </span>
       <span className="text-[22px] font-light">{value}</span>
       {bar && (
         <div className="relative col-span-full my-1.5 h-0.5 bg-line-soft" aria-hidden>
@@ -42,7 +45,9 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
     <div>
       <div className="border-b border-line-soft pb-5">
         <span className="flex items-baseline justify-between gap-3">
-          <span className="lab">Assessment</span>
+          <span className="lab">
+            <Term>Assessment</Term>
+          </span>
           <SourceTag source={m.source} />
         </span>
         <b className={`mt-1 block text-4xl font-light leading-tight tracking-tight ${toneClass[v.tone]}`}>{v.word}</b>

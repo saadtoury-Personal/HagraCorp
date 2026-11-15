@@ -1,6 +1,7 @@
-@import '@fontsource/barlow/300.css';
-@import '@fontsource/barlow/400.css';
-@import '@fontsource/barlow/500.css';
+/* Latin only: the site is in English, so the latin-ext and vietnamese files would never be used. */
+@import '@fontsource/barlow/latin-300.css';
+@import '@fontsource/barlow/latin-400.css';
+@import '@fontsource/barlow/latin-500.css';
 @import "tailwindcss";
 
 /* Design tokens from Nazim's mockup: dark editorial, hairlines, no cards, one corner system (square). */
