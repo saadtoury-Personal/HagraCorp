@@ -1,5 +1,6 @@
 import { serverMast, type ServerMetrics } from '../../lib/api'
 import { useServer } from '../../store/server'
+import { useScenario } from '../../store/scenario'
 import { GoBadge, Tag } from '../../components/Tag'
 import { goOf } from '../../lib/go'
 
@@ -11,6 +12,7 @@ const hours = (h: number | null) => (h == null ? 'none soon' : h < 48 ? `${h.toF
 export default function ServerPanel({ dur, mast, server: m }: Props) {
   const status = useServer((s) => s.status)
   const about = useServer((s) => s.about)
+  const requireEarth = useScenario((s) => s.requireEarth)
 
   if (status !== 'online') {
     return (
@@ -41,10 +43,26 @@ export default function ServerPanel({ dur, mast, server: m }: Props) {
       {!m && <p className="mt-2 text-[13px] text-dim">Asking the server</p>}
       {m && (
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
-          <GoBadge go={goOf(m.viable, m.closeCall, m.viperRuleViolated)} />
-          <span className="text-[13px] text-dim">
-            {!m.viable ? 'The Sun window is shorter than the stay.' : m.viperRuleViolated ? 'Over the 50 h VIPER limit.' : m.closeCall ? 'Close call: a 0.2° change in the skyline flips the verdict.' : 'Viable, and not a close call.'}
-          </span>
+          {(() => {
+            // Same rule as the Slip ranking: with Earth required, the Sun and Earth window must cover the stay, not the Sun window alone.
+            const window = requireEarth ? m.windowBothHours : m.windowSunHours
+            const viable = window >= dur * 24
+            const what = requireEarth ? 'Sun and Earth' : 'Sun'
+            return (
+              <>
+                <GoBadge go={goOf(viable, m.closeCall, m.viperRuleViolated)} />
+                <span className="text-[13px] text-dim">
+                  {!viable
+                    ? `The ${what} window (${window.toFixed(0)} h) is shorter than the ${dur}-day stay.`
+                    : m.viperRuleViolated
+                      ? 'Over the 50 h VIPER limit.'
+                      : m.closeCall
+                        ? 'Close call: a 0.2° change in the skyline flips the verdict.'
+                        : `The ${what} window covers the stay, and it is not a close call.`}
+                </span>
+              </>
+            )
+          })()}
         </div>
       )}
       {m && (

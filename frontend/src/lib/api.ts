@@ -1,12 +1,18 @@
 // Client for the LunarNav API (LunarNav/LunarNav.Api). The server computes from the real LOLA terrain and JPL Horizons data.
-// Set VITE_API_URL to point at another server; by default it is the one `dotnet run` starts locally (launchSettings.json).
-export const API_BASE = ((import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:5204').replace(/\/$/, '')
+// Default: the team's deployed server (Render, deployed from main). For a local `dotnet run` set VITE_API_URL=http://localhost:5204.
+export const API_BASE = ((import.meta.env.VITE_API_URL as string | undefined) ?? 'https://lunarnav-api.onrender.com').replace(/\/$/, '')
 
 /** Response shapes, mirroring LunarNav.Core/Models.cs (System.Text.Json camelCase). */
 export type Health = { status: string; sites: number }
 /** rules / validated come from rules.json (Nizar's branch); older servers omit them. */
 export type Rule = { id: string; label: string; value: unknown; unit?: string; description: string; status: 'assumed' | 'validated'; source: string }
-export type About = { precision: string[]; sources: string[]; rules?: Rule[]; validated?: Rule[] }
+/** The deployed server nests the rules file: rules = { note, rules, validated }. Older builds returned flat arrays. */
+export type About = { precision: string[]; sources: string[]; rules?: Rule[] | { note?: string; rules?: Rule[]; validated?: Rule[] }; validated?: Rule[] }
+export const aboutRules = (a: About | null): Rule[] => {
+  if (!a) return []
+  const r = a.rules
+  return Array.isArray(r) ? [...r, ...(a.validated ?? [])] : [...(r?.rules ?? []), ...(r?.validated ?? [])]
+}
 export type ServerMetrics = {
   at: string
   hoursToSunset: number | null
@@ -27,14 +33,15 @@ export type ServerMetrics = {
   dsnPct?: number | null
 }
 
-async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
-  const timeout = AbortSignal.timeout(5000)
+async function getJson<T>(path: string, signal?: AbortSignal, ms = 15000): Promise<T> {
+  const timeout = AbortSignal.timeout(ms)
   const res = await fetch(`${API_BASE}${path}`, { signal: signal ? AbortSignal.any([signal, timeout]) : timeout, headers: { Accept: 'application/json' } })
   if (!res.ok) throw new Error(`${path}: ${res.status} ${res.statusText}`)
   return (await res.json()) as T
 }
 
-export const fetchHealth = (signal?: AbortSignal) => getJson<Health>('/api/health', signal)
+// Render's free plan sleeps when idle and takes up to a minute to wake: give the health check that long.
+export const fetchHealth = (signal?: AbortSignal) => getJson<Health>('/api/health', signal, 70000)
 export const fetchAbout = (signal?: AbortSignal) => getJson<About>('/api/about', signal)
 
 /** The server only has horizon masks for observers 2 m and 10 m tall: pick the closer one. */
@@ -88,7 +95,17 @@ export function fetchBattery(siteId: string, at: Date, stayDays: number, mastM: 
   return getJson<Battery>(`/api/sites/${encodeURIComponent(siteId)}/battery?${q}`, signal)
 }
 
-/** GET /api/validation serves validation.json as written by the backend; its shape is not fixed yet, so it is shown as received. */
-export const fetchValidation = (signal?: AbortSignal) => getJson<unknown>('/api/validation', signal)
+/** GET /api/validation: the C# check against NASA PGDA product 69, with thresholds fixed before the run. Only the fields the app shows are typed. */
+type Stat = { n: number; within: number; bias: number; rmse: number; r: number; maxAbs: number; maxAbsSite: string }
+type SiteCheck = { ours0m: number; pgda: number; diff: number; verdict: string }
+export type Validation = {
+  generated: string
+  reference: string
+  thresholds?: { note?: string }
+  summary: { sun: Stat; earth: Stat; sunVerdicts?: Record<string, number>; earthVerdicts?: Record<string, number> }
+  pass: Record<string, boolean>
+  sites: { siteId: string; sun: SiteCheck; earth: SiteCheck }[]
+}
+export const fetchValidation = (signal?: AbortSignal) => getJson<Validation>('/api/validation', signal)
 export const exportCsvUrl = (siteId: string, from: Date, days: number, mastM: number) =>
   `${API_BASE}/api/sites/${encodeURIComponent(siteId)}/export.csv?${new URLSearchParams({ from: from.toISOString(), days: String(days), mast: String(serverMast(mastM)) })}`

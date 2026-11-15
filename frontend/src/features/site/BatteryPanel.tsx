@@ -64,7 +64,14 @@ export default function BatteryPanel({ siteId, day, dur, mast }: { siteId: strin
           </p>
           <Chart b={b} />
           <p className="mt-2 text-[13px] text-dim">
-            Smallest battery that survives this stay: <b className="font-medium text-ink">{(b.minBatteryWhToSurvive / 1000).toFixed(1)} kWh</b>. Charge at the end: {b.endSocPct.toFixed(0)}%.
+            {b.minBatteryWhToSurvive < 1 ? (
+              'The panel covers the load the whole time: no battery is needed for this stay.'
+            ) : (
+              <>
+                Smallest battery that survives this stay: <b className="font-medium text-ink">{(b.minBatteryWhToSurvive / 1000).toFixed(1)} kWh</b>.
+              </>
+            )}{' '}
+            Charge at the end: {b.endSocPct.toFixed(0)}%.
           </p>
         </>
       )}

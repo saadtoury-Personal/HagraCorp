@@ -1,6 +1,7 @@
 import { Link } from 'react-router'
+import { CheckCircleIcon, XCircleIcon } from '@phosphor-icons/react'
 import { Tag } from '../components/Tag'
-import { fetchValidation, type Rule } from '../lib/api'
+import { aboutRules, fetchValidation, type Rule, type Validation } from '../lib/api'
 import { SITES } from '../lib/sites'
 import { useServerData } from '../lib/useServerData'
 import { useServer } from '../store/server'
@@ -63,11 +64,105 @@ const ruleValue = (r: Rule) =>
         .join(', ')
     : `${String(r.value)}${r.unit ? ` ${r.unit}` : ''}`
 
+const PASS_LABEL: Record<string, string> = {
+  sun: 'Sun shares within the agreed margin',
+  earth: 'Earth shares within the agreed margin',
+  noProblemSites: 'No site left unexplained',
+  csharpVsPython: 'Server code matches the reference Python code',
+}
+const SITE_NAME = new Map(SITES.map((s) => [s.id, s.name]))
+
+/** The server's check against NASA PGDA product 69, with its thresholds fixed before the run. Failures are shown, not hidden. */
+function ValidationReport({ v }: { v: Validation }) {
+  const stat = (label: string, x: Validation['summary']['sun']) => (
+    <tr key={label} className="border-t border-line-soft">
+      <th scope="row" className="py-2 pr-4 text-left font-normal text-ink">
+        {label}
+      </th>
+      <td className="py-2 pr-4">
+        {x.within} of {x.n}
+      </td>
+      <td className="py-2 pr-4">{x.bias > 0 ? '+' : ''}{x.bias.toFixed(1)}</td>
+      <td className="py-2 pr-4">{x.rmse.toFixed(1)}</td>
+      <td className="py-2 pr-4">{x.r.toFixed(3)}</td>
+      <td className="py-2">
+        {x.maxAbs.toFixed(1)} at {SITE_NAME.get(x.maxAbsSite) ?? x.maxAbsSite}
+      </td>
+    </tr>
+  )
+  return (
+    <div className="mt-6 max-w-[62ch]">
+      <div className="flex flex-wrap items-center gap-2 text-[15px] text-ink">
+        Comparison with NASA PGDA maps <Tag kind="server" />
+      </div>
+      <p className="mt-1 text-sm leading-relaxed text-dim">{v.reference}</p>
+      {v.thresholds?.note && <p className="mt-1 text-sm leading-relaxed text-dim">{v.thresholds.note}</p>}
+      <div className="mt-3 overflow-x-auto">
+        <table className="w-full min-w-[520px] text-sm text-dim">
+          <caption className="sr-only">Agreement with NASA PGDA, percentage points</caption>
+          <thead className="text-left text-[13px] text-faint">
+            <tr>
+              <th className="pb-2 pr-4 font-normal"></th>
+              <th className="pb-2 pr-4 font-normal">Within 5 points</th>
+              <th className="pb-2 pr-4 font-normal">Bias</th>
+              <th className="pb-2 pr-4 font-normal">RMSE</th>
+              <th className="pb-2 pr-4 font-normal">Correlation</th>
+              <th className="pb-2 font-normal">Largest gap</th>
+            </tr>
+          </thead>
+          <tbody>
+            {stat('Sun', v.summary.sun)}
+            {stat('Earth', v.summary.earth)}
+          </tbody>
+        </table>
+      </div>
+      <ul className="mt-4 space-y-1.5 text-sm">
+        {Object.entries(v.pass).map(([k, ok]) => (
+          <li key={k} className="flex items-start gap-2">
+            {ok ? <CheckCircleIcon size={16} weight="fill" className="mt-0.5 shrink-0 text-ok" aria-hidden /> : <XCircleIcon size={16} weight="fill" className="mt-0.5 shrink-0 text-bad" aria-hidden />}
+            <span className="text-dim">
+              {PASS_LABEL[k] ?? k}: {ok ? 'met' : 'not met'}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <details className="mt-4">
+        <summary className="flex min-h-11 cursor-pointer items-center text-sm text-dim hover:text-ink">Every site, ours against PGDA (Sun, observer on the ground)</summary>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[440px] text-sm text-dim">
+            <thead className="text-left text-[13px] text-faint">
+              <tr>
+                <th className="py-2 pr-4 font-normal">Site</th>
+                <th className="py-2 pr-4 font-normal">Ours</th>
+                <th className="py-2 pr-4 font-normal">PGDA</th>
+                <th className="py-2 pr-4 font-normal">Gap</th>
+                <th className="py-2 font-normal">Verdict</th>
+              </tr>
+            </thead>
+            <tbody>
+              {v.sites.map((x) => (
+                <tr key={x.siteId} className="border-t border-line-soft">
+                  <td className="py-1.5 pr-4 text-ink">{SITE_NAME.get(x.siteId) ?? x.siteId}</td>
+                  <td className="py-1.5 pr-4">{x.sun.ours0m.toFixed(1)}%</td>
+                  <td className="py-1.5 pr-4">{x.sun.pgda.toFixed(1)}%</td>
+                  <td className="py-1.5 pr-4">{x.sun.diff > 0 ? '+' : ''}{x.sun.diff.toFixed(1)}</td>
+                  <td className="py-1.5">{x.sun.verdict === 'OK' ? 'Within 5 points' : x.sun.verdict === 'explained' ? 'Explained by terrain detail' : x.sun.verdict}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </details>
+      <p className="mt-2 text-[13px] text-faint">Report generated {v.generated}.</p>
+    </div>
+  )
+}
+
 export default function Method() {
   const status = useServer((s) => s.status)
   const about = useServer((s) => s.about)
-  const validation = useServerData<unknown>('validation', (sig) => fetchValidation(sig))
-  const rules = [...(about?.rules ?? []), ...(about?.validated ?? [])]
+  const validation = useServerData<Validation>('validation', (sig) => fetchValidation(sig))
+  const rules = aboutRules(about)
 
   return (
     <main className="mx-auto min-h-dvh max-w-[980px] px-5 pb-24 pt-28 md:px-9">
@@ -112,17 +207,12 @@ export default function Method() {
               ))}
             </ul>
           ) : null}
-          {validation.state === 'ok' ? (
-            <details className="mt-4">
-              <summary className="flex min-h-11 cursor-pointer items-center gap-2 text-[15px] text-ink">
-                Validation report from the server <Tag kind="server" />
-              </summary>
-              <pre className="mt-2 max-h-96 overflow-auto border border-line-soft p-4 text-xs leading-relaxed text-dim">{JSON.stringify(validation.data, null, 2)}</pre>
-            </details>
+          {validation.state === 'ok' && validation.data ? (
+            <ValidationReport v={validation.data} />
           ) : (
             <p className="mt-4 max-w-[62ch] text-[15px] leading-relaxed text-dim">
               {validation.state === 'offline'
-                ? 'The comparisons with JPL Horizons and NASA PGDA maps are published by the LunarNav server, which is not reachable right now.'
+                ? 'The comparison with NASA PGDA maps is published by the LunarNav server, which is not reachable right now.'
                 : validation.state === 'loading'
                   ? 'Loading the validation report.'
                   : 'The server has not published its validation report yet.'}{' '}
