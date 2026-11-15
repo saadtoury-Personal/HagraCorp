@@ -11,6 +11,16 @@ if (args is ["precompute", ..])
     Console.Error.WriteLine("usage: precompute <demPath> <dataDir>");
     return 1;
 }
+if (args is ["validate", var vDem, var vData, var vDir, var vOut, .. var vRest] && vRest.Length <= 1)
+{
+    Validation.Run(vDem, vData, vDir, vOut, vRest.FirstOrDefault());
+    return 0;
+}
+if (args is ["validate", ..])
+{
+    Console.Error.WriteLine("usage: validate <demPath> <dataDir> <validationDir> <out.json> [ephem.csv]");
+    return 1;
+}
 if (args is ["manifest", var manifestDir])
 {
     Tools.WriteManifest(manifestDir);
