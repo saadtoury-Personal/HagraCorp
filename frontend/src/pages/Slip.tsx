@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router'
 import Field from '../components/Field'
 import MobileFold from '../components/MobileFold'
 import { GoBadge, Tag } from '../components/Tag'
-import { fetchFallback, type Fallback } from '../lib/api'
+import { fetchFallback, serverMast, type Fallback } from '../lib/api'
 import { dayToDate } from '../lib/ephemeris'
 import { dateLabel, dayLabel, pad2 } from '../lib/format'
 import { goOf, type Go } from '../lib/go'
@@ -93,7 +93,7 @@ export default function Slip() {
   )
 
   // Server: /api/fallback ranks every site by its continuous window when landing at the best hour, with close calls and slip tolerance.
-  const fb = useServerData<Fallback>(`${planned}|${weeks}|${dur}|${requireEarth}|${mast}`, (sig) => fetchFallback(dayToDate(planned), weeks, dur, requireEarth, mast, sig))
+  const fb = useServerData<Fallback>(`${planned}|${weeks}|${dur}|${requireEarth}|${serverMast(mast)}`, (sig) => fetchFallback(dayToDate(planned), weeks, dur, requireEarth, mast, sig))
   const serverRows = useMemo<Row[] | null>(() => {
     if (fb.state !== 'ok' || !fb.data) return null
     return fb.data.ranked.flatMap((e) => {

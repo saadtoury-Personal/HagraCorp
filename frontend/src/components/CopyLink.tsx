@@ -1,16 +1,18 @@
 import { CheckIcon, LinkSimpleIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
+import { toQuery } from '../lib/scenarioLink'
 
-/** Copies the current page address, which already carries the scenario. */
+/** Copies a link to this page with the scenario as it is now (built on click: the address bar lags while time plays). */
 export default function CopyLink() {
   const [done, setDone] = useState(false)
   const copy = async () => {
+    const url = `${location.origin}${location.pathname}?${toQuery()}`
     try {
-      await navigator.clipboard.writeText(window.location.href)
+      await navigator.clipboard.writeText(url)
       setDone(true)
       setTimeout(() => setDone(false), 2000)
     } catch {
-      window.prompt('Copy this link', window.location.href)
+      window.prompt('Copy this link', url)
     }
   }
   return (

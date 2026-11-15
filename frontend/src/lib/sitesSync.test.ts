@@ -13,6 +13,16 @@ test('bundled sites have the same ids and coordinates as the backend list (Lunar
   }
 })
 
+// The bundled ephemeris is a 116-day window cut from the backend's Horizons table: every row must be in it, unchanged,
+// or the bundled figures drift from the server's when the table is regenerated.
+test('every bundled ephemeris row is in the backend Horizons table (LunarNav.Web/wwwroot/data/ephem.csv)', async () => {
+  const rows = (s: string) => s.trim().split(/\r?\n/)
+  const windowRows = rows((await import('../data/ephem-window.csv?raw')).default as string)
+  const backend = new Set(rows((await import('../../../LunarNav/LunarNav.Web/wwwroot/data/ephem.csv?raw')).default as string))
+  expect(windowRows.length).toBeGreaterThan(2000)
+  expect(windowRows.filter((r) => !backend.has(r))).toEqual([])
+})
+
 // Same rule for the position-uncertainty files the Site page falls back to when the server is offline.
 test('bundled uncertainty files are identical to the backend precompute', async () => {
   for (const m of [2, 10]) {

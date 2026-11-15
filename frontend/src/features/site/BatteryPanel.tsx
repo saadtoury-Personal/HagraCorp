@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Tag } from '../../components/Tag'
-import { fetchBattery, type Battery, type BatteryParams } from '../../lib/api'
+import { fetchBattery, serverMast, type Battery, type BatteryParams } from '../../lib/api'
 import { dayToDate } from '../../lib/ephemeris'
 import { useServerData } from '../../lib/useServerData'
 
@@ -45,7 +45,7 @@ function Chart({ b }: { b: Battery }) {
 export default function BatteryPanel({ siteId, day, dur, mast }: { siteId: string; day: number; dur: number; mast: number }) {
   const [p, setP] = useState<BatteryParams>(DEFAULTS)
   const at = Math.round(day * 4) / 4
-  const res = useServerData<Battery>(`${siteId}|${at}|${dur}|${mast}|${JSON.stringify(p)}`, (sig) => fetchBattery(siteId, dayToDate(at), dur, mast, p, sig))
+  const res = useServerData<Battery>(`${siteId}|${at}|${dur}|${serverMast(mast)}|${JSON.stringify(p)}`, (sig) => fetchBattery(siteId, dayToDate(at), dur, mast, p, sig))
   const b = res.data
 
   return (

@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 
 // Single source of truth for a scenario: every view reads it, none keeps its own copy.
-// shortcut: no URL sync yet, add it when sharing links is needed.
 type Scenario = {
   /** Index of the selected site in SITES. */
   site: number
