@@ -1,5 +1,5 @@
-import { MoonIcon } from '@phosphor-icons/react'
-import { lazy, Suspense, useEffect } from 'react'
+import { ListIcon, MoonIcon, XIcon } from '@phosphor-icons/react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, NavLink, Route, Routes, useLocation } from 'react-router'
 import CopyLink from './components/CopyLink'
 import PageBoundary from './components/PageBoundary'
@@ -25,36 +25,72 @@ const links = [
   ['/contact', 'Contact'],
 ] as const
 
+const desktopLink = ({ isActive }: { isActive: boolean }) =>
+  `relative flex min-h-11 shrink-0 items-center px-4 text-xs font-medium uppercase tracking-[0.16em] transition-colors ${
+    isActive ? 'text-ink after:absolute after:inset-x-4 after:bottom-2 after:h-px after:bg-ink' : 'text-dim hover:text-ink'
+  }`
+
+const mobileLink = ({ isActive }: { isActive: boolean }) =>
+  `flex min-h-12 items-center border-l-2 px-5 text-sm font-medium uppercase tracking-[0.16em] transition-colors ${
+    isActive ? 'border-ink bg-white/5 text-ink' : 'border-transparent text-dim hover:text-ink'
+  }`
+
 function Header() {
-  const { pathname } = useLocation()
-  // On phones the links scroll sideways: keep the current one in view.
+  const [open, setOpen] = useState(false)
+
+  // The menu closes when a page is chosen, on Esc, and when the screen grows to the desktop layout.
   useEffect(() => {
-    document.querySelector('nav[aria-label="Main"] [aria-current="page"]')?.scrollIntoView({ inline: 'center', block: 'nearest' })
-  }, [pathname])
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
+    const wide = matchMedia('(min-width: 768px)')
+    const onWide = () => wide.matches && setOpen(false)
+    addEventListener('keydown', onKey)
+    wide.addEventListener('change', onWide)
+    return () => {
+      removeEventListener('keydown', onKey)
+      wide.removeEventListener('change', onWide)
+    }
+  }, [open])
+
   return (
     <header className="fixed inset-x-0 top-0 z-30 flex h-16 items-center gap-2 bg-bg px-3 md:gap-6 md:bg-gradient-to-b md:from-bg md:to-transparent md:px-9">
       <NavLink to="/" className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-3 text-sm font-medium uppercase tracking-[0.3em]" aria-label="LunarNav home">
         <MoonIcon size={22} weight="light" aria-hidden />
         <span className="hidden sm:inline">LunarNav</span>
       </NavLink>
-      <nav aria-label="Main" className="flex min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_88%,transparent)] md:justify-center md:[mask-image:none] [&::-webkit-scrollbar]:hidden">
+      <nav aria-label="Main" className="hidden min-w-0 flex-1 justify-center md:flex">
         {links.map(([to, label]) => (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === '/'}
-            className={({ isActive }) =>
-              `relative flex min-h-11 shrink-0 items-center px-2 text-xs font-medium uppercase tracking-[0.06em] transition-colors md:px-4 md:tracking-[0.16em] ${
-                isActive ? 'text-ink after:absolute after:inset-x-2 after:bottom-2 after:h-px after:bg-ink md:after:inset-x-4' : 'text-dim hover:text-ink'
-              }`
-            }
-          >
+          <NavLink key={to} to={to} end={to === '/'} className={desktopLink}>
             {label}
           </NavLink>
         ))}
       </nav>
-      <ServerStatus />
-      <CopyLink />
+      <div className="ml-auto flex items-center gap-2 md:ml-0 md:gap-6">
+        <ServerStatus />
+        <CopyLink />
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-expanded={open}
+          aria-controls="mobile-menu"
+          className="grid size-11 shrink-0 place-items-center text-ink md:hidden"
+        >
+          {open ? <XIcon size={24} weight="light" aria-hidden /> : <ListIcon size={24} weight="light" aria-hidden />}
+        </button>
+      </div>
+      {open && (
+        <>
+          <button type="button" aria-label="Close menu" tabIndex={-1} onClick={() => setOpen(false)} className="fixed inset-x-0 bottom-0 top-16 -z-10 bg-black/60 md:hidden" />
+          <nav id="mobile-menu" aria-label="Main" className="absolute inset-x-0 top-16 border-t border-line bg-bg py-2 shadow-[0_16px_40px_rgb(0_0_0/0.7)] md:hidden">
+            {links.map(([to, label]) => (
+              <NavLink key={to} to={to} end={to === '/'} className={mobileLink} onClick={() => setOpen(false)}>
+                {label}
+              </NavLink>
+            ))}
+          </nav>
+        </>
+      )}
     </header>
   )
 }
