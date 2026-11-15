@@ -1,5 +1,6 @@
 import { PauseIcon, PlayIcon } from '@phosphor-icons/react'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
+import { useLocation } from 'react-router'
 import { dayToDate, SPAN_DAYS } from '../lib/ephemeris'
 import { dateLabel, dayLabel, timeLabel } from '../lib/format'
 import { useScenario } from '../store/scenario'
@@ -10,9 +11,17 @@ export default function TimeBar() {
   const playing = useScenario((s) => s.playing)
   const set = useScenario((s) => s.set)
 
+  // The router renders a page change as a low-priority transition; a tick every 50 ms would restart it forever and the click
+  // would seem dead. While the address already shows another page than the one drawn, the clock waits.
+  const { pathname } = useLocation()
+  const drawn = useRef(pathname)
+  useEffect(() => {
+    drawn.current = pathname // set after commit: this is the page actually on screen
+  }, [pathname])
   useEffect(() => {
     if (!playing || matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const id = setInterval(() => {
+      if (window.location.pathname !== drawn.current) return
       const d = useScenario.getState().day + 0.075
       set({ day: d > SPAN_DAYS ? 0 : d })
     }, 50)
