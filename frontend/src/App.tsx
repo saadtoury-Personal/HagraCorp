@@ -2,6 +2,7 @@ import { MoonIcon } from '@phosphor-icons/react'
 import { lazy, Suspense, useEffect } from 'react'
 import { BrowserRouter, NavLink, Route, Routes, useLocation } from 'react-router'
 import CopyLink from './components/CopyLink'
+import PageBoundary from './components/PageBoundary'
 import ServerStatus from './components/ServerStatus'
 import UrlSync from './components/UrlSync'
 import RouteEffects from './components/RouteEffects'
@@ -68,6 +69,16 @@ export default function App() {
       </a>
       <Header />
       <div id="main" tabIndex={-1} className="outline-none">
+      <Pages />
+      </div>
+    </BrowserRouter>
+  )
+}
+
+function Pages() {
+  const { pathname } = useLocation()
+  return (
+    <PageBoundary key={pathname}>
       <Suspense fallback={<div className="grid min-h-dvh place-items-center text-sm text-dim" role="status">Loading</div>}>
         <Routes>
           <Route path="/" element={<Globe />} />
@@ -79,7 +90,6 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
-      </div>
-    </BrowserRouter>
+    </PageBoundary>
   )
 }

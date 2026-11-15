@@ -59,8 +59,8 @@ export default function Compare() {
   }
 
   return (
-    <div className="grid min-h-dvh grid-cols-1 border-line-soft pt-16 lg:grid-cols-[300px_1fr_330px]">
-      <form className="border-b border-line-soft p-5 sm:p-7 lg:border-b-0 lg:border-r" aria-label="Mission needs" onSubmit={(e) => e.preventDefault()}>
+    <div className="grid min-h-dvh grid-cols-1 border-line-soft pt-16 xl:grid-cols-[270px_minmax(0,1fr)_290px]">
+      <form className="border-b border-line-soft p-5 sm:p-7 xl:border-b-0 xl:border-r" aria-label="Mission needs" onSubmit={(e) => e.preventDefault()}>
         <MobileFold summary={<><b className="font-medium">Your mission</b>: {dur} days, sunlight at least {minE}%, Earth link at least {minD}%, mast {mast} m</>}>
         <h2 className="mb-2.5 text-2xl font-light uppercase leading-tight tracking-[0.16em]">Your mission</h2>
         <p className="text-sm text-dim">Describe what you need. The tool ranks the best windows.</p>
@@ -75,7 +75,7 @@ export default function Compare() {
         </MobileFold>
       </form>
 
-      <section className="min-w-0 p-5 sm:p-7 max-lg:order-3" aria-label="Sites by date">
+      <section className="min-w-0 p-5 sm:p-7 max-xl:order-3" aria-label="Sites by date">
         <h2 className="mb-2.5 flex flex-wrap items-center gap-3 text-2xl font-light uppercase leading-tight tracking-[0.16em]">
           Sites and dates <Tag kind="bundled" />
         </h2>
@@ -83,7 +83,7 @@ export default function Compare() {
           Mission start over the next {COLS * COL_STEP} days, {dur} d long, sunlight at least {minE}%, Earth link at least {minD}%
         </p>
         <div className="mt-5 overflow-x-auto">
-          <div role="grid" aria-label="Viability by site and start date" className="grid min-w-[700px] grid-cols-[210px_repeat(10,1fr)] items-stretch gap-[3px]">
+          <div role="grid" aria-label="Viability by site and start date" className="grid min-w-[600px] grid-cols-[170px_repeat(10,minmax(38px,1fr))] items-stretch gap-[3px]">
             <div />
             {Array.from({ length: COLS }, (_, c) => (
               <div key={c} className="pb-2 text-center text-xs text-faint">
@@ -144,7 +144,7 @@ export default function Compare() {
         </ul>
       </section>
 
-      <aside className="border-t border-line-soft p-5 sm:p-7 lg:border-l lg:border-t-0 max-lg:order-2" aria-label="Best combinations">
+      <aside className="border-t border-line-soft p-5 sm:p-7 xl:border-l xl:border-t-0 max-xl:order-2" aria-label="Best combinations">
         <h2 className="mb-2.5 text-2xl font-light uppercase leading-tight tracking-[0.16em]">Recommended</h2>
         <p className="text-sm text-dim">The three best windows for your mission.</p>
         <div className="mt-5">
