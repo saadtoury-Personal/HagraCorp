@@ -7,7 +7,7 @@ import Flyover from '../features/site/Flyover'
 import Horizon from '../features/site/Horizon'
 import Lanes from '../features/site/Lanes'
 import { categoryLabel, coords, pad2, toneClass } from '../lib/format'
-import { frac, getSeries, metrics, SITES, verdict } from '../lib/sites'
+import { frac, getSeries, idxAt, metrics, SITES, timeToChange, verdict } from '../lib/sites'
 import { SPAN_DAYS } from '../lib/ephemeris'
 import { useScenario } from '../store/scenario'
 
@@ -105,6 +105,10 @@ export default function Site() {
           <p className="mt-2 text-sm text-dim">Region {site + 1} of {SITES.length}, landing site radius 100 m, horizon from the LOLA terrain map</p>
           <p className="mt-1 text-sm text-dim [text-shadow:0_1px_8px_#000]">
             {coords(s.lat, s.lonE)} · {categoryLabel(s.category)}
+          </p>
+          <p className="mt-3 max-w-[40ch] text-base text-ink [text-shadow:0_1px_8px_#000]" aria-live="polite">
+            {sr.sun[idxAt(day)] ? 'The Sun is up' : 'The Sun is down'} and {timeToChange(sr.sun, day)}. {sr.earth[idxAt(day)] ? 'Earth is in view' : 'Earth is hidden'} and{' '}
+            {timeToChange(sr.earth, day)}.
           </p>
           {tour && (
             <div className="mt-3 flex items-center gap-3 text-xs uppercase tracking-[0.16em] text-dim">

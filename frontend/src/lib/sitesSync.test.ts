@@ -12,3 +12,12 @@ test('bundled sites have the same ids and coordinates as the backend list (Lunar
     expect(f.lonDeg).toBeCloseTo(b.lonDeg, 6)
   }
 })
+
+// Same rule for the position-uncertainty files the Site page falls back to when the server is offline.
+test('bundled uncertainty files are identical to the backend precompute', async () => {
+  for (const m of [2, 10]) {
+    const bundledU = (await import(`../data/uncertainty_${m}m.json`)).default
+    const backendU = (await import(`../../../LunarNav/LunarNav.Web/wwwroot/data/uncertainty_${m}m.json?raw`)).default as string
+    expect(bundledU).toEqual(JSON.parse(backendU))
+  }
+})

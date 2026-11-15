@@ -187,7 +187,7 @@ export function timeToChange(arr: Uint8Array, t: number) {
   const cur = arr[k0]
   let k = k0
   while (k < N && arr[k] === cur) k++
-  if (k >= N) return 'beyond the window'
+  if (k >= N) return 'stays that way to the end of the data'
   const d = (k - k0) * STEP
   const h = d * 24
   const w = cur ? 'sets' : 'rises'

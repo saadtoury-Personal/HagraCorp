@@ -2,6 +2,7 @@ import { CheckIcon } from '@phosphor-icons/react'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router'
 import Field from '../components/Field'
+import { Tag } from '../components/Tag'
 import { dayLabel, pad2 } from '../lib/format'
 import { getSeries, metrics, SITES } from '../lib/sites'
 import { useScenario } from '../store/scenario'
@@ -26,7 +27,7 @@ export default function Compare() {
     )
     const seen = new Set<number>() // one window per site, so the shortlist offers real alternatives
     const top = cells
-      .filter((c) => c.pass)
+      .filter((c) => c.pass && c.s.terrain) // a flat skyline (no relief map) cannot be recommended over real terrain
       .sort((a, b) => b.m.E + b.m.D - (a.m.E + a.m.D) || a.t0 - b.t0)
       .filter((c) => !seen.has(c.s.i) && seen.add(c.s.i))
       .slice(0, 3)
@@ -50,11 +51,13 @@ export default function Compare() {
         <button type="button" className="btn btn-ghost mt-7 min-h-10 px-5" onClick={() => print()}>
           Export sheet
         </button>
-        <p className="mt-6 text-[13px] text-faint">The 2023 NASA white paper suggests a first landing site sunlit for about 6 to 6.5 days, so that is the default.</p>
+        <p className="mt-6 text-[13px] text-faint">The 2023 NASA white paper suggests a first landing site sunlit for about 6 to 6.5 days. The default stay is 6 days.</p>
       </form>
 
       <section className="min-w-0 p-7" aria-label="Sites by date">
-        <h2 className="mb-2.5 text-2xl font-light uppercase leading-tight tracking-[0.16em]">Sites and dates</h2>
+        <h2 className="mb-2.5 flex flex-wrap items-center gap-3 text-2xl font-light uppercase leading-tight tracking-[0.16em]">
+          Sites and dates <Tag kind="bundled" />
+        </h2>
         <p className="text-sm text-dim">
           Mission start over the next {COLS * COL_STEP} days, {dur} d long, sunlight at least {minE}%, Earth link at least {minD}%
         </p>

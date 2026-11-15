@@ -1,6 +1,9 @@
 import { earthMaskAt, idxAt, metrics, SITES, SUN_EDGE_DEG, sunMaskAt, timeToChange, verdict, type Series } from '../../lib/sites'
 import { categoryLabel, coords, signed, toneClass } from '../../lib/format'
+import { Tag } from '../../components/Tag'
+import BatteryPanel from './BatteryPanel'
 import ServerPanel from './ServerPanel'
+import Uncertainty from './Uncertainty'
 
 type Props = { site: number; series: Series; day: number; dur: number; mast: number; minD: number; onMast: (m: number) => void }
 
@@ -39,7 +42,10 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
   return (
     <div>
       <div className="border-b border-line-soft pb-5">
-        <span className="lab">Assessment</span>
+        <span className="flex items-center justify-between gap-3">
+          <span className="lab">Assessment</span>
+          <Tag kind="bundled" />
+        </span>
         <b className={`mt-1 block text-4xl font-light leading-tight tracking-tight ${toneClass[v.tone]}`}>{v.word}</b>
         <p className="mt-2.5 text-sm text-dim">{v.why}</p>
       </div>
@@ -57,6 +63,8 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
       </section>
 
       <ServerPanel siteId={s.id} day={day} dur={dur} mast={mast} />
+      <Uncertainty siteId={s.id} mast={mast} />
+      <BatteryPanel siteId={s.id} day={day} dur={dur} mast={mast} />
 
       <div className="mt-5">
         <div className="flex justify-between">
@@ -88,7 +96,7 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
         <a className="underline underline-offset-4 hover:text-ink" href="https://www.nasa.gov/wp-content/uploads/2024/02/15-2024-architecture-workshop-white-paper-lunar-site-selection.pdf" target="_blank" rel="noopener">
           Lunar Site Selection white paper
         </a>
-        . Simplified analytic model, not real ephemeris data.
+        . Sun and Earth from the JPL Horizons table, horizon from the LOLA terrain map.
       </p>
     </div>
   )
