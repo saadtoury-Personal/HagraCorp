@@ -22,7 +22,7 @@ const ZOOM_MIN = 0.6
 const ZOOM_MAX = 1.8
 
 /**
- * The Sun and Earth go round the Moon in their real directions (Horizons table, Moon-fixed frame), on two rings drawn around it.
+ * The Sun and Earth go round the Moon in their real directions (Horizons table, Moon-fixed frame), on two invisible circles around it.
  * Distances are for display only: at true scale both would be far off screen. The label badges are plain DOM that follow the
  * projected 3D positions; the Moon hides a badge while its body is behind it, and the Sun's light (SunLight) comes from the same direction.
  */
@@ -31,7 +31,6 @@ type BadgeRefs = Record<Body, { box: HTMLDivElement | null }>
 
 /** Display radii of the two orbits, in Moon radii. */
 const ORBIT_R: Record<Body, number> = { sun: 1.95, earth: 1.5 }
-const ORBIT_COLOR: Record<Body, string> = { sun: '#ffc766', earth: '#6fa8ff' }
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x))
 
@@ -40,23 +39,6 @@ function paint(box: HTMLElement, x: number, y: number, opacity: number) {
   box.style.visibility = opacity < 0.02 ? 'hidden' : 'visible'
   box.style.opacity = String(opacity)
   box.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`
-}
-
-/** A thin ring in the Moon's equatorial plane. The Moon hides the part behind it, like the real orbit would be. */
-function OrbitRing({ body }: { body: Body }) {
-  const geometry = useMemo(() => {
-    const pts: Vector3[] = []
-    for (let i = 0; i < 160; i++) {
-      const a = (i / 160) * Math.PI * 2
-      pts.push(new Vector3(Math.cos(a) * ORBIT_R[body], 0, Math.sin(a) * ORBIT_R[body]))
-    }
-    return new BufferGeometry().setFromPoints(pts)
-  }, [body])
-  return (
-    <lineLoop geometry={geometry}>
-      <lineBasicMaterial color={ORBIT_COLOR[body]} transparent opacity={0.3} depthWrite={false} />
-    </lineLoop>
-  )
 }
 
 /** Moves the Earth and Sun badges to where those bodies are on their rings, and fades them out while the Moon is in front of them. */
@@ -356,35 +338,18 @@ function Marker({ i, level, onSelect, onOpen }: { i: number; level: Level; onSel
   )
 }
 
-export default function MoonScene({ level, sunOpen, onPickSun, onSelect, onOpen }: { level: Level; sunOpen: boolean; onPickSun: () => void; onSelect: (i: number) => void; onOpen: (i: number) => void }) {
+export default function MoonScene({ level, onSelect, onOpen }: { level: Level; onSelect: (i: number) => void; onOpen: (i: number) => void }) {
   const view = useRef<View>({ yaw: 0, zoom: 1 })
   const badgeRefs = useRef<BadgeRefs>({ earth: { box: null }, sun: { box: null } })
-  // The Sun badge opens a live monitor of the Sun; the Earth badge only shows where Earth is.
-  const badge = (key: Body, label: string, disc: string) => {
-    const body = (
-      <>
+  // Plain markers: they only show where the Sun and Earth are.
+  const badge = (key: Body, label: string, disc: string) => (
+    <div ref={(el) => void (badgeRefs.current[key].box = el)} className="absolute left-0 top-0" title={label} style={{ visibility: 'hidden' }}>
+      <div className="relative flex min-h-11 min-w-11 flex-col items-center gap-1.5 p-1.5">
         <span className={`block rounded-full ${disc}`} />
         <span className="scene-label">{label}</span>
-      </>
-    )
-    return (
-      <div ref={(el) => void (badgeRefs.current[key].box = el)} className="absolute left-0 top-0" title={label} style={{ visibility: 'hidden' }}>
-        {key === 'sun' ? (
-          <button
-            type="button"
-            aria-pressed={sunOpen}
-            aria-label={`Sun: ${sunOpen ? 'close' : 'open'} its monitor`}
-            onClick={onPickSun}
-            className="pointer-events-auto relative flex min-h-11 min-w-11 cursor-pointer flex-col items-center gap-1.5 p-1.5 transition-transform hover:scale-110"
-          >
-            {body}
-          </button>
-        ) : (
-          <div className="relative flex min-h-11 min-w-11 flex-col items-center gap-1.5 p-1.5">{body}</div>
-        )}
       </div>
-    )
-  }
+    </div>
+  )
   return (
     <>
     <Canvas
@@ -398,8 +363,6 @@ export default function MoonScene({ level, sunOpen, onPickSun, onSelect, onOpen 
       <Controls view={view} level={level} />
       <SunLight />
       <Moon />
-      <OrbitRing body="sun" />
-      <OrbitRing body="earth" />
       <SkyBadges refs={badgeRefs} />
       {SITES.map((s) => (
         <Marker key={s.i} i={s.i} level={level} onSelect={onSelect} onOpen={onOpen} />
