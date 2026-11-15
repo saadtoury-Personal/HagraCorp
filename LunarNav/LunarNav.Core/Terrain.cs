@@ -38,8 +38,7 @@ public sealed class Dem
     /// <summary>Map position (fractional, 0-based) of a point on the Moon.</summary>
     public (double Line, double Sample) LatLonToPixel(double latDeg, double lonDeg)
     {
-        // MATH-REVIEW. The minus sign on y (line) is the usual convention but NOT yet verified against
-        // the real DEM: check with Shackleton crater (about 89.67 S, 129.8 E), see the class summary.
+        // The minus sign on y (line) is verified on the real map: Shackleton crater shows its deep floor only with it.
         double lat = latDeg * Math.PI / 180;
         double lon = lonDeg * Math.PI / 180;
         double rho = 2 * MoonRadiusM * Math.Tan(Math.PI / 4 + lat / 2);
@@ -103,8 +102,9 @@ public static class HorizonMask
     public const int Bins = 720;
 
     /// <summary>Computes the skyline. Takes up to about 1 s. mastM = observer height above the ground (2 or 10).</summary>
-    public static float[] Compute(Dem dem, double latDeg, double lonDeg, double mastM, double maxDistKm = 150)
+    public static float[] Compute(Dem dem, double latDeg, double lonDeg, double mastM, double maxDistKm = 250)
     {
+        // 250 km, not 150: from a peak the skyline sits 2-5 deg below level, so lower terrain far away still shows.
         if (!dem.TryHeightM(latDeg, lonDeg, out double hSite)) throw new ArgumentException("site is outside the terrain map");
         var u = Geometry.UnitVector(latDeg, lonDeg);
         double rEye = Geometry.MoonRadiusKm + hSite / 1000.0 + mastM / 1000.0;
@@ -132,26 +132,24 @@ public static class HorizonMask
     }
 
     /// <summary>Skyline for a site outside the map (Apollo 11): all zeros.</summary>
-    public static float[] Flat()
-    {
-        // TODO: return new float[Bins];
-        throw new NotImplementedException();
-    }
+    public static float[] Flat() => new float[Bins];
 
     /// <summary>Skyline elevation at any azimuth, interpolating between the two nearest bins.</summary>
     public static double At(float[] mask, double azDeg)
     {
-        // TODO: x = (azDeg mod 360) / 0.5; i = floor(x); f = x - i;
-        //       return mask[i % Bins] * (1 - f) + mask[(i + 1) % Bins] * f      (wraps from 359.5 back to 0)
-        throw new NotImplementedException();
+        double x = (azDeg % 360 + 360) % 360 / 0.5;
+        int i = (int)Math.Floor(x);
+        double f = x - i;
+        return mask[i % Bins] * (1 - f) + mask[(i + 1) % Bins] * f;
     }
 
     /// <summary>Point reached when walking distKm from (lat, lon) in the compass direction bearingDeg (great circle).</summary>
     public static (double LatDeg, double LonDeg) Destination(double latDeg, double lonDeg, double bearingDeg, double distKm)
     {
-        // TODO (radians; delta = distKm / Geometry.MoonRadiusKm; theta = bearing):   MATH-REVIEW
-        //   lat2 = asin(sin lat * cos delta + cos lat * sin delta * cos theta)
-        //   lon2 = lon + atan2(sin theta * sin delta * cos lat, cos delta - sin lat * sin lat2)
-        throw new NotImplementedException();
+        const double rad = Math.PI / 180;
+        double lat = latDeg * rad, theta = bearingDeg * rad, delta = distKm / Geometry.MoonRadiusKm;
+        double lat2 = Math.Asin(Math.Sin(lat) * Math.Cos(delta) + Math.Cos(lat) * Math.Sin(delta) * Math.Cos(theta));
+        double lon2 = lonDeg * rad + Math.Atan2(Math.Sin(theta) * Math.Sin(delta) * Math.Cos(lat), Math.Cos(delta) - Math.Sin(lat) * Math.Sin(lat2));
+        return (lat2 / rad, lon2 / rad);
     }
 }
