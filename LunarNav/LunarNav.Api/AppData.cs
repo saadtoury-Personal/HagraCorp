@@ -33,6 +33,8 @@ public sealed class AppData
         _dem = new Lazy<Dem?>(() => demPath is not null && File.Exists(demPath) ? Tools.LoadDem(demPath) : null);
     }
 
+    public string DataDir => _dataDir;
+
     public Ephemeris Ephemeris => _ephemeris.Value;
 
     public Dem? Dem => _dem.Value;

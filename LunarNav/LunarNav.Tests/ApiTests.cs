@@ -107,6 +107,13 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task Validation_NotProducedYet_Returns404()
+    {
+        var res = await _client.GetAsync("/api/validation");
+        Assert.Equal(HttpStatusCode.NotFound, res.StatusCode);
+    }
+
+    [Fact]
     public async Task Custom_WithoutTerrainMap_Returns503()
     {
         var res = await _client.PostAsJsonAsync("/api/custom", new CustomRequest(-86.3, -23.3, 2, null));

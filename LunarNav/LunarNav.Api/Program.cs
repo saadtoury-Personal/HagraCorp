@@ -136,6 +136,12 @@ api.MapGet("/sites/{id}/export.csv", (string id, AppData data, DateTime? from, i
     });
 }).WithName("ExportSiteCsv");
 
+api.MapGet("/validation", (AppData data) =>
+{
+    var path = Path.Combine(data.DataDir, "validation.json");
+    return File.Exists(path) ? Results.File(path, "application/json") : Results.NotFound("validation.json not produced yet");
+}).WithName("GetValidation");
+
 api.MapGet("/heatmap",(AppData data, int mast = 2) =>
 {
     if (BadMast(mast) is { } bad)
