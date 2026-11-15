@@ -16,7 +16,7 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         _client = factory.WithWebHostBuilder(b => b.UseSetting("DataDir", FindDataDir()).UseSetting("DemPath", "no-such-file.img")).CreateClient();
     }
 
-    private static string FindDataDir()
+    internal static string FindDataDir()
     {
         // Tests run from bin/ so the data folder is found by walking up through parent directories
         var dir = new DirectoryInfo(AppContext.BaseDirectory);

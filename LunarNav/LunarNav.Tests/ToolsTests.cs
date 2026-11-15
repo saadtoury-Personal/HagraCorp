@@ -49,6 +49,27 @@ public class ToolsTests : IDisposable
     }
 
     [Fact]
+    public void CommittedManifest_MatchesTheRealDataFiles()
+    {
+        // If this fails after a precompute: dotnet run --project LunarNav.Api -- manifest <full path to LunarNav.Web/wwwroot/data>
+        var dataDir = ApiTests.FindDataDir();
+        using var doc = JsonDocument.Parse(File.ReadAllText(Path.Combine(dataDir, "manifest.json")));
+        var listed = doc.RootElement.GetProperty("files").EnumerateArray()
+            .ToDictionary(f => f.GetProperty("path").GetString()!, f => f.GetProperty("sha256").GetString()!);
+
+        var onDisk = Directory.EnumerateFiles(dataDir, "*", SearchOption.AllDirectories)
+            .Select(f => Path.GetRelativePath(dataDir, f).Replace('\\', '/'))
+            .Where(p => p != "manifest.json" && !Path.GetFileName(p).StartsWith('.'));
+        Assert.Equal(onDisk.Order(StringComparer.Ordinal), listed.Keys.Order(StringComparer.Ordinal));
+
+        foreach (var (path, sha) in listed)
+        {
+            using var stream = File.OpenRead(Path.Combine(dataDir, path));
+            Assert.True(sha == Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(stream)), $"{path}: SHA-256 differs from manifest.json");
+        }
+    }
+
+    [Fact]
     public void LoadDem_WrongSize_Throws()
     {
         var path = Path.Combine(_dir, "small.img");
