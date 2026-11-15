@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 import bodies from '../data/bodies.json'
-import { earthFrame, julianDay, sunEcliptic } from './earthOrientation'
+import { earthFrame, julianDay, sunAxis, sunEcliptic } from './earthOrientation'
 import { sunVec } from './ephemeris'
 
 const dot = (a: number[], b: number[]) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
@@ -21,6 +21,17 @@ test("Earth's axis is tilted by the workbook's obliquity from the ecliptic and p
   const sinDec = dot(f.axis, sunVec(0))
   expect(sinDec).toBeCloseTo(Math.sin((sunEcliptic(julianDay(0)).decDeg * Math.PI) / 180), 6)
   expect(bodies.earth.obliquityDeg).toBeCloseTo(23.44, 2)
+})
+
+test("the Sun's axis is a unit vector tilted 7.25 degrees from ecliptic north (checked against Earth's axis)", () => {
+  const a = sunAxis(20)
+  expect(Math.hypot(...a)).toBeCloseTo(1, 10)
+  // Both axes lean away from ecliptic north: Earth by 23.44 degrees toward longitude 90, the Sun by 7.25 toward longitude -14.24.
+  const e = bodies.earth.obliquityDeg * (Math.PI / 180)
+  const s = bodies.sun.obliquityDeg * (Math.PI / 180)
+  const dLon = (104.24 * Math.PI) / 180
+  const expected = Math.cos(e) * Math.cos(s) + Math.sin(e) * Math.sin(s) * Math.cos(dLon)
+  expect(dot(a, earthFrame(20).axis)).toBeCloseTo(expected, 4)
 })
 
 test('the prime meridian is perpendicular to the axis', () => {
