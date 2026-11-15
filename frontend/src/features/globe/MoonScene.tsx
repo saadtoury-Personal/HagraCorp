@@ -97,6 +97,62 @@ function SystemLabels({ shown }: { shown: boolean }) {
 }
 
 /**
+ * At true scale the Earth and Sun are off screen in the Moon views, so a badge sits on the screen edge
+ * in their direction (with an arrow) until the real body comes into view.
+ */
+function SkyBadges({ shown }: { shown: boolean }) {
+  const { camera, size } = useThree()
+  const tmp = useMemo(() => new Vector3(), [])
+  const refs = useRef<Record<'earth' | 'sun', { box: HTMLDivElement | null; arrow: HTMLElement | null }>>({ earth: { box: null, arrow: null }, sun: { box: null, arrow: null } })
+  useFrame(() => {
+    const t = useScenario.getState().day
+    const e = earthVec(t)
+    const d = kmToUnits(earthDistKm(t))
+    const sv = sunVec(t)
+    camera.updateMatrixWorld()
+    const left = 48
+    const right = size.width - 170
+    const top = 96
+    const bottom = size.height - 150
+    const cx = (left + right) / 2
+    const cy = (top + bottom) / 2
+    // drei's fullscreen Html is anchored at the scene origin (the Moon), so shift screen coordinates by where it sits.
+    tmp.set(0, 0, 0).project(camera)
+    const ox = tmp.x * 0.5 * size.width
+    const oy = -tmp.y * 0.5 * size.height
+    const place = (key: 'earth' | 'sun', x: number, y: number, z: number) => {
+      const { box, arrow } = refs.current[key]
+      if (!box || !arrow) return
+      tmp.set(x, y, z).project(camera)
+      const behind = tmp.z > 1
+      const nx = behind ? -tmp.x : tmp.x
+      const ny = behind ? -tmp.y : tmp.y
+      const dx = (nx * 0.5 + 0.5) * size.width - cx
+      const dy = (-ny * 0.5 + 0.5) * size.height - cy
+      const k = Math.max(Math.abs(dx) / ((right - left) / 2), Math.abs(dy) / ((bottom - top) / 2), 1)
+      box.style.display = shown && (behind || k > 1) ? '' : 'none'
+      box.style.transform = `translate(${cx + dx / k - ox}px, ${cy + dy / k - oy}px) translate(-50%, -50%)`
+      arrow.style.transform = `rotate(${Math.atan2(dy, dx)}rad) translateX(24px)`
+    }
+    place('earth', e[0] * d, e[1] * d, e[2] * d)
+    place('sun', sv[0] * SUN_DIST, sv[1] * SUN_DIST, sv[2] * SUN_DIST)
+  })
+  const badge = (key: 'earth' | 'sun', label: string, disc: string) => (
+    <div ref={(el) => void (refs.current[key].box = el)} className="absolute left-0 top-0 flex flex-col items-center gap-1.5" style={{ display: 'none' }}>
+      <span className={`block rounded-full ${disc}`} />
+      <i ref={(el) => void (refs.current[key].arrow = el)} className="absolute left-1/2 top-3 block size-0 border-y-[5px] border-l-[8px] border-y-transparent border-l-ink/80" aria-hidden />
+      <span className="scene-label">{label}</span>
+    </div>
+  )
+  return (
+    <Html fullscreen pointerEvents="none" zIndexRange={[15, 0]}>
+      {badge('earth', 'Earth', 'size-6 bg-[radial-gradient(circle_at_35%_30%,#9cc4ff,#2b5fb8_60%,#0c1f45)]')}
+      {badge('sun', 'Sun', 'size-5 bg-sun shadow-[0_0_14px_3px_rgb(255_199_102/0.55)]')}
+    </Html>
+  )
+}
+
+/**
  * Sky from Nazim's mockup: a screen-space hash starfield (same grid and thresholds), drawn behind everything.
  * It ignores the camera, so the stars stay still while the Moon turns.
  */
@@ -383,6 +439,7 @@ export default function MoonScene({ level, onSelect, onOpen }: { level: Level; o
       <Earth labelled={level === 3} />
       <SunBody />
       <SystemLabels shown={level === 3} />
+      <SkyBadges shown={level < 3} />
       {SITES.map((s) => (
         <Marker key={s.i} i={s.i} level={level} onSelect={onSelect} onOpen={onOpen} />
       ))}
