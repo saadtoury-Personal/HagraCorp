@@ -122,12 +122,14 @@ export function fetchRanking(date: Date, stayDays: number, mastM: number, signal
 
 /** GET /api/validation: the C# check against NASA PGDA product 69, with thresholds fixed before the run. Only the fields the app shows are typed. */
 type Stat = { n: number; within: number; bias: number; rmse: number; r: number; maxAbs: number; maxAbsSite: string }
-type SiteCheck = { ours0m: number; pgda: number; diff: number; verdict: string }
+/** The C# against the Python with the server's disc model ported to it (a check added after the first run, not pre-registered). */
+export type PortedCheck = { maxAbsDiffSun: number; maxAbsDiffEarth: number; rowsWithinThreshold: number; rows: number }
+type SiteCheck ={ ours0m: number; pgda: number; diff: number; verdict: string }
 export type Validation = {
   generated: string
   reference: string
   thresholds?: { note?: string }
-  summary: { sun: Stat; earth: Stat; sunVerdicts?: Record<string, number>; earthVerdicts?: Record<string, number> }
+  summary: { sun: Stat; earth: Stat; sunVerdicts?: Record<string, number>; earthVerdicts?: Record<string, number>; csharpVsPortedPython?: PortedCheck }
   pass: Record<string, boolean>
   sites: { siteId: string; sun: SiteCheck; earth: SiteCheck }[]
 }

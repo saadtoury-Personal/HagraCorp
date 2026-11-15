@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import { CheckCircleIcon, XCircleIcon } from '@phosphor-icons/react'
 import { Tag } from '../components/Tag'
-import { aboutRules, fetchValidation, type Rule, type Validation } from '../lib/api'
+import { aboutRules, fetchValidation, type PortedCheck, type Rule, type Validation } from '../lib/api'
 import { GLOSSARY as TERMS } from '../lib/glossary'
 import { SITES } from '../lib/sites'
 import { useServerData } from '../lib/useServerData'
@@ -70,11 +70,18 @@ const PASS_LABEL: Record<string, string> = {
   earth: 'Earth shares within the agreed margin',
   noProblemSites: 'No site left unexplained',
   csharpVsPython: 'Server code matches the reference Python code',
+  // "added after the first run" must stay: this check was not pre-registered, the failed one above was.
+  csharpVsPortedPython: 'Server code matches the Python code with the disc model ported (added after the first run)',
 }
 const SITE_NAME = new Map(SITES.map((s) => [s.id, s.name]))
 
 /** The server's check against NASA PGDA product 69, with its thresholds fixed before the run. Failures are shown, not hidden. */
+/** Why the pre-registered C# vs Python check failed, with the numbers from the server's own re-run (summary.csharpVsPortedPython). */
+const portedNote = (p: PortedCheck) =>
+  `Cause verified: the server uses a finer disc model (16 strips, Sun size from distance, eclipses). With those changes ported to the Python, the gap is ${Math.max(p.maxAbsDiffSun, p.maxAbsDiffEarth).toFixed(2)} points on ${p.rowsWithinThreshold === p.rows ? 'all' : `${p.rowsWithinThreshold} of`} ${p.rows} rows.`
+
 function ValidationReport({ v }: { v: Validation }) {
+  const ported = v.summary.csharpVsPortedPython
   const stat = (label: string, x: Validation['summary']['sun']) => (
     <tr key={label} className="border-t border-line-soft">
       <th scope="row" className="py-2 pr-4 text-left font-normal text-ink">
@@ -119,11 +126,14 @@ function ValidationReport({ v }: { v: Validation }) {
       </div>
       <ul className="mt-4 space-y-1.5 text-sm">
         {Object.entries(v.pass).map(([k, ok]) => (
-          <li key={k} className="flex items-start gap-2">
-            {ok ? <CheckCircleIcon size={16} weight="fill" className="mt-0.5 shrink-0 text-ok" aria-hidden /> : <XCircleIcon size={16} weight="fill" className="mt-0.5 shrink-0 text-bad" aria-hidden />}
-            <span className="text-dim">
-              {PASS_LABEL[k] ?? k}: {ok ? 'met' : 'not met'}
+          <li key={k}>
+            <span className="flex items-start gap-2">
+              {ok ? <CheckCircleIcon size={16} weight="fill" className="mt-0.5 shrink-0 text-ok" aria-hidden /> : <XCircleIcon size={16} weight="fill" className="mt-0.5 shrink-0 text-bad" aria-hidden />}
+              <span className="text-dim">
+                {PASS_LABEL[k] ?? k}: {ok ? 'met' : 'not met'}
+              </span>
             </span>
+            {k === 'csharpVsPython' && ported && <p className="ml-6 mt-0.5 text-[13px] leading-relaxed text-faint">{portedNote(ported)}</p>}
           </li>
         ))}
       </ul>
