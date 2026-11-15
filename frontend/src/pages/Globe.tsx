@@ -7,7 +7,7 @@ import { signed } from '../lib/format'
 import { SITES } from '../lib/sites'
 import { useScenario } from '../store/scenario'
 
-const LEVELS = ['Moon', 'Pole', 'Region'] as const
+const LEVELS = ['Moon', 'Pole', 'Region', 'Space'] as const
 
 function Readouts() {
   const day = useScenario((s) => s.day)
@@ -83,10 +83,20 @@ export default function Globe() {
             <button type="button" className="pointer-events-auto hover:text-ink" onClick={() => setLevel(0)}>
               Moon
             </button>
-            <span aria-hidden>&rsaquo;</span>
-            <button type="button" className="pointer-events-auto hover:text-ink" onClick={() => setLevel(1)}>
-              South Pole
-            </button>
+            {level !== 3 && (
+              <>
+                <span aria-hidden>&rsaquo;</span>
+                <button type="button" className="pointer-events-auto hover:text-ink" onClick={() => setLevel(1)}>
+                  South Pole
+                </button>
+              </>
+            )}
+            {level === 3 && (
+              <>
+                <span aria-hidden>&rsaquo;</span>
+                <b className="font-medium text-ink">Earth and Sun, true scale</b>
+              </>
+            )}
             {level === 2 && (
               <>
                 <span aria-hidden>&rsaquo;</span>
@@ -98,7 +108,7 @@ export default function Globe() {
 
         <div>
           <p className="mb-3 max-w-[55%] text-xs uppercase md:max-w-none tracking-[0.16em] text-dim [text-shadow:0_1px_8px_#000]">Drag to rotate. Pinch or scroll to zoom.</p>
-          <div className="pointer-events-auto">{level === 0 && <Readouts />}</div>
+          <div className="pointer-events-auto">{(level === 0 || level === 3) && <Readouts />}</div>
         </div>
       </main>
 

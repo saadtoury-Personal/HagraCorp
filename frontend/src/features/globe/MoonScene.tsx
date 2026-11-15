@@ -1,15 +1,16 @@
 import { Html, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { BufferGeometry, DoubleSide, Float32BufferAttribute, Mesh, PerspectiveCamera, Vector2, Vector3, type DirectionalLight, type Material } from 'three'
-import { sunVec } from '../../lib/ephemeris'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { BufferGeometry, DoubleSide, type Group, Float32BufferAttribute, Mesh, PerspectiveCamera, Vector2, Vector3, type DirectionalLight, type Material } from 'three'
+import { earthDistKm, earthVec, sunVec, TAU } from '../../lib/ephemeris'
 import { toneClass } from '../../lib/format'
 import { getSeries, metrics, SITES, verdict } from '../../lib/sites'
 import { useScenario } from '../../store/scenario'
-import { MODEL_URLS } from './models'
+import { dayToDate } from '../../lib/ephemeris'
+import { EARTH_R, kmToUnits, MODEL_URLS, normalise, SUN_DIST, SUN_R } from './models'
 
-/** 0 = whole Moon, 1 = south pole, 2 = one candidate region. */
-export type Level = 0 | 1 | 2
+/** 0 = whole Moon, 1 = south pole, 2 = one candidate region, 3 = Moon, Earth and Sun at true scale. */
+export type Level = 0 | 1 | 2 | 3
 
 const D2R = Math.PI / 180
 const toVec = (lat: number, lon: number, r: number) =>
@@ -18,6 +19,82 @@ const Y = new Vector3(0, 1, 0)
 const LON0 = 112 // longitude the camera looks from before the user rotates the Moon
 const ZOOM_MIN = 0.6
 const ZOOM_MAX = 1.8
+
+/** Earth at its real size and distance, lit by the same Sun as the Moon. Spin is only indicative. */
+function Earth({ labelled }: { labelled: boolean }) {
+  const { scene } = useGLTF(MODEL_URLS.earth)
+  const clone = useMemo(() => scene.clone(true), [scene])
+  const group = useRef<Group>(null)
+  const spin = useRef<Group>(null)
+  useLayoutEffect(() => {
+    normalise(clone, EARTH_R)
+  }, [clone])
+  useFrame(() => {
+    const t = useScenario.getState().day
+    const e = earthVec(t)
+    const d = kmToUnits(earthDistKm(t))
+    group.current?.position.set(e[0] * d, e[1] * d, e[2] * d)
+    const d0 = dayToDate(t)
+    spin.current?.rotation.set(0, -((d0.getUTCHours() + d0.getUTCMinutes() / 60) / 24) * TAU, 0)
+  })
+  return (
+    <group ref={group}>
+      <group ref={spin}>
+        <primitive object={clone} />
+      </group>
+      <Html center position={[0, 0, -(EARTH_R + 6)]} zIndexRange={[20, 0]}>
+        <span className={labelled ? 'scene-label' : 'hidden'}>Earth</span>
+      </Html>
+    </group>
+  )
+}
+
+/** The Sun in its true direction and true angular size (0.53 degrees), drawn closer than its real 1 AU. */
+function SunBody() {
+  const group = useRef<Group>(null)
+  useFrame(() => {
+    const v = sunVec(useScenario.getState().day)
+    group.current?.position.set(v[0] * SUN_DIST, v[1] * SUN_DIST, v[2] * SUN_DIST)
+  })
+  return (
+    <group ref={group}>
+      <mesh>
+        <sphereGeometry args={[SUN_R, 32, 16]} />
+        <meshBasicMaterial color="#ffd98a" toneMapped={false} />
+      </mesh>
+    </group>
+  )
+}
+
+/** Labels and a pointer toward the Sun for the true-scale view. */
+function SystemLabels({ shown }: { shown: boolean }) {
+  const tip = useRef<Group>(null)
+  const geo = useMemo(() => new BufferGeometry().setFromPoints([new Vector3(), new Vector3(1, 0, 0)]), [])
+  useFrame(() => {
+    const v = sunVec(useScenario.getState().day)
+    const L = 28
+    geo.setFromPoints([new Vector3(), new Vector3(v[0] * L, v[1] * L, v[2] * L)])
+    tip.current?.position.set(v[0] * L, v[1] * L, v[2] * L)
+  })
+  return (
+    <>
+      <Html center position={[0, 0, 0]} zIndexRange={[20, 0]}>
+        <span className={shown ? 'scene-label relative' : 'hidden'}>
+          <i className="absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border border-ink/70" aria-hidden />
+          <span className="block -translate-y-5">Moon</span>
+        </span>
+      </Html>
+      <lineSegments geometry={geo} visible={shown}>
+        <lineBasicMaterial color="#ffc766" transparent opacity={0.7} />
+      </lineSegments>
+      <group ref={tip}>
+        <Html center zIndexRange={[20, 0]}>
+          <span className={shown ? 'scene-label -translate-y-5 text-sun' : 'hidden'}>Sun, 150 million km away</span>
+        </Html>
+      </group>
+    </>
+  )
+}
 
 /**
  * Sky from Nazim's mockup: a screen-space hash starfield (same grid and thresholds), drawn behind everything.
@@ -95,10 +172,10 @@ function Rig({ level, view }: { level: Level; view: RefObject<View> }) {
   const pos = useRef(toVec(-38, LON0, 7))
   const look = useRef(new Vector3())
   const cur = useRef({ yaw: 0, zoom: 1 })
-  const goal = useRef({ pos: new Vector3(), look: new Vector3(), up: new Vector3(0, 1, 0), side: new Vector3(), negSide: new Vector3() })
+  const goal = useRef({ pos: new Vector3(), look: new Vector3(), up: new Vector3(0, 1, 0), side: new Vector3(), negSide: new Vector3(), want: new Vector3() })
   useFrame((_, dt) => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
-    const { pos: goalPos, look: goalLook, up, side, negSide } = goal.current
+    const { pos: goalPos, look: goalLook, up, side, negSide, want } = goal.current
     const k = reduce ? 1 : 1 - Math.exp(-dt * 3.2)
     cur.current.yaw += (view.current.yaw - cur.current.yaw) * k
     cur.current.zoom += (view.current.zoom - cur.current.zoom) * k
@@ -113,6 +190,14 @@ function Rig({ level, view }: { level: Level; view: RefObject<View> }) {
     } else if (level === 1) {
       goalPos.copy(toVec(-72, lon, 2.2 * fit * z))
       goalLook.set(0, -0.95, 0)
+    } else if (level === 3) {
+      // Straight down on the Moon-Earth plane, far enough to fit both, Moon on the left.
+      const t = useScenario.getState().day
+      const e = earthVec(t)
+      const d = kmToUnits(earthDistKm(t))
+      const aspect = size.width / size.height
+      goalLook.set((e[0] * d) / 2, (e[1] * d) / 2, (e[2] * d) / 2)
+      goalPos.copy(goalLook).setY(goalLook.y + Math.max(d * 0.7 / aspect, d * 0.3) / Math.tan(14 * D2R) * z)
     } else {
       const q = SITES[useScenario.getState().site].q
       goalLook.set(q[0], q[1], q[2])
@@ -123,12 +208,15 @@ function Rig({ level, view }: { level: Level; view: RefObject<View> }) {
     look.current.lerp(goalLook, k)
     camera.position.copy(pos.current)
     // Looking straight up the axis from below the pole, +y is degenerate, so tilt the up vector.
-    up.lerp(level === 2 ? negSide : Y, k).normalize()
+    const yaw = cur.current.yaw * D2R
+    if (level === 3) want.set(Math.sin(yaw), 0, -Math.cos(yaw))
+    else want.copy(level === 2 ? negSide : Y)
+    up.lerp(want, k).normalize()
     camera.up.copy(up)
     camera.lookAt(look.current)
     // Push the Moon right of the headline on wide screens, and a little low on narrow ones.
     const wide = size.width >= 1024
-    ;(camera as PerspectiveCamera).setViewOffset(size.width, size.height, wide && level === 0 ? -size.width * 0.15 : 0, wide ? 0 : size.height * 0.04, size.width, size.height)
+    ;(camera as PerspectiveCamera).setViewOffset(size.width, size.height, wide && level === 0 ? -size.width * 0.15 : 0, wide || level === 3 ? 0 : size.height * 0.04, size.width, size.height)
   })
   return null
 }
@@ -235,7 +323,7 @@ function Marker({ i, level, onSelect, onOpen }: { i: number; level: Level; onSel
     const el = wrap.current
     if (!el) return
     tmp.copy(camera.position).sub(q)
-    el.style.display = level > 0 && q.dot(tmp) > 0.02 ? '' : 'none'
+    el.style.display = level > 0 && level < 3 && q.dot(tmp) > 0.02 ? '' : 'none'
   })
 
   const m = metrics(getSeries(mast)[i], day, dur)
@@ -283,7 +371,7 @@ export default function MoonScene({ level, onSelect, onOpen }: { level: Level; o
   return (
     <Canvas
       dpr={[1, 2]}
-      camera={{ fov: 28, near: 0.05, far: 400, position: [0, 0, 7] }}
+      camera={{ fov: 28, near: 0.05, far: 2500, position: [0, 0, 7] }}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
       aria-label="The Moon seen from the south with the 13 candidate regions near the pole"
     >
@@ -292,6 +380,9 @@ export default function MoonScene({ level, onSelect, onOpen }: { level: Level; o
       <Controls view={view} level={level} />
       <SunLight />
       <Moon />
+      <Earth labelled={level === 3} />
+      <SunBody />
+      <SystemLabels shown={level === 3} />
       {SITES.map((s) => (
         <Marker key={s.i} i={s.i} level={level} onSelect={onSelect} onOpen={onOpen} />
       ))}
@@ -300,3 +391,4 @@ export default function MoonScene({ level, onSelect, onOpen }: { level: Level; o
 }
 
 useGLTF.preload(MODEL_URLS.moon)
+useGLTF.preload(MODEL_URLS.earth)
