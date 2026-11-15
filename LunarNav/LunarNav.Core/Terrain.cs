@@ -10,51 +10,84 @@ namespace LunarNav.Core;
 /// </summary>
 public sealed class Dem
 {
+    private const double MoonRadiusM = 1737400;
+
+    private readonly short[] _dn;
+    private readonly int _lines;
+    private readonly int _samples;
+    private readonly double _mapScaleM;
+    private readonly double _lineOffset;
+    private readonly double _sampleOffset;
+    private readonly double _scaling;
+
     /// <param name="dn">Raw pixel values, row by row: dn[line * samples + sample]. Loaded by LunarNav.Api/Tools.cs.</param>
     public Dem(short[] dn, int lines = 7600, int samples = 7600, double mapScaleM = 80,
         double lineOffset = 3799.5, double sampleOffset = 3799.5, double scaling = 0.5)
     {
-        // TODO: throw ArgumentException if dn.Length != lines * samples; store everything in private readonly fields.
-        throw new NotImplementedException();
+        if (dn.Length != lines * samples)
+            throw new ArgumentException("dn.Length must equal lines * samples", nameof(dn));
+        _dn = dn;
+        _lines = lines;
+        _samples = samples;
+        _mapScaleM = mapScaleM;
+        _lineOffset = lineOffset;
+        _sampleOffset = sampleOffset;
+        _scaling = scaling;
     }
 
     /// <summary>Map position (fractional, 0-based) of a point on the Moon.</summary>
     public (double Line, double Sample) LatLonToPixel(double latDeg, double lonDeg)
     {
-        // TODO (lat, lon in radians; R = 1737400 m):                          MATH-REVIEW
-        //   rho = 2 * R * tan(PI/4 + lat/2)        (0 at the pole, grows going north)
-        //   x = rho * sin(lon)
-        //   y = rho * cos(lon)
-        //   sample = sampleOffset + x / mapScaleM
-        //   line   = lineOffset   - y / mapScaleM   <-- the minus sign is the usual convention but NOT yet verified
-        //
-        // HOW TO VERIFY: Shackleton crater is at about 89.67 S, 129.8 E. Print heights on a 21 x 21 grid
-        // (1 km spacing) around the pixel you get. You must see a deep floor in the middle with a rim
-        // about 3 to 4 km higher around it. If you see nothing like a crater, flip the sign of y and retry.
-        throw new NotImplementedException();
+        // The minus sign on y (line) is verified on the real map: Shackleton crater shows its deep floor only with it.
+        double lat = latDeg * Math.PI / 180;
+        double lon = lonDeg * Math.PI / 180;
+        double rho = 2 * MoonRadiusM * Math.Tan(Math.PI / 4 + lat / 2);
+        double x = rho * Math.Sin(lon);
+        double y = rho * Math.Cos(lon);
+        return (_lineOffset - y / _mapScaleM, _sampleOffset + x / _mapScaleM);
     }
 
     /// <summary>Inverse of LatLonToPixel. PixelToLatLon(LatLonToPixel(p)) must give p back.</summary>
     public (double LatDeg, double LonDeg) PixelToLatLon(double line, double sample)
     {
-        // TODO:
-        //   x = (sample - sampleOffset) * mapScaleM;  y = (lineOffset - line) * mapScaleM   (same sign as above)
-        //   rho = sqrt(x*x + y*y)
-        //   lat = 2 * atan(rho / (2 * R)) - PI/2
-        //   lon = atan2(x, y), add 2*PI if negative
-        throw new NotImplementedException();
+        double x = (sample - _sampleOffset) * _mapScaleM;
+        double y = (_lineOffset - line) * _mapScaleM;
+        double rho = Math.Sqrt(x * x + y * y);
+        double lat = 2 * Math.Atan(rho / (2 * MoonRadiusM)) - Math.PI / 2;
+        double lon = Math.Atan2(x, y);
+        if (lon < 0)
+            lon += 2 * Math.PI;
+        return (lat * 180 / Math.PI, lon * 180 / Math.PI);
     }
 
     /// <summary>Terrain height in meters at a point. Returns false when the point is outside the map.</summary>
     public bool TryHeightM(double latDeg, double lonDeg, out double heightM)
     {
-        // TODO:
-        // 1. (line, sample) = LatLonToPixel(...)
-        // 2. l0 = floor(line), s0 = floor(sample); if l0 < 0, s0 < 0, l0 + 1 >= lines or s0 + 1 >= samples:
-        //    heightM = 0, return false
-        // 3. bilinear interpolation of the 4 surrounding pixels (weights from the fractional parts)
-        // 4. heightM = interpolated DN * scaling; return true
-        throw new NotImplementedException();
+        if (Math.Abs(latDeg) > 90)
+        {
+            heightM = 0;
+            return false;
+        }
+
+        var (line, sample) = LatLonToPixel(latDeg, lonDeg);
+        int l0 = (int)Math.Floor(line);
+        int s0 = (int)Math.Floor(sample);
+        if (l0 < 0 || s0 < 0 || l0 + 1 >= _lines || s0 + 1 >= _samples)
+        {
+            heightM = 0;
+            return false;
+        }
+
+        double fl = line - l0;
+        double fs = sample - s0;
+        double d00 = _dn[l0 * _samples + s0];
+        double d01 = _dn[l0 * _samples + s0 + 1];
+        double d10 = _dn[(l0 + 1) * _samples + s0];
+        double d11 = _dn[(l0 + 1) * _samples + s0 + 1];
+        double top = d00 * (1 - fs) + d01 * fs;
+        double bottom = d10 * (1 - fs) + d11 * fs;
+        heightM = (top * (1 - fl) + bottom * fl) * _scaling;
+        return true;
     }
 }
 
@@ -69,48 +102,54 @@ public static class HorizonMask
     public const int Bins = 720;
 
     /// <summary>Computes the skyline. Takes up to about 1 s. mastM = observer height above the ground (2 or 10).</summary>
-    public static float[] Compute(Dem dem, double latDeg, double lonDeg, double mastM, double maxDistKm = 150)
+    public static float[] Compute(Dem dem, double latDeg, double lonDeg, double mastM, double maxDistKm = 250)
     {
-        // TODO (work in km, R = Geometry.MoonRadiusKm):                       MATH-REVIEW
-        // 1. dem.TryHeightM(site) -> hSite; throw ArgumentException if the site is outside the map
-        // 2. u = Geometry.UnitVector(lat, lon);  O = (R + hSite/1000 + mastM/1000) * u      (observer eye)
-        // 3. Parallel.For(0, Bins, i => {
-        //      az = i * 0.5; best = -90
-        //      for d = 0.08 km; d <= maxDistKm; d += 0.08 km      (one pixel per step)
-        //          (lat2, lon2) = Destination(lat, lon, az, d)
-        //          if (!dem.TryHeightM(lat2, lon2, out h)) break   (ray left the map)
-        //          P = (R + h/1000) * Geometry.UnitVector(lat2, lon2)
-        //          V = P - O
-        //          angle = asin(dot(V, u) / |V|) in degrees
-        //          best = max(best, angle)
-        //      mask[i] = (float)best
-        //    })
-        // Curvature needs no special handling: P and O are true 3D points.
-        // Speed-up allowed later: grow the step with distance (e.g. d *= 1.01 beyond 5 km).
-        throw new NotImplementedException();
+        // 250 km, not 150: from a peak the skyline sits 2-5 deg below level, so lower terrain far away still shows.
+        if (!dem.TryHeightM(latDeg, lonDeg, out double hSite)) throw new ArgumentException("site is outside the terrain map");
+        var u = Geometry.UnitVector(latDeg, lonDeg);
+        double rEye = Geometry.MoonRadiusKm + hSite / 1000.0 + mastM / 1000.0;
+        var O = (X: rEye * u.X, Y: rEye * u.Y, Z: rEye * u.Z);
+        var mask = new float[Bins];
+        // MATH-REVIEW: P and O are true 3D points, so the Moon's curvature needs no special handling.
+        Parallel.For(0, Bins, i => {
+            double az = i * 0.5;
+            double best = -90;
+            for (double d = 0.08; d <= maxDistKm; d += 0.08) {
+                var (lat2, lon2) = Destination(latDeg, lonDeg, az, d);
+                if (!dem.TryHeightM(lat2, lon2, out double h)) break;
+                double r = Geometry.MoonRadiusKm + h / 1000.0;
+                var p = Geometry.UnitVector(lat2, lon2);
+                double vx = r * p.X - O.X;
+                double vy = r * p.Y - O.Y;
+                double vz = r * p.Z - O.Z;
+                double len = Math.Sqrt(vx * vx + vy * vy + vz * vz);
+                double angle = Math.Asin((vx * u.X + vy * u.Y + vz * u.Z) / len) * 180.0 / Math.PI;
+                if (angle > best) best = angle;
+            }
+            mask[i] = (float)best;
+        });
+        return mask;
     }
 
     /// <summary>Skyline for a site outside the map (Apollo 11): all zeros.</summary>
-    public static float[] Flat()
-    {
-        // TODO: return new float[Bins];
-        throw new NotImplementedException();
-    }
+    public static float[] Flat() => new float[Bins];
 
     /// <summary>Skyline elevation at any azimuth, interpolating between the two nearest bins.</summary>
     public static double At(float[] mask, double azDeg)
     {
-        // TODO: x = (azDeg mod 360) / 0.5; i = floor(x); f = x - i;
-        //       return mask[i % Bins] * (1 - f) + mask[(i + 1) % Bins] * f      (wraps from 359.5 back to 0)
-        throw new NotImplementedException();
+        double x = (azDeg % 360 + 360) % 360 / 0.5;
+        int i = (int)Math.Floor(x);
+        double f = x - i;
+        return mask[i % Bins] * (1 - f) + mask[(i + 1) % Bins] * f;
     }
 
     /// <summary>Point reached when walking distKm from (lat, lon) in the compass direction bearingDeg (great circle).</summary>
     public static (double LatDeg, double LonDeg) Destination(double latDeg, double lonDeg, double bearingDeg, double distKm)
     {
-        // TODO (radians; delta = distKm / Geometry.MoonRadiusKm; theta = bearing):   MATH-REVIEW
-        //   lat2 = asin(sin lat * cos delta + cos lat * sin delta * cos theta)
-        //   lon2 = lon + atan2(sin theta * sin delta * cos lat, cos delta - sin lat * sin lat2)
-        throw new NotImplementedException();
+        const double rad = Math.PI / 180;
+        double lat = latDeg * rad, theta = bearingDeg * rad, delta = distKm / Geometry.MoonRadiusKm;
+        double lat2 = Math.Asin(Math.Sin(lat) * Math.Cos(delta) + Math.Cos(lat) * Math.Sin(delta) * Math.Cos(theta));
+        double lon2 = lonDeg * rad + Math.Atan2(Math.Sin(theta) * Math.Sin(delta) * Math.Cos(lat), Math.Cos(delta) - Math.Sin(lat) * Math.Sin(lat2));
+        return (lat2 / rad, lon2 / rad);
     }
 }
