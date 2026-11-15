@@ -1,14 +1,16 @@
 import { Html, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { BufferGeometry, DoubleSide, Float32BufferAttribute, Mesh, PerspectiveCamera, Vector2, Vector3, type DirectionalLight, type Material } from 'three'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { BufferGeometry, DoubleSide, Float32BufferAttribute, Mesh, PerspectiveCamera, Vector2, Vector3, type DirectionalLight, type Group, type Material } from 'three'
+import { sunAxis } from '../../lib/earthOrientation'
 import { earthVec, sunVec } from '../../lib/ephemeris'
 import { coords, toneClass } from '../../lib/format'
 import SourceTag from '../../components/SourceTag'
 import { SITES, verdict } from '../../lib/sites'
 import { useSiteMetrics } from '../../lib/useSiteMetrics'
 import { useScenario } from '../../store/scenario'
-import { MODEL_URLS } from './models'
+import { earthQuaternion } from './earthPose'
+import { MODEL_URLS, normalise, SUN_ROTATION_DAYS } from './models'
 
 /** 0 = whole Moon, 1 = south pole, 2 = one candidate region. */
 export type Level = 0 | 1 | 2
@@ -22,15 +24,15 @@ const ZOOM_MIN = 0.6
 const ZOOM_MAX = 1.8
 
 /**
- * The Sun and Earth go round the Moon in their real directions (Horizons table, Moon-fixed frame), on two invisible circles around it.
+ * The Sun and Earth go round the Moon in their real directions (Horizons table, Moon-fixed frame), at display size.
  * Distances are for display only: at true scale both would be far off screen. The label badges are plain DOM that follow the
  * projected 3D positions; the Moon hides a badge while its body is behind it, and the Sun's light (SunLight) comes from the same direction.
  */
 export type Body = 'earth' | 'sun'
 type BadgeRefs = Record<Body, { box: HTMLDivElement | null }>
 
-/** Display radii of the two orbits, in Moon radii. */
-const ORBIT_R: Record<Body, number> = { sun: 1.95, earth: 1.5 }
+/** Display size and distance from the Moon's centre, in Moon radii. For readability only: at true scale both would be far off screen. */
+const DISPLAY: Record<Body, { r: number; dist: number }> = { sun: { r: 0.34, dist: 2.1 }, earth: { r: 0.26, dist: 1.7 } }
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x))
 
@@ -39,6 +41,57 @@ function paint(box: HTMLElement, x: number, y: number, opacity: number) {
   box.style.visibility = opacity < 0.02 ? 'hidden' : 'visible'
   box.style.opacity = String(opacity)
   box.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`
+}
+
+/** Earth, from the team's model: real tilt and real turn (sidereal time) in the Moon frame, lit by the same Sun as the Moon. */
+function Earth() {
+  const { scene } = useGLTF(MODEL_URLS.earth)
+  const clone = useMemo(() => scene.clone(true), [scene])
+  const place = useRef<Group>(null)
+  const spin = useRef<Group>(null)
+  useLayoutEffect(() => {
+    normalise(clone, DISPLAY.earth.r)
+  }, [clone])
+  useFrame(() => {
+    const t = useScenario.getState().day
+    const e = earthVec(t)
+    place.current?.position.set(e[0], e[1], e[2]).multiplyScalar(DISPLAY.earth.dist)
+    if (spin.current) earthQuaternion(t, spin.current.quaternion)
+  })
+  return (
+    <group ref={place}>
+      <group ref={spin}>
+        <primitive object={clone} />
+      </group>
+    </group>
+  )
+}
+
+/** The Sun, from the team's model: it glows by itself, turns once per 25.4 days on its real axis. */
+function SunBody() {
+  const { scene } = useGLTF(MODEL_URLS.sun)
+  const clone = useMemo(() => scene.clone(true), [scene])
+  const place = useRef<Group>(null)
+  const spin = useRef<Group>(null)
+  const axis = useMemo(() => new Vector3(), [])
+  useLayoutEffect(() => {
+    normalise(clone, DISPLAY.sun.r)
+  }, [clone])
+  useFrame(() => {
+    const t = useScenario.getState().day
+    const s = sunVec(t)
+    place.current?.position.set(s[0], s[1], s[2]).multiplyScalar(DISPLAY.sun.dist)
+    const a = sunAxis(t)
+    place.current?.quaternion.setFromUnitVectors(Y, axis.set(a[0], a[1], a[2]))
+    if (spin.current) spin.current.rotation.y = (2 * Math.PI * t) / SUN_ROTATION_DAYS
+  })
+  return (
+    <group ref={place}>
+      <group ref={spin}>
+        <primitive object={clone} />
+      </group>
+    </group>
+  )
 }
 
 /** Moves the Earth and Sun badges to where those bodies are on their rings, and fades them out while the Moon is in front of them. */
@@ -56,7 +109,7 @@ function SkyBadges({ refs }: { refs: RefObject<BadgeRefs> }) {
       const box = refs.current[key].box
       if (!box) continue
       const d = dirs[key]
-      pos.set(d[0], d[1], d[2]).multiplyScalar(ORBIT_R[key])
+      pos.set(d[0], d[1], d[2]).multiplyScalar(DISPLAY[key].dist)
       // Moon in front of it: the line from the camera to the body passes through the Moon (radius 1) before reaching the body.
       ray.copy(pos).sub(cam)
       const len = ray.length()
@@ -64,9 +117,11 @@ function SkyBadges({ refs }: { refs: RefObject<BadgeRefs> }) {
       const along = -cam.dot(ray)
       const closest = along > 0 && along < len ? hit.copy(cam).addScaledVector(ray, along).length() : 99
       const behindMoon = clamp01((closest - 1) / 0.25) // fades out as it slips behind the limb
+      // Label under the body: its on-screen radius is its display radius over the view height at that distance.
+      const radiusPx = (DISPLAY[key].r / (len * Math.tan((camera as PerspectiveCamera).fov * Math.PI / 360))) * (size.height / 2)
       pos.project(camera)
       const inView = pos.z < 1 ? clamp01((1 - Math.max(Math.abs(pos.x), Math.abs(pos.y))) / 0.1) : 0
-      paint(box, (pos.x * 0.5 + 0.5) * size.width, (-pos.y * 0.5 + 0.5) * size.height, behindMoon * inView)
+      paint(box, (pos.x * 0.5 + 0.5) * size.width, (-pos.y * 0.5 + 0.5) * size.height + radiusPx + 14, behindMoon * inView)
     }
   })
   return null
@@ -341,13 +396,10 @@ function Marker({ i, level, onSelect, onOpen }: { i: number; level: Level; onSel
 export default function MoonScene({ level, onSelect, onOpen }: { level: Level; onSelect: (i: number) => void; onOpen: (i: number) => void }) {
   const view = useRef<View>({ yaw: 0, zoom: 1 })
   const badgeRefs = useRef<BadgeRefs>({ earth: { box: null }, sun: { box: null } })
-  // Plain markers: they only show where the Sun and Earth are.
-  const badge = (key: Body, label: string, disc: string) => (
-    <div ref={(el) => void (badgeRefs.current[key].box = el)} className="absolute left-0 top-0" title={label} style={{ visibility: 'hidden' }}>
-      <div className="relative flex min-h-11 min-w-11 flex-col items-center gap-1.5 p-1.5">
-        <span className={`block rounded-full ${disc}`} />
-        <span className="scene-label">{label}</span>
-      </div>
+  // The 3D models are the markers; these are only their names, kept under them.
+  const badge = (key: Body, label: string) => (
+    <div ref={(el) => void (badgeRefs.current[key].box = el)} className="absolute left-0 top-0" style={{ visibility: 'hidden' }}>
+      <span className="scene-label">{label}</span>
     </div>
   )
   return (
@@ -363,17 +415,21 @@ export default function MoonScene({ level, onSelect, onOpen }: { level: Level; o
       <Controls view={view} level={level} />
       <SunLight />
       <Moon />
+      <Earth />
+      <SunBody />
       <SkyBadges refs={badgeRefs} />
       {SITES.map((s) => (
         <Marker key={s.i} i={s.i} level={level} onSelect={onSelect} onOpen={onOpen} />
       ))}
     </Canvas>
       <div className="pointer-events-none absolute inset-0 z-[6]">
-        {badge('earth', 'Earth', 'size-6 bg-[radial-gradient(circle_at_35%_30%,#9cc4ff,#2b5fb8_60%,#0c1f45)]')}
-        {badge('sun', 'Sun', 'size-5 bg-sun shadow-[0_0_14px_3px_rgb(255_199_102/0.55)]')}
+        {badge('earth', 'Earth')}
+        {badge('sun', 'Sun')}
       </div>
     </>
   )
 }
 
 useGLTF.preload(MODEL_URLS.moon)
+useGLTF.preload(MODEL_URLS.earth)
+useGLTF.preload(MODEL_URLS.sun)

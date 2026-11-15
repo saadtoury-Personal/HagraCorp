@@ -15,8 +15,11 @@ export const SUN_DIST = SUN_R / Math.tan((bodies.sunAngularRadiusDeg * Math.PI) 
 /** The Sun turns once per 25.4 days (sidereal rotation 609.12 h) on an axis tilted 7.25 degrees to the ecliptic. */
 export const SUN_ROTATION_DAYS = bodies.sun.siderealRotationHours / 24
 
+// The team's models (3Dobjets/), with their textures recompressed to JPEG so the page loads fast.
 export const MODEL_URLS = {
   moon: '/models/Moon_LRO_clean.glb',
+  earth: '/models/Earth.glb',
+  sun: '/models/Sun.glb',
 } as const
 
 /** Scale `root` so its bounding sphere has the given radius, centred on the origin. */
