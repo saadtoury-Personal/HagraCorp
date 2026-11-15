@@ -71,6 +71,21 @@ public class ToolsTests : IDisposable
     }
 
     [Fact]
+    public void AppData_FileWrittenAfterStart_IsFound()
+    {
+        // Server started before precompute: the heatmap must appear as soon as the file exists, without a restart.
+        File.Copy(Path.Combine(ApiTests.FindDataDir(), "sites.json"), Path.Combine(_dir, "sites.json"));
+        var data = new AppData(_dir);
+        Assert.Null(data.Heatmap(2));
+        Assert.Null(data.Uncertainty("haworth", 2));
+
+        File.Copy(Path.Combine(ApiTests.FindDataDir(), "heatmap_2m.json"), Path.Combine(_dir, "heatmap_2m.json"));
+        File.Copy(Path.Combine(ApiTests.FindDataDir(), "uncertainty_2m.json"), Path.Combine(_dir, "uncertainty_2m.json"));
+        Assert.NotNull(data.Heatmap(2));
+        Assert.NotNull(data.Uncertainty("haworth", 2));
+    }
+
+    [Fact]
     public void LoadDem_WrongSize_Throws()
     {
         var path = Path.Combine(_dir, "small.img");

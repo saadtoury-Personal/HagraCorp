@@ -73,15 +73,20 @@ public sealed class AppData
     private readonly ConcurrentDictionary<int, UncertaintyDto[]?> _uncertainty = new();
 
     /// <summary>uncertainty_{mast}m.json written by precompute (S1), null if not computed yet.</summary>
-    public UncertaintyDto? Uncertainty(string siteId, int mast) => _uncertainty.GetOrAdd(mast, m =>
-    {
-        var path = Path.Combine(_dataDir, $"uncertainty_{m}m.json");
-        return File.Exists(path) ? JsonSerializer.Deserialize<UncertaintyDto[]>(File.ReadAllText(path), JsonSerializerOptions.Web) : null;
-    })?.FirstOrDefault(u => string.Equals(u.SiteId, siteId, StringComparison.OrdinalIgnoreCase));
+    public UncertaintyDto? Uncertainty(string siteId, int mast) => LoadOnce(_uncertainty, mast, $"uncertainty_{mast}m.json")
+        ?.FirstOrDefault(u => string.Equals(u.SiteId, siteId, StringComparison.OrdinalIgnoreCase));
 
-    public HeatmapDto? Heatmap(int mast) => _heatmaps.GetOrAdd(mast, m =>
+    public HeatmapDto? Heatmap(int mast) => LoadOnce(_heatmaps, mast, $"heatmap_{mast}m.json");
+
+    /// <summary>Reads a data file once and keeps it. A missing file is not remembered: if precompute writes it while
+    /// the server runs, the next call finds it instead of answering "not computed yet" until a restart.</summary>
+    private T? LoadOnce<T>(ConcurrentDictionary<int, T?> cache, int key, string file) where T : class
     {
-        var path = Path.Combine(_dataDir, $"heatmap_{m}m.json");
-        return File.Exists(path) ? JsonSerializer.Deserialize<HeatmapDto>(File.ReadAllText(path), JsonSerializerOptions.Web) : null;
-    });
+        if (cache.TryGetValue(key, out var hit) && hit is not null)
+            return hit;
+        var path = Path.Combine(_dataDir, file);
+        if (!File.Exists(path))
+            return null;
+        return cache[key] = JsonSerializer.Deserialize<T>(File.ReadAllText(path), JsonSerializerOptions.Web);
+    }
 }
