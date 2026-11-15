@@ -13,6 +13,7 @@ const Compare = lazy(() => import('./pages/Compare'))
 const Slip = lazy(() => import('./pages/Slip'))
 const Method = lazy(() => import('./pages/Method'))
 const Contact = lazy(() => import('./pages/Contact'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 const links = [
   ['/', 'Globe'],
@@ -62,7 +63,7 @@ export default function App() {
     <BrowserRouter>
       <UrlSync />
       <RouteEffects />
-      <a href="#main" className="sr-only fixed left-3 top-3 z-50 bg-ink px-4 py-2 text-sm font-medium text-bg focus:not-sr-only">
+      <a href="#main" className="fixed left-3 top-3 z-50 -translate-y-20 bg-ink px-4 py-2 text-sm font-medium text-bg transition-transform focus:translate-y-0">
         Skip to content
       </a>
       <Header />
@@ -75,6 +76,7 @@ export default function App() {
           <Route path="/slip" element={<Slip />} />
           <Route path="/method" element={<Method />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
       </div>

@@ -18,7 +18,7 @@ export default function RouteEffects() {
   const first = useRef(true)
 
   useEffect(() => {
-    const page = pathname === '/site' ? SITES[site].name : (TITLES[pathname] ?? 'Lunar Landing Site Navigator')
+    const page = pathname === '/site' ? SITES[site].name : (TITLES[pathname] ?? 'Page not found')
     document.title = `${page} · LunarNav`
   }, [pathname, site])
 
@@ -27,6 +27,7 @@ export default function RouteEffects() {
       first.current = false
       return
     }
+    scrollTo(0, 0) // a new page starts at its top, not where the last one was scrolled to
     document.getElementById('main')?.focus({ preventScroll: true })
   }, [pathname])
   return null
