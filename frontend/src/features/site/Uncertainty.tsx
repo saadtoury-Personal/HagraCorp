@@ -3,6 +3,7 @@ import { Tag } from '../../components/Tag'
 import { fetchUncertainty, serverMast, type PctRange, type Uncertainty as U } from '../../lib/api'
 import { coords } from '../../lib/format'
 import { useServerData } from '../../lib/useServerData'
+import { useServer } from '../../store/server'
 
 /** Precomputed copies of the backend files, used when the server is offline (kept identical by sitesSync.test.ts). */
 const loadBundled = (mast: 2 | 10) =>
@@ -36,7 +37,8 @@ export default function Uncertainty({ siteId, mast }: { siteId: string; mast: nu
   const m = serverMast(mast)
   const srv = useServerData<U>(`${siteId}|${m}`, (sig) => fetchUncertainty(siteId, mast, sig))
   const [bundled, setBundled] = useState<{ key: string; u: U | null } | null>(null)
-  const needBundled = srv.state === 'offline' || srv.state === 'error'
+  const waking = useServer((s) => s.status === 'checking') // the server can take a minute to wake: show the bundled copy meanwhile
+  const needBundled = srv.state === 'offline' || srv.state === 'error' || waking
   useEffect(() => {
     if (!needBundled) return
     let live = true
@@ -48,7 +50,7 @@ export default function Uncertainty({ siteId, mast }: { siteId: string; mast: nu
 
   const u = srv.state === 'ok' ? srv.data : bundled?.key === `${siteId}|${m}` ? bundled.u : null
   const source = srv.state === 'ok' ? 'server' : 'bundled'
-  if (srv.state === 'loading' || (needBundled && bundled?.key !== `${siteId}|${m}`)) return null
+  if ((srv.state === 'loading' && !waking) || (needBundled && bundled?.key !== `${siteId}|${m}`)) return null
   if (!u)
     return (
       <section aria-label="Landing accuracy" className="mt-5 border-t border-line-soft pt-4">
