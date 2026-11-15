@@ -28,6 +28,15 @@ public class ToolsTests : IDisposable
     }
 
     [Fact]
+    public void WriteManifest_UncertaintyFiles_ComeFromPrecompute()
+    {
+        File.WriteAllText(Path.Combine(_dir, "uncertainty_2m.json"), "[]");
+        var entry = Assert.Single(Tools.WriteManifest(_dir));
+        Assert.Contains("LOLA", entry.Source);
+        Assert.Contains("precompute", entry.Command);
+    }
+
+    [Fact]
     public void WriteManifest_DoesNotListItself_AndIsValidJson()
     {
         File.WriteAllText(Path.Combine(_dir, "ephem.csv"), "x");

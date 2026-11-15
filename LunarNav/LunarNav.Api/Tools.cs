@@ -76,7 +76,7 @@ public static class Tools
                     "sites.json" => ("NASA Lunar Surface Data Book ACD-50044 Table A2-2, NASA Artemis III candidate regions", "written by hand"),
                     "rules.json" => ("LunarNav team: thresholds, each marked assumed or validated", "written by hand"),
                     "ephem.csv" =>("JPL Horizons (DE441), hourly sub-solar and sub-Earth points 2026-2030", "python fetch_ephem.py"),
-                    _ when p.StartsWith("masks/") || p.StartsWith("heatmap_") => (lola, precompute),
+                    _ when p.StartsWith("masks/") || p.StartsWith("heatmap_") || p.StartsWith("uncertainty_") => (lola, precompute),
                     _ => ("unknown", "unknown"),
                 };
                 return new ManifestEntry(p, new FileInfo(full).Length, Sha256(full), source, command);
