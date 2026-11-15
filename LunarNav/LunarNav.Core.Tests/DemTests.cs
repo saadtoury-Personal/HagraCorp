@@ -79,6 +79,19 @@ public class DemTests
     }
 
     [Theory]
+    [InlineData(89.9999, 180.0)]
+    [InlineData(89.9999, 90.0)]
+    [InlineData(double.NaN, 0.0)]
+    [InlineData(-85.0, double.NaN)]
+    public void TryHeightM_NearNorthPoleOrNaN_ReturnsFalseWithoutThrowing(double lat, double lon)
+    {
+        // Near the north pole the pixel position is so large that the int cast overflowed and indexed outside the map.
+        var dem = new Dem(new short[7600 * 7600]);
+        Assert.False(dem.TryHeightM(lat, lon, out var h));
+        Assert.Equal(0.0, h);
+    }
+
+    [Theory]
     [InlineData(-95)]
     [InlineData(95)]
     public void TryHeightM_LatitudeBeyond90_ReturnsFalse(double lat)
