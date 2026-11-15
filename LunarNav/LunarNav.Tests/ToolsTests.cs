@@ -37,9 +37,10 @@ public class ToolsTests : IDisposable
     }
 
     [Fact]
-    public void WriteManifest_DoesNotListItself_AndIsValidJson()
+    public void WriteManifest_SkipsItselfAndHiddenFiles_AndIsValidJson()
     {
         File.WriteAllText(Path.Combine(_dir, "ephem.csv"), "x");
+        File.WriteAllText(Path.Combine(_dir, ".DS_Store"), "finder");
         Tools.WriteManifest(_dir);
         var again = Tools.WriteManifest(_dir);
 

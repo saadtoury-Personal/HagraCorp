@@ -66,7 +66,7 @@ public static class Tools
         var lola = $"NASA LOLA {Path.GetFileNameWithoutExtension(demName)} (PDS) + ephem.csv";
         var entries = Directory.EnumerateFiles(dataDir, "*.*", SearchOption.AllDirectories)
             .Select(f => Path.GetRelativePath(dataDir, f).Replace('\\', '/'))
-            .Where(p => p != "manifest.json")
+            .Where(p => p != "manifest.json" && !Path.GetFileName(p).StartsWith('.'))   // skip .DS_Store and other hidden files
             .Order(StringComparer.Ordinal)
             .Select(p =>
             {
