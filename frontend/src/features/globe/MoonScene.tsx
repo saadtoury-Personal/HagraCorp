@@ -208,21 +208,19 @@ function Rig({ level, view }: { level: Level; view: RefObject<View> }) {
   const pos = useRef(toVec(-38, LON0, 7))
   const look = useRef(new Vector3())
   const cur = useRef({ yaw: 0, zoom: 1, ox: 0, oy: 0 })
-  const goal = useRef({ pos: new Vector3(), look: new Vector3(), up: new Vector3(0, 1, 0), side: new Vector3(), negSide: new Vector3(), want: new Vector3() })
+  const goal = useRef({ pos: new Vector3(), look: new Vector3(), up: new Vector3(0, 1, 0), want: new Vector3() })
   const last = useRef<Level>(level)
   const tween = useRef<{ t: number; from: { pos: Vector3; look: Vector3; up: Vector3; ox: number; oy: number } } | null>(null)
   const tmp = useMemo(() => ({ q: new Quaternion(), id: new Quaternion(), da: new Vector3(), db: new Vector3(), pos: new Vector3() }), [])
 
   useFrame((_, dt) => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
-    const { pos: goalPos, look: goalLook, up, side, negSide, want } = goal.current
+    const { pos: goalPos, look: goalLook, up, want } = goal.current
     const k = reduce ? 1 : 1 - Math.exp(-dt * 3.2)
     cur.current.yaw += (view.current.yaw - cur.current.yaw) * k
     cur.current.zoom += (view.current.zoom - cur.current.zoom) * k
     const z = cur.current.zoom
     const lon = LON0 + cur.current.yaw
-    side.copy(toVec(0, lon, 1))
-    negSide.copy(side).negate()
     const fit = size.width < size.height ? 0.75 / (size.width / size.height) : 1 // keep the Moon inside a portrait screen
     if (level === 0) {
       goalPos.copy(toVec(-38, lon, 7 * fit * z))
@@ -233,10 +231,13 @@ function Rig({ level, view }: { level: Level; view: RefObject<View> }) {
     } else {
       const q = SITES[useScenario.getState().site].q
       goalLook.set(q[0], q[1], q[2])
-      // Above the site, tilted a little toward the camera side, looking down at it.
-      goalPos.copy(goalLook).multiplyScalar(1.7 * z).addScaledVector(side, 0.55 * Math.max(1, fit * 0.7) * z)
+      // Above the site, tilted along the ground toward where the Pole view looks from: for the south-pole sites that is within 11 degrees
+      // of the Pole view's line of sight, so picking a site reads as a zoom, not a turn. Always 0.8+ Moon radii above the ground.
+      const to = tmp.pos.copy(toVec(-72, lon, 2.2)).sub(goalLook)
+      const tangent = to.addScaledVector(goalLook, -to.dot(goalLook)).normalize() // site normal = goalLook (unit sphere)
+      goalPos.copy(goalLook).addScaledVector(tangent, 0.6).normalize().multiplyScalar(0.9 * Math.max(1, fit * 0.7) * z).add(goalLook)
     }
-    want.copy(level === 2 ? negSide : Y)
+    want.copy(Y) // north stays up at every level: no roll
     // Push the Moon right of the headline on wide screens, and a little low on narrow ones.
     const wide = size.width >= 1024
     const goalOx = wide && level === 0 ? -size.width * 0.15 : 0
