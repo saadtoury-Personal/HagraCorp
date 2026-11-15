@@ -59,6 +59,15 @@ public sealed class AppData
         ? Mask(site.Id, mast) ?? throw new InvalidOperationException($"no horizon mask computed yet for '{site.Id}' at {mast} m")
         : HorizonMask.Flat();
 
+    private readonly ConcurrentDictionary<int, UncertaintyDto[]?> _uncertainty = new();
+
+    /// <summary>uncertainty_{mast}m.json written by precompute (S1), null if not computed yet.</summary>
+    public UncertaintyDto? Uncertainty(string siteId, int mast) => _uncertainty.GetOrAdd(mast, m =>
+    {
+        var path = Path.Combine(_dataDir, $"uncertainty_{m}m.json");
+        return File.Exists(path) ? JsonSerializer.Deserialize<UncertaintyDto[]>(File.ReadAllText(path), JsonSerializerOptions.Web) : null;
+    })?.FirstOrDefault(u => string.Equals(u.SiteId, siteId, StringComparison.OrdinalIgnoreCase));
+
     public HeatmapDto? Heatmap(int mast) => _heatmaps.GetOrAdd(mast, m =>
     {
         var path = Path.Combine(_dataDir, $"heatmap_{m}m.json");
