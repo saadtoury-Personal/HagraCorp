@@ -14,7 +14,7 @@ export default function CopyLink() {
     }
   }
   return (
-    <button type="button" onClick={copy} className="flex min-h-11 shrink-0 items-center gap-2 px-2 text-xs font-medium uppercase tracking-[0.16em] text-dim transition-colors hover:text-ink">
+    <button type="button" onClick={copy} className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 px-2 text-xs font-medium uppercase tracking-[0.16em] text-dim transition-colors hover:text-ink">
       {done ? <CheckIcon size={16} aria-hidden /> : <LinkSimpleIcon size={16} aria-hidden />}
       <span className="hidden sm:inline" aria-live="polite">
         {done ? 'Link copied' : 'Share'}

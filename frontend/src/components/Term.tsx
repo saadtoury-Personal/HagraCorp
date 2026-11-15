@@ -33,7 +33,7 @@ export default function Term({ children, term }: { children: string; term?: stri
         aria-expanded={open}
         aria-controls={open ? id : undefined}
         onClick={() => setOpen((o) => !o)}
-        className="-m-2 grid size-9 place-items-center text-faint transition-colors hover:text-ink"
+        className="-m-3 grid size-11 place-items-center text-faint transition-colors hover:text-ink"
       >
         <span className="grid size-4 place-items-center rounded-full border border-current text-[10px] font-medium normal-case leading-none tracking-normal">?</span>
       </button>

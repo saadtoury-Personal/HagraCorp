@@ -230,7 +230,7 @@ export default function Slip() {
 
         {intro && (
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3 border border-line px-4 py-3 text-sm" role="note">
-            <span className="min-w-0 flex-1">New here? Try the classic case: the launch slips by two weeks.</span>
+            <span className="min-w-0 basis-full sm:flex-1 sm:basis-0">New here? Try the classic case: the launch slips by two weeks.</span>
             <button type="button" className="btn min-h-10 px-4" onClick={example}>
               Show the example
             </button>

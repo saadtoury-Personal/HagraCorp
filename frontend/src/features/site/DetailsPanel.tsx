@@ -95,11 +95,11 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
       </ul>
       <p className="mt-5 text-[13px] text-faint">
         Criteria: NASA,{' '}
-        <a className="underline underline-offset-4 hover:text-ink" href="https://www.nasa.gov/history/50-years-ago-lunar-landing-sites-selected/" target="_blank" rel="noopener">
+        <a className="inline-flex min-h-11 items-center underline underline-offset-4 hover:text-ink" href="https://www.nasa.gov/history/50-years-ago-lunar-landing-sites-selected/" target="_blank" rel="noopener">
           Apollo landing site selection (1968)
         </a>
         ; NASA Moon to Mars Architecture,{' '}
-        <a className="underline underline-offset-4 hover:text-ink" href="https://www.nasa.gov/wp-content/uploads/2024/02/15-2024-architecture-workshop-white-paper-lunar-site-selection.pdf" target="_blank" rel="noopener">
+        <a className="inline-flex min-h-11 items-center underline underline-offset-4 hover:text-ink" href="https://www.nasa.gov/wp-content/uploads/2024/02/15-2024-architecture-workshop-white-paper-lunar-site-selection.pdf" target="_blank" rel="noopener">
           Lunar Site Selection white paper
         </a>
         . Sun and Earth from the JPL Horizons table, horizon from the LOLA terrain map.
