@@ -13,7 +13,7 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
 
     public ApiTests(WebApplicationFactory<Program> factory)
     {
-        _client = factory.WithWebHostBuilder(b => b.UseSetting("DataDir", FindDataDir())).CreateClient();
+        _client = factory.WithWebHostBuilder(b => b.UseSetting("DataDir", FindDataDir()).UseSetting("DemPath", "no-such-file.img")).CreateClient();
     }
 
     private static string FindDataDir()
@@ -57,5 +57,36 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
     {
         var response = await _client.GetAsync("/api/sites/nope/mask?mast=2");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task About_ListsPrecision()
+    {
+        var res = await _client.GetAsync("/api/about");
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        Assert.Contains("80 m terrain pixel", await res.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
+    public async Task Metrics_Apollo11_ReturnsSiteMetrics()
+    {
+        var m = await _client.GetFromJsonAsync<SiteMetrics>("/api/sites/apollo11/metrics?at=2027-01-01T06:00:00Z&stayDays=14");
+        Assert.NotNull(m);
+        Assert.InRange(m.SunPct, 0, 100);
+        Assert.Equal(100, m.EarthPct);   // near side, flat horizon: Earth always in view
+    }
+
+    [Fact]
+    public async Task Metrics_DateOutsideData_Returns400()
+    {
+        var res = await _client.GetAsync("/api/sites/apollo11/metrics?at=2040-01-01T00:00:00Z");
+        Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
+    }
+
+    [Fact]
+    public async Task Custom_WithoutTerrainMap_Returns503()
+    {
+        var res = await _client.PostAsJsonAsync("/api/custom", new CustomRequest(-86.3, -23.3, 2, null));
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, res.StatusCode);
     }
 }
