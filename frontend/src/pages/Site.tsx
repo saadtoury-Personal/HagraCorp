@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import TimeBar from '../components/TimeBar'
 import DetailsPanel from '../features/site/DetailsPanel'
+import Flyover from '../features/site/Flyover'
 import Horizon from '../features/site/Horizon'
 import Lanes from '../features/site/Lanes'
 import { pad2, toneClass } from '../lib/format'
@@ -11,6 +12,15 @@ import { SPAN_DAYS } from '../lib/ephemeris'
 import { useScenario } from '../store/scenario'
 
 const TOUR_MS = 7000
+
+/** Orbit and Lander fly over the terrain (WebGL); Panorama and Polar draw the horizon and sky tracks (SVG). */
+type Mode = 'orbit' | 'lander' | 'panorama' | 'polar'
+const MODES: [Mode, string][] = [
+  ['orbit', 'Orbit'],
+  ['lander', 'Lander'],
+  ['panorama', 'Panorama'],
+  ['polar', 'Polar'],
+]
 
 function Seg({ children, label }: { children: React.ReactNode; label: string }) {
   return (
@@ -29,7 +39,8 @@ export default function Site() {
   const m = metrics(sr, day, dur)
   const v = verdict(m.E, m.D)
 
-  const [mode, setMode] = useState<'lander' | 'orbit'>('lander')
+  const [mode, setMode] = useState<Mode>('orbit')
+  const flyover = mode === 'orbit' || mode === 'lander'
   const [drawer, setDrawer] = useState<'regions' | 'details' | null>(null)
   const [params, setParams] = useSearchParams()
   const [tour, setTour] = useState(params.get('tour') === '1')
@@ -74,11 +85,17 @@ export default function Site() {
   return (
     <div className="relative flex h-dvh min-h-[640px] flex-col overflow-hidden">
       <div className="relative min-h-0 flex-1 overflow-hidden bg-black">
-        <div className="absolute inset-x-0 bottom-[170px] top-0 md:bottom-[150px]">
-          <div className="mx-auto size-full max-w-[1400px] pt-52 lg:pt-16">
-            <Horizon site={site} day={day} dur={dur} mast={mast} mode={mode} />
+        {flyover ? (
+          <div className="absolute inset-0">
+            <Flyover site={site} day={day} mast={mast} low={mode === 'lander'} tour={tour} />
           </div>
-        </div>
+        ) : (
+          <div className="absolute inset-x-0 bottom-[170px] top-0 md:bottom-[150px]">
+            <div className="mx-auto size-full max-w-[1400px] pt-52 lg:pt-16">
+              <Horizon site={site} day={day} dur={dur} mast={mast} mode={mode === 'polar' ? 'orbit' : 'lander'} />
+            </div>
+          </div>
+        )}
 
         <div className="pointer-events-none absolute inset-x-5 top-20 z-30 flex flex-col gap-3 md:inset-x-9 lg:flex-row lg:items-start lg:justify-between">
         <header className="pointer-events-none">
@@ -109,12 +126,11 @@ export default function Site() {
             </button>
           </Seg>
           <Seg label="Point of view">
-            <button type="button" className={segBtn} aria-pressed={mode === 'lander'} onClick={() => setMode('lander')}>
-              Lander
-            </button>
-            <button type="button" className={segBtn} aria-pressed={mode === 'orbit'} onClick={() => setMode('orbit')}>
-              Orbit
-            </button>
+            {MODES.map(([id, name]) => (
+              <button key={id} type="button" className={segBtn} aria-pressed={mode === id} onClick={() => setMode(id)}>
+                {name}
+              </button>
+            ))}
           </Seg>
           <Seg label="Panels">
             <button type="button" className={segBtn} aria-pressed={drawer === 'regions'} onClick={() => toggle('regions')}>

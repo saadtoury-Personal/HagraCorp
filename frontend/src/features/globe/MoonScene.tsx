@@ -1,12 +1,13 @@
 import { Html, Stars, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { PerspectiveCamera, Vector3, type DirectionalLight } from 'three'
-import { sunVec } from '../../lib/ephemeris'
+import { AdditiveBlending, PerspectiveCamera, Vector3, type DirectionalLight, type Group, type Mesh, type Sprite } from 'three'
+import { earthVec, sunVec, TAU } from '../../lib/ephemeris'
 import { toneClass } from '../../lib/format'
 import { getSeries, metrics, SITES, verdict } from '../../lib/sites'
 import { useScenario } from '../../store/scenario'
-import { MODEL_URLS, MOON_R, normalise } from './models'
+import { makeEarthTexture, makeGlowTexture } from './earth'
+import { EARTH_D, EARTH_R, EARTH_TILT, MODEL_URLS, MOON_R, normalise } from './models'
 
 /** 0 = whole Moon, 1 = south pole, 2 = one candidate region. */
 export type Level = 0 | 1 | 2
@@ -63,7 +64,57 @@ function Rig({ level }: { level: Level }) {
   return null
 }
 
-/** The Sun is only a light here: its direction follows the shared clock. */
+const AXIS = new Vector3()
+
+/**
+ * Earth at its true size ratio, in the sub-Earth direction (it only librates a few degrees as seen from the Moon).
+ * It spins once per 0.99727 d on an axis tilted 23.44 degrees, leaning away from the Sun in northern winter.
+ */
+function Earth() {
+  const place = useRef<Group>(null)
+  const tilt = useRef<Group>(null)
+  const spin = useRef<Mesh>(null)
+  const map = useMemo(() => makeEarthTexture(), [])
+  useFrame(() => {
+    const day = useScenario.getState().day
+    const e = earthVec(day)
+    const s = sunVec(day)
+    place.current?.position.set(e[0] * EARTH_D, e[1] * EARTH_D, e[2] * EARTH_D)
+    const h = Math.hypot(s[0], s[2]) || 1
+    const k = Math.sin(EARTH_TILT * D2R)
+    AXIS.set((-s[0] / h) * k, Math.cos(EARTH_TILT * D2R), (-s[2] / h) * k).normalize()
+    tilt.current?.quaternion.setFromUnitVectors(Y, AXIS)
+    if (spin.current) spin.current.rotation.y = (TAU * day) / 0.99727
+  })
+  return (
+    <group ref={place}>
+      <group ref={tilt}>
+        <mesh ref={spin}>
+          <sphereGeometry args={[EARTH_R, 96, 64]} />
+          {/* A faint emissive copy of the map keeps the night side readable as a planet instead of a black disc. */}
+          <meshStandardMaterial map={map} emissive="#ffffff" emissiveMap={map} emissiveIntensity={0.28} roughness={0.85} metalness={0} />
+        </mesh>
+      </group>
+    </group>
+  )
+}
+
+/** Glow in the true Sun direction. The Sun is not drawn to scale: it would be about 400 times the Moon's width. */
+function SunGlow() {
+  const ref = useRef<Sprite>(null)
+  const map = useMemo(() => makeGlowTexture(), [])
+  useFrame(() => {
+    const s = sunVec(useScenario.getState().day)
+    ref.current?.position.set(s[0] * 60, s[1] * 60, s[2] * 60)
+  })
+  return (
+    <sprite ref={ref} scale={[16, 16, 1]}>
+      <spriteMaterial map={map} blending={AdditiveBlending} transparent depthWrite={false} toneMapped={false} />
+    </sprite>
+  )
+}
+
+/** The Sun also lights the scene: its direction follows the shared clock. */
 function SunLight() {
   const light = useRef<DirectionalLight>(null)
   useFrame(() => {
@@ -151,6 +202,8 @@ export default function MoonScene({ level, onSelect, onOpen }: { level: Level; o
       <Stars radius={150} depth={40} count={2200} factor={3} saturation={0} fade speed={0} />
       <Rig level={level} />
       <SunLight />
+      <SunGlow />
+      <Earth />
       <Moon />
       {SITES.map((s) => (
         <Marker key={s.i} i={s.i} level={level} onSelect={onSelect} onOpen={onOpen} />

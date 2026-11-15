@@ -19,7 +19,7 @@ function Readouts() {
     ['Lunar day', `${age.toFixed(1)} d`, phaseName(age)],
     ['Sun over the Moon', `${Math.abs(lon).toFixed(0)}° ${lon >= 0 ? 'E' : 'W'}`, `declination ${signed(sunDecDeg(day))}°`],
     ['Earth libration', `${signed(lib.lat)}°`, `longitude ${signed(lib.lon)}°`],
-    ['Earth to Moon', `${(Math.round(earthDistKm(day) / 100) * 100).toLocaleString('en-US')} km`, 'distance'],
+    ['Earth to Moon', `${(Math.round(earthDistKm(day) / 100) * 100).toLocaleString('en-US')} km`, 'Earth at true size, distance compressed'],
   ]
   return (
     <dl className="grid grid-cols-2 border-t border-line lg:grid-cols-4">
