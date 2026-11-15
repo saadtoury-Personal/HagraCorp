@@ -83,7 +83,7 @@ export default function Site() {
         <div className="pointer-events-none absolute inset-x-5 top-20 z-30 flex flex-col gap-3 md:inset-x-9 lg:flex-row lg:items-start lg:justify-between">
         <header className="pointer-events-none">
           <h1 className="max-w-[14em] text-[clamp(24px,3.8vw,52px)] font-light uppercase leading-[1.12] tracking-[0.16em] [text-shadow:0_1px_16px_#000]">{s.name}</h1>
-          <p className="mt-2 text-sm text-dim">Region {site + 1} of 13, landing site radius 100 m, illustrative position</p>
+          <p className="mt-2 text-sm text-dim">Region {site + 1} of 13, landing site radius 100 m, modelled horizon (LOLA terrain pending)</p>
           {tour && (
             <div className="mt-3 flex items-center gap-3 text-xs uppercase tracking-[0.16em] text-dim">
               <span>

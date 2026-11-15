@@ -1,12 +1,10 @@
-// Simplified analytic Sun/Earth model in the Moon-fixed frame, ported from Nazim's mockup.
-// x = sub-Earth point (lon 0, lat 0), y = lunar north, z = west. SIMULATED until SPICE data lands.
+// Sun and Earth in the Moon-fixed frame, from the team's JPL Horizons table (hourly, Moon Mean Earth frame).
+// x = sub-Earth point (lon 0, lat 0), y = lunar north, z = west. Window: 14 Nov 2026 to 10 Mar 2027.
+import ephemCsv from '../data/ephem-window.csv?raw'
+
 export const TAU = Math.PI * 2
 const D2R = Math.PI / 180
 const SYN = 29.530588
-const ANOM = 27.55455
-const DRAC = 27.212221
-const ECL = 346.62
-const AGE0 = 4.86 // lunar age at epoch, days since new Moon
 
 /** Day 0 of the timeline. */
 export const EPOCH = Date.UTC(2026, 10, 14, 18, 40)
@@ -14,32 +12,55 @@ export const SPAN_DAYS = 90
 
 export type Vec3 = [number, number, number]
 
-export function sunVec(t: number): Vec3 {
-  const ls = (TAU * (AGE0 + t)) / SYN - Math.PI
-  const dec = 1.54 * D2R * Math.sin((TAU * (t - 70)) / ECL)
-  return [Math.cos(dec) * Math.cos(ls), Math.sin(dec), Math.cos(dec) * Math.sin(ls)]
+const wrap180 = (d: number) => ((((d + 180) % 360) + 360) % 360) - 180
+// East-positive sub-point to a unit vector in our frame (z = west).
+export const toVec = (latDeg: number, lonEastDeg: number): Vec3 => {
+  const la = latDeg * D2R
+  const lo = lonEastDeg * D2R
+  return [Math.cos(la) * Math.cos(lo), Math.sin(la), -Math.cos(la) * Math.sin(lo)]
 }
 
-export function libration(t: number) {
-  return { lat: 6.68 * Math.sin((TAU * (t + 17)) / DRAC), lon: 7.9 * Math.sin((TAU * (t + 1)) / ANOM) }
+const rows = ephemCsv
+  .trim()
+  .split(/\r?\n/)
+  .slice(1)
+  .map((line) => {
+    const [utc, sLat, sLon, eLat, eLon, km] = line.split(',')
+    return { day: (Date.parse(utc) - EPOCH) / 86400000, sLat: +sLat, sLon: wrap180(+sLon), eLat: +eLat, eLon: wrap180(+eLon), km: +km }
+  })
+const T0 = rows[0].day
+const STEP_D = rows[1].day - rows[0].day
+
+/** Interpolate one table column between the two hourly rows around day t (longitudes wrap). */
+function at(t: number) {
+  const f = Math.min(rows.length - 1.001, Math.max(0, (t - T0) / STEP_D))
+  const i = Math.floor(f)
+  const k = f - i
+  const a = rows[i]
+  const b = rows[i + 1]
+  const mix = (x: number, y: number) => x + (y - x) * k
+  const mixLon = (x: number, y: number) => wrap180(x + wrap180(y - x) * k)
+  return { sLat: mix(a.sLat, b.sLat), sLon: mixLon(a.sLon, b.sLon), eLat: mix(a.eLat, b.eLat), eLon: mixLon(a.eLon, b.eLon), km: mix(a.km, b.km) }
 }
 
-export function earthVec(t: number): Vec3 {
-  const l = libration(t)
-  const la = l.lat * D2R
-  const lw = -l.lon * D2R
-  return [Math.cos(la) * Math.cos(lw), Math.sin(la), Math.cos(la) * Math.sin(lw)]
+export const sunVec = (t: number): Vec3 => {
+  const r = at(t)
+  return toVec(r.sLat, r.sLon)
 }
-
-export const earthDistKm = (t: number) => 384400 * (1 - 0.0549 * Math.cos((TAU * (t + 5)) / ANOM))
-export const sunDecDeg = (t: number) => 1.54 * Math.sin((TAU * (t - 70)) / ECL)
-
-export function subSolarLonE(t: number) {
-  const l = -((TAU * (AGE0 + t)) / SYN - Math.PI) * (180 / Math.PI)
-  return ((((l + 180) % 360) + 360) % 360) - 180
+export const earthVec = (t: number): Vec3 => {
+  const r = at(t)
+  return toVec(r.eLat, r.eLon)
 }
+export const libration = (t: number) => {
+  const r = at(t)
+  return { lat: r.eLat, lon: r.eLon }
+}
+export const earthDistKm = (t: number) => at(t).km
+export const sunDecDeg = (t: number) => at(t).sLat
+export const subSolarLonE = (t: number) => at(t).sLon
 
-export const ageDays = (t: number) => (((AGE0 + t) % SYN) + SYN) % SYN
+/** Days since new Moon, from the sub-solar longitude (180 E at new Moon, 0 at full). */
+export const ageDays = (t: number) => ((((180 - at(t).sLon) % 360) + 360) % 360 / 360) * SYN
 
 export function phaseName(age: number) {
   const f = age / SYN

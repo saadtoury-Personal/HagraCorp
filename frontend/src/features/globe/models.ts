@@ -5,7 +5,7 @@ import { Box3, Vector3, type Object3D } from 'three'
 export const MOON_R = 1
 
 export const MODEL_URLS = {
-  moon: '/models/Moon_NASA_LRO_15k_Grid_Small.glb',
+  moon: '/models/Moon_LRO_clean.glb',
 } as const
 
 /** Scale `root` so its bounding sphere has the given radius, centred on the origin. */

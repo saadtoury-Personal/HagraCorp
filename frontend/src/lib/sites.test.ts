@@ -1,11 +1,11 @@
 import { expect, test } from 'vitest'
 import { getSeries, metrics, SITES, verdict } from './sites'
 
-test('13 sites with unit position vectors near the south pole', () => {
+test('13 sites with unit position vectors, all but Apollo 11 near the south pole', () => {
   expect(SITES).toHaveLength(13)
   for (const s of SITES) {
     expect(Math.hypot(...s.q)).toBeCloseTo(1, 10)
-    expect(s.q[1]).toBeLessThan(-0.99)
+    if (s.terrain) expect(s.q[1]).toBeLessThan(-0.99)
   }
 })
 

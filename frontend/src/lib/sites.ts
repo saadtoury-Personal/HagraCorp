@@ -1,6 +1,7 @@
 // Sites, horizon masks and visibility series, ported from Nazim's mockup (simplified analytic model).
-// SIMULATED: positions are illustrative and horizons are synthetic until LOLA masks and SPICE series land.
-import { earthVec, sunVec, TAU, type Vec3 } from './ephemeris'
+// Site coordinates and Sun/Earth positions are real (team data). Horizons are still synthetic until the LOLA masks land.
+import sitesJson from '../data/sites.json'
+import { earthVec, sunVec, TAU, toVec, type Vec3 } from './ephemeris'
 
 const D2R = Math.PI / 180
 export const STEP = 0.05 // days per sample
@@ -18,21 +19,8 @@ const norm = (a: Vec3): Vec3 => {
 }
 const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x))
 
-const SITE_DEF: [string, number, number][] = [
-  ['Connecting Ridge', 0.9, 150],
-  ['Connecting Ridge Extended', 1.5, 168],
-  ['de Gerlache Rim 1', 2.6, -100],
-  ['de Gerlache Rim 2', 3.3, -82],
-  ['Haworth', 4.1, -5],
-  ['Malapert Massif', 5.6, 0],
-  ['Leibnitz Beta Plateau', 6.2, -150],
-  ['Nobile Rim 1', 4.6, 55],
-  ['Nobile Rim 2', 4.0, 38],
-  ['Amundsen Rim', 6.4, 85],
-  ['Peak Near Shackleton', 0.5, 129],
-  ['Faustini Rim A', 3.9, 95],
-  ['de Gerlache-Kocher Massif', 5.0, -120],
-]
+type SiteRow = { id: string; name: string; latDeg: number; lonDeg: number; category: string; terrain: boolean }
+const SITE_DEF = sitesJson as SiteRow[]
 
 function rng(seed: number) {
   let s = (seed * 2654435761) >>> 0
@@ -42,8 +30,11 @@ function rng(seed: number) {
 export type Site = {
   i: number
   name: string
-  colat: number
+  lat: number
   lonE: number
+  category: string
+  /** false = flat horizon (Apollo 11, outside the polar terrain map) */
+  terrain: boolean
   /** Unit vector from the Moon's centre to the site, Moon-fixed frame. */
   q: Vec3
   n: Vec3
@@ -84,17 +75,15 @@ for (let k = 0; k < N; k++) {
 }
 export const bodiesAt = (t: number) => ({ sun: sunVec(t), earth: earthVec(t) })
 
-export const SITES: Site[] = SITE_DEF.map(([name, colat, lonE], i) => {
+export const SITES: Site[] = SITE_DEF.map(({ name, latDeg: lat, lonDeg: lonE, category, terrain }, i) => {
   const r = rng(i + 11)
-  const t = colat * D2R
-  const l = -lonE * D2R
-  const q: Vec3 = [Math.sin(t) * Math.cos(l), -Math.cos(t), Math.sin(t) * Math.sin(l)]
+  const q = toVec(lat, lonE)
   const P: Vec3 = [0, 1, 0]
   const pq = dot(P, q)
   const n = norm([P[0] - pq * q[0], P[1] - pq * q[1], P[2] - pq * q[2]])
   const e = cross(n, q)
-  const mask = [-0.3 + r() * 2.1, 0.3 + r() * 0.7, r() * TAU, 0.2 + r() * 0.5, r() * TAU, 0.1 + r() * 0.3, r() * TAU]
-  const s: Site = { i, name, colat, lonE, q, n, e, mask, sEl: new Float32Array(N), sMk: new Float32Array(N), eEl: new Float32Array(N), eMk: new Float32Array(N) }
+  const mask = !terrain ? [0, 0, 0, 0, 0, 0, 0] : [-0.3 + r() * 2.1, 0.3 + r() * 0.7, r() * TAU, 0.2 + r() * 0.5, r() * TAU, 0.1 + r() * 0.3, r() * TAU]
+  const s: Site = { i, name, lat, lonE, category, terrain, q, n, e, mask, sEl: new Float32Array(N), sMk: new Float32Array(N), eEl: new Float32Array(N), eMk: new Float32Array(N) }
   for (let k = 0; k < N; k++) {
     const a = azEl(s, Sx[k])
     const b = azEl(s, Ex[k], DIST_EM)

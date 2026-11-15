@@ -1,12 +1,12 @@
-import { Html, Stars, useGLTF } from '@react-three/drei'
+import { Html, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { PerspectiveCamera, Vector3, type DirectionalLight } from 'three'
+import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
+import { BufferGeometry, DoubleSide, Float32BufferAttribute, Mesh, PerspectiveCamera, Vector2, Vector3, type DirectionalLight, type Material } from 'three'
 import { sunVec } from '../../lib/ephemeris'
 import { toneClass } from '../../lib/format'
 import { getSeries, metrics, SITES, verdict } from '../../lib/sites'
 import { useScenario } from '../../store/scenario'
-import { MODEL_URLS, MOON_R, normalise } from './models'
+import { MODEL_URLS } from './models'
 
 /** 0 = whole Moon, 1 = south pole, 2 = one candidate region. */
 export type Level = 0 | 1 | 2
@@ -19,16 +19,75 @@ const LON0 = 112 // longitude the camera looks from before the user rotates the 
 const ZOOM_MIN = 0.6
 const ZOOM_MAX = 1.8
 
+/**
+ * Sky from Nazim's mockup: a screen-space hash starfield (same grid and thresholds), drawn behind everything.
+ * It ignores the camera, so the stars stay still while the Moon turns.
+ */
+const SKY_VS = 'void main(){gl_Position=vec4(position.xy,1.,1.);}'
+const SKY_FS = `
+uniform vec2 uRes;
+float h21(vec2 p){p=fract(p*vec2(.3183099,.3678794)+.1);p*=17.;return fract(p.x*p.y*(p.x+p.y));}
+vec3 stars(vec2 uv){vec2 g=floor(uv*vec2(1100.,620.));float r=h21(g);float s=step(.9986,r);
+ float b=h21(g+7.3);return vec3(.78,.82,.95)*s*(.18+.6*b*b);}
+void main(){gl_FragColor=vec4(vec3(.0196,.0235,.0314)+stars(gl_FragCoord.xy/uRes),1.);}`
+function Sky() {
+  const { size, viewport } = useThree()
+  const uniforms = useMemo(() => ({ uRes: { value: new Vector2() } }), [])
+  useFrame(() => uniforms.uRes.value.set(size.width * viewport.dpr, size.height * viewport.dpr))
+  return (
+    <mesh renderOrder={-1} frustumCulled={false}>
+      <planeGeometry args={[2, 2]} />
+      <shaderMaterial vertexShader={SKY_VS} fragmentShader={SKY_FS} uniforms={uniforms} depthTest={false} depthWrite={false} side={DoubleSide} />
+    </mesh>
+  )
+}
+
 /** User view: yaw spins the camera around the polar axis (degrees), so the south pole stays put. */
 type View = { yaw: number; zoom: number }
 
+/**
+ * The GLB mesh is only 64 segments wide, which smears the texture into a fan at the pole.
+ * Same mapping (u = 0.5 - lon / 2pi, v = 0.5 - lat / pi), but with enough segments to stay smooth.
+ */
+function sphereGeometry(seg = 256, rings = 128) {
+  const pos: number[] = []
+  const uv: number[] = []
+  const idx: number[] = []
+  for (let j = 0; j <= rings; j++) {
+    const lat = Math.PI / 2 - (Math.PI * j) / rings
+    for (let i = 0; i <= seg; i++) {
+      const lon = Math.PI - (2 * Math.PI * i) / seg
+      pos.push(Math.cos(lat) * Math.cos(lon), Math.sin(lat), Math.cos(lat) * Math.sin(lon))
+      uv.push(i / seg, 1 - j / rings)
+    }
+  }
+  for (let j = 0; j < rings; j++) {
+    for (let i = 0; i < seg; i++) {
+      const a = j * (seg + 1) + i
+      const b = a + seg + 1
+      idx.push(a, b, a + 1, b, b + 1, a + 1)
+    }
+  }
+  const g = new BufferGeometry()
+  g.setAttribute('position', new Float32BufferAttribute(pos, 3))
+  g.setAttribute('normal', new Float32BufferAttribute(pos, 3)) // unit sphere: normal = position
+  g.setAttribute('uv', new Float32BufferAttribute(uv, 2))
+  g.setIndex(idx)
+  return g
+}
+
 function Moon() {
   const { scene } = useGLTF(MODEL_URLS.moon)
-  const clone = useMemo(() => scene.clone(true), [scene])
-  useLayoutEffect(() => {
-    normalise(clone, MOON_R)
-  }, [clone])
-  return <primitive object={clone} />
+  const mesh = useMemo(() => {
+    let material: Material | Material[] | undefined
+    scene.traverse((o) => {
+      if ((o as Mesh).isMesh) material = (o as Mesh).material
+    })
+    const m = Array.isArray(material) ? material[0] : material
+    if (m && 'map' in m && m.map) Object.assign(m.map, { anisotropy: 8 })
+    return new Mesh(sphereGeometry(), m)
+  }, [scene])
+  return <primitive object={mesh} />
 }
 
 function Rig({ level, view }: { level: Level; view: RefObject<View> }) {
@@ -228,8 +287,7 @@ export default function MoonScene({ level, onSelect, onOpen }: { level: Level; o
       gl={{ antialias: true, powerPreference: 'high-performance' }}
       aria-label="The Moon seen from the south with the 13 candidate regions near the pole"
     >
-      <color attach="background" args={['#050608']} />
-      <Stars radius={150} depth={40} count={2200} factor={3} saturation={0} fade speed={0} />
+      <Sky />
       <Rig level={level} view={view} />
       <Controls view={view} level={level} />
       <SunLight />
