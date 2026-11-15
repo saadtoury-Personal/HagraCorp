@@ -15,32 +15,56 @@ public static class Geometry
     /// <summary>Unit vector from the Moon's center through the point (lat, lon). Also the local "up" there.</summary>
     public static (double X, double Y, double Z) UnitVector(double latDeg, double lonDeg)
     {
-        // TODO: convert to radians, then return (cos lat * cos lon, cos lat * sin lon, sin lat)
-        throw new NotImplementedException();
+        double latRad = latDeg * Math.PI / 180;
+        double lonRad = lonDeg * Math.PI / 180;
+        return (Math.Cos(latRad) * Math.Cos(lonRad), Math.Cos(latRad) * Math.Sin(lonRad), Math.Sin(latRad));
     }
 
     /// <summary>Inverse of UnitVector. v does not need to be normalized. Longitude returned in [0, 360).</summary>
     public static (double LatDeg, double LonDeg) ToLatLon((double X, double Y, double Z) v)
     {
-        // TODO: lat = atan2(z, sqrt(x^2 + y^2)); lon = atan2(y, x); add 360 if negative
-        throw new NotImplementedException();
+        double lat = Math.Atan2(v.Z, Math.Sqrt(v.X * v.X + v.Y * v.Y));
+        double lon = Math.Atan2(v.Y, v.X);
+        if (lon < 0)
+        {
+            lon += 2 * Math.PI;
+        }
+        return (lat * 180 / Math.PI, lon * 180 / Math.PI);
     }
 
     /// <summary>Azimuth / elevation of the Sun's center seen from the site.</summary>
     public static AzEl SunAzEl(EphemSample e, double latDeg, double lonDeg)
     {
         // The Sun is so far away that its direction is the same from anywhere on the Moon.
-        // TODO:
-        // 1. dir = UnitVector(e.SubSunLatDeg, e.SubSunLonDeg)
-        // 2. return ToAzEl(dir, latDeg, lonDeg)   (write that private helper, see below)
-        //
-        // private helper ToAzEl(dir, latDeg, lonDeg):                       MATH-REVIEW
-        //   u = ( cos lat cos lon,  cos lat sin lon, sin lat)   local up
-        //   E = (-sin lon,          cos lon,         0      )   local east
-        //   N = (-sin lat cos lon, -sin lat sin lon, cos lat)   local north
-        //   elevation = asin(dot(dir, u))
-        //   azimuth   = atan2(dot(dir, E), dot(dir, N)), then add 360 if negative
-        throw new NotImplementedException();
+        var dir = UnitVector(e.SubSunLatDeg, e.SubSunLonDeg);
+        return ToAzEl(dir, latDeg, lonDeg);
+    }
+
+    // MATH-REVIEW
+    // dir does not need to be normalized: Atan2 works for a vector of any length.
+    //   u = ( cos lat cos lon,  cos lat sin lon, sin lat)   local up
+    //   E = (-sin lon,          cos lon,         0      )   local east
+    //   N = (-sin lat cos lon, -sin lat sin lon, cos lat)   local north
+    private static AzEl ToAzEl((double X, double Y, double Z) dir, double latDeg, double lonDeg)
+    {
+        double latRad = latDeg * Math.PI / 180;
+        double lonRad = lonDeg * Math.PI / 180;
+        // Local up vector
+        var u = (X: Math.Cos(latRad) * Math.Cos(lonRad), Y: Math.Cos(latRad) * Math.Sin(lonRad), Z: Math.Sin(latRad));
+        // Local east vector
+        var E = (X: -Math.Sin(lonRad), Y: Math.Cos(lonRad), Z: 0.0);
+        // Local north vector
+        var N = (X: -Math.Sin(latRad) * Math.Cos(lonRad), Y: -Math.Sin(latRad) * Math.Sin(lonRad), Z: Math.Cos(latRad));
+
+        double up = dir.X * u.X + dir.Y * u.Y + dir.Z * u.Z;
+        double east = dir.X * E.X + dir.Y * E.Y + dir.Z * E.Z;
+        double north = dir.X * N.X + dir.Y * N.Y + dir.Z * N.Z;
+
+        double elevation = Math.Atan2(up, Math.Sqrt(east * east + north * north));
+        double azimuth = Math.Atan2(east, north);
+        if (azimuth < 0)
+            azimuth += 2 * Math.PI;
+        return new AzEl(azimuth * 180 / Math.PI, elevation * 180 / Math.PI);
     }
 
     /// <summary>Azimuth / elevation of the Earth's center seen from the site.</summary>
@@ -48,19 +72,18 @@ public static class Geometry
     {
         // The Earth is close: its direction changes by up to ~0.26 deg depending on where you stand
         // (parallax), so subtract the site position.                         MATH-REVIEW
-        // TODO:
-        // 1. earthPos = e.EarthRangeKm * UnitVector(e.SubEarthLatDeg, e.SubEarthLonDeg)
-        // 2. sitePos  = MoonRadiusKm * UnitVector(latDeg, lonDeg)   (site height ignored: error < 0.001 deg)
-        // 3. dir = normalize(earthPos - sitePos)
-        // 4. return ToAzEl(dir, latDeg, lonDeg)
-        throw new NotImplementedException();
+        var ue = UnitVector(e.SubEarthLatDeg, e.SubEarthLonDeg);
+        var us = UnitVector(latDeg, lonDeg);
+        var earthPos = (X: e.EarthRangeKm * ue.X, Y: e.EarthRangeKm * ue.Y, Z: e.EarthRangeKm * ue.Z);
+        var sitePos = (X: MoonRadiusKm * us.X, Y: MoonRadiusKm * us.Y, Z: MoonRadiusKm * us.Z);
+        var dir = (X: earthPos.X - sitePos.X, Y: earthPos.Y - sitePos.Y, Z: earthPos.Z - sitePos.Z);
+        return ToAzEl(dir, latDeg, lonDeg);
     }
 
     /// <summary>Apparent radius of the Earth's disk, about 0.95 deg.</summary>
     public static double EarthAngularRadiusDeg(double earthRangeKm)
     {
-        // TODO: atan(EarthRadiusKm / earthRangeKm), in degrees
-        throw new NotImplementedException();
+        return Math.Atan(EarthRadiusKm / earthRangeKm) * 180 / Math.PI;
     }
 
     /// <summary>
@@ -69,12 +92,13 @@ public static class Geometry
     /// </summary>
     public static double DiskFraction(double marginDeg, double radiusDeg)
     {
-        // TODO:                                                              MATH-REVIEW
-        // if margin >=  radius: return 1
-        // if margin <= -radius: return 0
-        // k = margin / radius
-        // return 1 - (acos(k) - k * sqrt(1 - k*k)) / PI
-        // Check: margin = 0 gives exactly 0.5.
-        throw new NotImplementedException();
+        // MATH-REVIEW. Check: margin = 0 gives exactly 0.5.
+        if (marginDeg >= radiusDeg)
+            return 1.0;
+        if (marginDeg <= -radiusDeg)
+            return 0.0;
+
+        double k = marginDeg / radiusDeg;
+        return 1.0 - (Math.Acos(k) - k * Math.Sqrt(1.0 - k * k)) / Math.PI;
     }
 }

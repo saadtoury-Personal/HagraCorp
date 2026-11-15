@@ -46,7 +46,7 @@ export default function Site() {
   const [tour, setTour] = useState(params.get('tour') === '1')
   const tourStep = useRef(site)
 
-  // Guided tour: step through the 13 regions, one every few seconds.
+  // Guided tour: step through all the regions, one every few seconds.
   useEffect(() => {
     if (!tour) return
     const id = setInterval(() => {
@@ -100,11 +100,11 @@ export default function Site() {
         <div className="pointer-events-none absolute inset-x-5 top-20 z-30 flex flex-col gap-3 md:inset-x-9 lg:flex-row lg:items-start lg:justify-between">
         <header className="pointer-events-none">
           <h1 className="max-w-[14em] text-[clamp(24px,3.8vw,52px)] font-light uppercase leading-[1.12] tracking-[0.16em] [text-shadow:0_1px_16px_#000]">{s.name}</h1>
-          <p className="mt-2 text-sm text-dim">Region {site + 1} of 13, landing site radius 100 m, illustrative position</p>
+          <p className="mt-2 text-sm text-dim">Region {site + 1} of {SITES.length}, landing site radius 100 m, horizon from the LOLA terrain map</p>
           {tour && (
             <div className="mt-3 flex items-center gap-3 text-xs uppercase tracking-[0.16em] text-dim">
               <span>
-                Segment {site + 1} / 13
+                Segment {site + 1} / {SITES.length}
               </span>
               <i key={site} className="relative block h-px w-28 bg-line">
                 <b className="tour-bar absolute inset-y-0 left-0 bg-ink" style={{ animationDuration: `${TOUR_MS}ms` }} />
@@ -119,7 +119,7 @@ export default function Site() {
               <CaretLeftIcon size={14} />
             </button>
             <span className="grid min-w-20 place-items-center border-l border-line text-xs tracking-[0.14em]">
-              {pad2(site + 1)} / 13
+              {pad2(site + 1)} / {SITES.length}
             </span>
             <button type="button" className={segBtn} aria-label="Next region" onClick={() => go(site + 1)}>
               <CaretRightIcon size={14} />
@@ -163,7 +163,7 @@ export default function Site() {
           className={`absolute bottom-0 left-0 top-16 z-40 w-[min(100%,300px)] lg:top-[136px] lg:z-20 overflow-auto border-r border-line-soft bg-bg/95 transition-transform duration-500 ease-out-expo ${drawer === 'regions' ? '' : '-translate-x-full'}`}
         >
           <div className="sticky top-0 flex items-center justify-between border-b border-line-soft bg-bg px-5 py-4">
-            <span className="lab">13 candidate regions</span>
+            <span className="lab">{SITES.length} candidate regions</span>
             <button type="button" aria-label="Close regions" className="grid size-11 place-items-center text-dim hover:text-ink" onClick={() => setDrawer(null)}>
               <XIcon size={16} />
             </button>

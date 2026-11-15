@@ -50,7 +50,7 @@ export default function TimeBar() {
           ))}
         </div>
       </div>
-      <span className="hidden shrink-0 text-xs uppercase tracking-[0.16em] text-faint lg:block">Simplified model</span>
+      <span className="hidden shrink-0 text-xs uppercase tracking-[0.16em] text-faint xl:block">JPL Horizons positions, modelled horizon</span>
     </div>
   )
 }
