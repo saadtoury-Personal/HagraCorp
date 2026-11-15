@@ -1,10 +1,18 @@
 import { useEffect, useState } from 'react'
+import { withRetry } from './retry'
 import { fetchMetrics, serverMast, type ServerMetrics } from './api'
 import { dayToDate } from './ephemeris'
 import { getSeries, metrics } from './sites'
 import { useServer } from '../store/server'
 
 export type Source = 'server' | 'bundled'
+
+// Answers already received, so going back to a date or a site never shows the bundled figure again while the server is asked a second time.
+const answers = new Map<string, ServerMetrics>()
+const remember = (key: string, m: ServerMetrics) => {
+  if (answers.size > 500) answers.delete(answers.keys().next().value as string)
+  answers.set(key, m)
+}
 
 /**
  * Sunlight and Earth-link shares for one site, date, stay and mast.
@@ -13,16 +21,19 @@ export type Source = 'server' | 'bundled'
  */
 export function useSiteMetrics(siteIndex: number, siteId: string, day: number, dur: number, mast: number, enabled = true) {
   const status = useServer((s) => s.status)
-  const [srv, setSrv] = useState<{ key: string; m: ServerMetrics } | null>(null)
+  const [, bump] = useState(0)
   const at = Math.round(day * 4) / 4 // a quarter-day grid, so dragging the time bar does not call the server for every pixel
   const key = `${siteId}|${at}|${dur}|${serverMast(mast)}`
 
   useEffect(() => {
-    if (status !== 'online' || !enabled) return
+    if (status !== 'online' || !enabled || answers.has(key)) return
     const ctl = new AbortController()
     const id = setTimeout(() => {
-      fetchMetrics(siteId, dayToDate(at), dur, mast, ctl.signal).then(
-        (m) => setSrv({ key, m }),
+      withRetry(() => fetchMetrics(siteId, dayToDate(at), dur, mast, ctl.signal), ctl.signal).then(
+        (m) => {
+          remember(key, m)
+          bump((n) => n + 1)
+        },
         () => undefined,
       )
     }, 250)
@@ -33,8 +44,7 @@ export function useSiteMetrics(siteIndex: number, siteId: string, day: number, d
   }, [status, siteId, at, dur, mast, key, enabled])
 
   const local = metrics(getSeries(mast)[siteIndex], day, dur)
-  if (status === 'online' && srv?.key === key) {
-    return { E: Math.round(srv.m.sunPct), D: Math.round(srv.m.earthPct), source: 'server' as Source, server: srv.m }
-  }
+  const hit = status === 'online' ? answers.get(key) : undefined
+  if (hit) return { E: Math.round(hit.sunPct), D: Math.round(hit.earthPct), source: 'server' as Source, server: hit }
   return { E: local.E, D: local.D, source: 'bundled' as Source, server: status === 'online' ? null : undefined }
 }

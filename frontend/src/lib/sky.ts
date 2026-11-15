@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { withRetry } from './retry'
 import { fetchTimeline, serverMast, type TimelinePoint } from './api'
 import { dayToDate, earthDistKm } from './ephemeris'
 import { azEl, bodiesAt, earthDistMoons, earthRadiusDeg, maskAt, SITES } from './sites'
@@ -6,6 +7,12 @@ import { useServer } from '../store/server'
 import bodies from '../data/bodies.json'
 
 export type Sky = Omit<TimelinePoint, 't'> & { source: 'server' | 'bundled' }
+
+const answers = new Map<string, TimelinePoint>()
+const remember = (key: string, p: TimelinePoint) => {
+  if (answers.size > 500) answers.delete(answers.keys().next().value as string)
+  answers.set(key, p)
+}
 
 /** Share (0..1) of a round disk above a straight skyline; margin = elevation of its centre minus the horizon there. Same formula as LunarNav.Core Geometry.DiskFraction. */
 export function diskFraction(marginDeg: number, radiusDeg: number) {
@@ -34,14 +41,18 @@ export function useSky(siteIndex: number, siteId: string, day: number, mast: num
   const status = useServer((s) => s.status)
   const hour = Math.floor(day * 24) / 24 // one call per simulated hour, not per animation frame
   const key = `${siteId}|${hour}|${serverMast(mast)}`
-  const [srv, setSrv] = useState<{ key: string; p: TimelinePoint } | null>(null)
+  const [, bump] = useState(0)
 
   useEffect(() => {
-    if (status !== 'online') return
+    if (status !== 'online' || answers.has(key)) return
     const ctl = new AbortController()
     const id = setTimeout(() => {
-      fetchTimeline(siteId, dayToDate(hour), 1, 60, mast, ctl.signal).then(
-        (pts) => pts[0] && setSrv({ key, p: pts[0] }),
+      withRetry(() => fetchTimeline(siteId, dayToDate(hour), 1, 60, mast, ctl.signal), ctl.signal).then(
+        (pts) => {
+          if (!pts[0]) return
+          remember(key, pts[0])
+          bump((n) => n + 1)
+        },
         () => undefined,
       )
     }, 250)
@@ -51,8 +62,9 @@ export function useSky(siteIndex: number, siteId: string, day: number, mast: num
     }
   }, [status, siteId, hour, mast, key])
 
-  if (status === 'online' && srv?.key === key) {
-    const { t: _t, ...rest } = srv.p
+  const hit = status === 'online' ? answers.get(key) : undefined
+  if (hit) {
+    const { t: _t, ...rest } = hit
     void _t
     return { ...rest, source: 'server' }
   }

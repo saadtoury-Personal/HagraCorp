@@ -114,6 +114,19 @@ export default function Globe() {
         )}
 
         <div>
+          <div role="group" aria-label="Zoom level" className="pointer-events-auto mb-2 flex gap-1 md:hidden">
+            {LEVELS.map((name, i) => (
+              <button
+                key={name}
+                type="button"
+                aria-current={level === i}
+                onClick={() => changeLevel(i as Level)}
+                className="relative min-h-11 px-3 text-xs font-medium uppercase tracking-[0.14em] text-faint transition-colors hover:text-ink aria-[current=true]:text-ink after:absolute after:inset-x-3 after:bottom-1 after:h-px after:bg-transparent aria-[current=true]:after:bg-ink [text-shadow:0_1px_8px_#000]"
+              >
+                {name}
+              </button>
+            ))}
+          </div>
           <div className="mb-3 flex flex-wrap items-center gap-x-8 gap-y-2">
             <p className="max-w-[55%] text-xs uppercase md:max-w-none tracking-[0.16em] text-dim [text-shadow:0_1px_8px_#000]">Drag to rotate. Pinch or scroll to zoom.</p>
           </div>
@@ -121,7 +134,7 @@ export default function Globe() {
         </div>
       </main>
 
-      <div className="absolute z-10 flex items-center gap-5 max-sm:hidden sm:max-md:bottom-[300px] sm:max-md:left-5 md:right-9 md:top-1/2 md:-translate-y-1/2 md:flex-col md:items-end md:gap-0" role="group" aria-label="Zoom level">
+      <div className="absolute z-10 hidden md:right-9 md:top-1/2 md:flex md:-translate-y-1/2 md:flex-col md:items-end" role="group" aria-label="Zoom level">
         {LEVELS.map((name, i) => (
           <button
             key={name}
