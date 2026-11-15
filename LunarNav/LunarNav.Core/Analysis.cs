@@ -37,13 +37,15 @@ public static class Analysis
     /// <summary>Copy of the skyline moved up (positive) or down (negative) by deg.</summary>
     public static float[] Shift(float[] mask, double deg) => mask.Select(x => (float)(x + deg)).ToArray();
 
-    /// <summary>Sky state at every step from start to end (both included).</summary>
+    /// <summary>Sky state at every step from start to end (both included), cut at the end of the ephemeris
+    /// (like UpSeries) so a period running past the data returns what exists instead of failing.</summary>
     public static TimelinePoint[] Timeline(Ephemeris eph, Site site, float[] mask, DateTime start, DateTime end, TimeSpan step)
     {
         if (step <= TimeSpan.Zero)
             throw new ArgumentOutOfRangeException(nameof(step), "step must be positive");
+        var stop = end < eph.End ? end : eph.End;
         var points = new List<TimelinePoint>();
-        for (var t = start; t <= end; t += step)
+        for (var t = start; t <= stop; t += step)
             points.Add(Point(eph, site, mask, t));
         return points.ToArray();
     }

@@ -85,6 +85,17 @@ public class AnalysisTests
         Assert.All(pts, p => Assert.True(p.EarthFrac == 1));  // near-side site: Earth always overhead-ish
     }
 
+    [Fact]
+    public void Timeline_PastEndOfEphemeris_StopsAtTheLastRow()
+    {
+        var t0 = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var eph = new Ephemeris(Enumerable.Range(0, 49).Select(h => new EphemSample(t0.AddHours(h), 0, 0, 0, 0, 384400)).ToList());
+        var site = new Site("eq", "Equator", 0, 0, "test", "", Terrain: false);
+        var pts = Analysis.Timeline(eph, site, HorizonMask.Flat(), t0.AddHours(40), t0.AddDays(30), TimeSpan.FromHours(1));
+        Assert.Equal(9, pts.Length);   // 40 h .. 48 h, both included
+        Assert.Equal(eph.End, pts[^1].T);
+    }
+
     private static string FindData(string name)
     {
         for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir is not null; dir = dir.Parent)
