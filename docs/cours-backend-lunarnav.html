@@ -1,0 +1,849 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cours backend LunarNav</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky table of contents on the left, one long reading column; widgets sit inline in the module they teach. */
+:root {
+  --bg: #EDEFF2; --surface: #F8F9FB; --ink: #18202D; --muted: #586274; --line: #D2D7DF;
+  --sun: #B9620F; --sun-soft: #F6E3CC; --earth: #2B5EA7; --earth-soft: #DCE6F5;
+  --ok: #2E7A4C; --ok-soft: #DCEFE3; --bad: #B0362E; --bad-soft: #F6DEDB;
+  --code-bg: #E4E8EE;
+  --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", Roboto, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0E1218; --surface: #161B23; --ink: #E5E8ED; --muted: #98A1B0; --line: #29303B;
+  --sun: #EFA04A; --sun-soft: #3A2A17; --earth: #7FA9E6; --earth-soft: #1A2840;
+  --ok: #63BE88; --ok-soft: #17301F; --bad: #E77A70; --bad-soft: #3A1C1A; --code-bg: #1D232D; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0E1218; --surface: #161B23; --ink: #E5E8ED; --muted: #98A1B0; --line: #29303B;
+  --sun: #EFA04A; --sun-soft: #3A2A17; --earth: #7FA9E6; --earth-soft: #1A2840;
+  --ok: #63BE88; --ok-soft: #17301F; --bad: #E77A70; --bad-soft: #3A1C1A; --code-bg: #1D232D; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h2 { font-size: 1.9rem; font-weight: 800; letter-spacing: -0.01em; }
+h3 { font-size: 1.15rem; font-weight: 700; margin-top: 1.6rem; }
+p { margin: 0.7rem 0; }
+a { color: var(--earth); }
+code { font-family: var(--f-mono); font-size: 0.88em; background: var(--code-bg); padding: 0.08em 0.35em; border-radius: 4px; }
+pre { font-family: var(--f-mono); font-size: 0.82rem; line-height: 1.5; background: var(--code-bg); padding: 0.9rem 1rem; border-radius: 6px; overflow-x: auto; margin: 0.9rem 0; }
+pre code { background: none; padding: 0; }
+.eyebrow { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+:focus-visible { outline: 2px solid var(--earth); outline-offset: 2px; }
+
+/* hero */
+.hero { max-width: 1180px; margin: 0 auto; padding-block: 2.5rem 1.5rem; }
+.hero h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 800; letter-spacing: -0.02em; margin-top: 0.4rem; }
+.hero .lead { max-width: 62ch; font-size: 1.1rem; color: var(--muted); }
+.sky { margin: 1.4rem 0 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding-block: 0.8rem; }
+.sky svg { display: block; width: 100%; height: auto; }
+.sky figcaption { font-size: 0.8rem; color: var(--muted); font-family: var(--f-mono); }
+.figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-top: 1.4rem; }
+.figures div { border-left: 2px solid var(--sun); padding-left: 0.7rem; }
+.figures b { display: block; font-family: var(--f-display); font-size: 1.7rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.figures span { font-size: 0.85rem; color: var(--muted); }
+
+/* layout */
+.layout { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 2.5rem; padding-block: 1rem 4rem; }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; }
+nav.toc ol { list-style: none; padding: 0; margin: 0.6rem 0 0; display: grid; gap: 2px; }
+nav.toc a { display: flex; gap: 0.5rem; align-items: baseline; text-decoration: none; color: var(--ink); padding: 0.3rem 0.5rem; border-radius: 5px; font-size: 0.9rem; }
+nav.toc a:hover { background: var(--surface); }
+nav.toc a .n { font-family: var(--f-mono); font-size: 0.75rem; color: var(--muted); min-width: 1.4rem; }
+nav.toc a.done .n { color: var(--ok); }
+nav.toc a.done .n::after { content: " ✓"; }
+.progress { margin-top: 0.8rem; font-size: 0.8rem; color: var(--muted); }
+.bar { height: 4px; background: var(--line); border-radius: 2px; margin-top: 0.3rem; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--ok); width: 0; transition: width .3s; }
+main { min-width: 0; }
+section.mod { padding-block: 2.2rem; border-top: 1px solid var(--line); scroll-margin-top: 12px; }
+section.mod > * { max-width: 72ch; }
+section.mod > .wide { max-width: none; }
+.modhead { display: flex; gap: 1rem; align-items: baseline; flex-wrap: wrap; }
+.modhead .num { font-family: var(--f-mono); color: var(--sun); font-size: 0.9rem; }
+.readbtn { margin-top: 1.4rem; }
+
+/* callouts */
+.why, .fact { border-radius: 6px; padding: 0.8rem 1rem; margin: 1rem 0; }
+.why { background: var(--earth-soft); }
+.why::before { content: "Pourquoi ce choix"; display: block; font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--earth); margin-bottom: 0.2rem; }
+.fact { background: var(--sun-soft); }
+.fact::before { content: "À retenir"; display: block; font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--sun); margin-bottom: 0.2rem; }
+details.jury { border: 1px solid var(--line); border-radius: 6px; margin: 0.6rem 0; background: var(--surface); }
+details.jury summary { cursor: pointer; padding: 0.7rem 1rem; font-weight: 600; list-style: none; display: flex; gap: 0.6rem; }
+details.jury summary::-webkit-details-marker { display: none; }
+details.jury summary::before { content: "Jury"; font-family: var(--f-mono); font-size: 0.72rem; color: var(--sun); padding-top: 0.2rem; }
+details.jury[open] summary { border-bottom: 1px solid var(--line); }
+details.jury > div { padding: 0.6rem 1rem 0.8rem; }
+
+/* tables */
+.tw { overflow-x: auto; margin: 1rem 0; }
+table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+th, td { text-align: left; padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+td.num, th.num { font-variant-numeric: tabular-nums; text-align: right; }
+.pill { display: inline-block; font-family: var(--f-mono); font-size: 0.72rem; padding: 0.05rem 0.45rem; border-radius: 999px; white-space: nowrap; }
+.pill.ok { background: var(--ok-soft); color: var(--ok); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+
+/* buttons */
+button { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 0.45rem 0.9rem; }
+button:hover { border-color: var(--muted); }
+button.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+button.on { background: var(--earth); color: var(--bg); border-color: var(--earth); }
+select { font: inherit; padding: 0.4rem 0.6rem; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+
+/* flow diagram */
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.8rem; margin: 1rem 0; }
+.flow div { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 0.7rem 0.8rem; font-size: 0.88rem; }
+.flow b { display: block; font-family: var(--f-display); font-size: 1rem; }
+.flow .tag { font-family: var(--f-mono); font-size: 0.7rem; color: var(--muted); }
+
+/* widgets */
+.widget { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 1rem; margin: 1.2rem 0; }
+.widget h4 { margin: 0 0 0.4rem; font-family: var(--f-display); font-size: 1rem; }
+.cells { display: grid; grid-template-columns: repeat(36, minmax(0, 1fr)); gap: 2px; margin: 0.3rem 0 0.6rem; }
+.cells span { aspect-ratio: 1 / 1.6; border-radius: 2px; background: var(--line); max-width: 100%; }
+.cells span.up { background: var(--sun); }
+.cells span.bridged { background: repeating-linear-gradient(135deg, var(--sun) 0 3px, var(--sun-soft) 3px 6px); }
+.cells.click span { cursor: pointer; }
+.lbl { font-family: var(--f-mono); font-size: 0.72rem; color: var(--muted); }
+.out { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.6rem; margin-top: 0.7rem; }
+.out div { font-size: 0.85rem; color: var(--muted); }
+.out b { display: block; font-family: var(--f-display); font-size: 1.3rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: var(--sun); }
+.disk { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 1rem; align-items: center; }
+.disk svg { width: 100%; max-width: 200px; height: auto; }
+
+/* endpoint explorer */
+.eps { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 1rem; }
+.eplist { display: grid; gap: 3px; align-content: start; }
+.eplist button { text-align: left; font-family: var(--f-mono); font-size: 0.78rem; padding: 0.35rem 0.55rem; display: flex; gap: 0.5rem; }
+.eplist button .m { min-width: 2.6rem; color: var(--earth); }
+.eplist button.on .m { color: var(--bg); }
+.epdetail { min-width: 0; }
+.epdetail h4 { font-family: var(--f-mono); font-size: 0.95rem; margin: 0 0 0.5rem; word-break: break-all; }
+.epdetail dl { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 0.35rem 0.8rem; font-size: 0.88rem; margin: 0; }
+.epdetail dt { font-family: var(--f-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding-top: 0.15rem; }
+.epdetail dd { margin: 0; }
+
+/* flashcards + quiz */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 1.3rem; min-height: 200px; display: grid; gap: 0.8rem; align-content: start; }
+.card .q { font-family: var(--f-display); font-size: 1.25rem; font-weight: 700; text-wrap: balance; }
+.card .a { border-top: 1px dashed var(--line); padding-top: 0.8rem; }
+.choices { display: grid; gap: 0.5rem; }
+.choices button { text-align: left; padding: 0.65rem 0.9rem; line-height: 1.4; }
+.choices button.right { background: var(--ok-soft); border-color: var(--ok); color: var(--ink); }
+.choices button.wrong { background: var(--bad-soft); border-color: var(--bad); color: var(--ink); }
+.choices button:disabled { cursor: default; }
+.expl { font-size: 0.92rem; background: var(--bg); border-radius: 6px; padding: 0.7rem 0.9rem; }
+.score { font-family: var(--f-display); font-size: 2.6rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.meter { height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.meter i { display: block; height: 100%; background: var(--earth); }
+.missed li { margin: 0.4rem 0; }
+.hist { font-size: 0.85rem; }
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  nav.toc { position: static; max-height: none; border: 1px solid var(--line); border-radius: 8px; padding: 0.8rem; background: var(--surface); }
+  nav.toc ol { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+  .eps, .disk { grid-template-columns: minmax(0, 1fr); }
+  .eplist { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .epdetail dl { grid-template-columns: minmax(0, 1fr); }
+  .epdetail dt { padding-top: 0.5rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+
+<header class="hero">
+  <div class="eyebrow">HagraCorp · NASA Space Apps · cours pour Saad et Nizar</div>
+  <h1>Le backend LunarNav, de la carte LOLA à la réponse JSON</h1>
+  <p class="lead">Tout ce qu'il faut pour défendre l'API devant un jury : ce qu'elle calcule, pourquoi elle est construite ainsi, comment on sait qu'elle a raison, et où sont ses limites. Chaque module se termine par les questions qu'on risque de vous poser. L'examen final est à la fin.</p>
+  <figure class="sky">
+    <svg viewBox="0 0 720 152" role="img" aria-label="Profil de l'horizon de Haworth sur 360 degrés d'azimut">
+      <line x1="0" x2="720" y1="84.2" y2="84.2" stroke="var(--muted)" stroke-dasharray="4 4" stroke-width="0.8"></line>
+      <polygon points="0,140 0,108.0 1,109.1 2,111.0 3,112.7 4,113.5 5,113.1 6,113.2 7,113.9 8,115.5 9,117.7 10,120.2 11,122.4 12,124.0 13,124.0 14,123.5 15,122.8 16,121.9 17,120.8 18,119.9 19,119.1 20,118.3 21,117.3 22,116.3 23,115.5 24,114.7 25,113.1 26,111.4 27,109.9 28,108.3 29,107.0 30,105.8 31,104.7 32,103.7 33,102.3 34,101.0 35,100.2 36,100.0 37,100.0 38,99.1 39,98.1 40,97.7 41,97.2 42,96.6 43,96.2 44,95.9 45,95.9 46,96.3 47,96.9 48,97.7 49,98.6 50,99.5 51,100.5 52,101.4 53,101.9 54,102.2 55,102.7 56,103.1 57,103.9 58,105.2 59,106.7 60,108.2 61,109.6 62,109.8 63,109.0 64,108.2 65,107.3 66,106.5 67,105.7 68,104.9 69,104.0 70,103.2 71,102.4 72,101.5 73,100.7 74,99.9 75,99.0 76,98.2 77,97.4 78,96.5 79,95.7 80,94.8 81,94.0 82,93.1 83,92.3 84,91.5 85,90.6 86,89.8 87,88.9 88,88.1 89,87.2 90,86.4 91,85.5 92,84.7 93,83.8 94,83.0 95,82.1 96,81.3 97,80.4 98,79.6 99,78.7 100,77.9 101,77.0 102,76.2 103,75.3 104,74.5 105,73.6 106,72.8 107,71.9 108,71.1 109,70.2 110,69.4 111,68.5 112,67.7 113,66.8 114,66.0 115,65.1 116,64.3 117,63.4 118,62.6 119,61.7 120,60.9 121,60.0 122,59.2 123,58.4 124,57.5 125,56.7 126,55.8 127,55.0 128,54.2 129,53.3 130,52.5 131,51.7 132,50.8 133,50.0 134,49.2 135,48.4 136,47.5 137,46.7 138,45.9 139,45.1 140,44.3 141,43.5 142,42.7 143,41.8 144,41.0 145,40.2 146,39.4 147,38.6 148,37.8 149,37.2 150,36.5 151,35.9 152,35.3 153,34.6 154,34.0 155,33.4 156,32.8 157,32.1 158,31.5 159,30.9 160,30.3 161,29.7 162,29.2 163,28.6 164,28.0 165,27.4 166,26.9 167,26.3 168,25.9 169,25.6 170,25.2 171,24.9 172,24.5 173,24.2 174,23.8 175,23.5 176,23.2 177,22.8 178,22.5 179,22.2 180,21.9 181,21.5 182,21.2 183,20.9 184,20.6 185,20.3 186,20.0 187,19.6 188,19.3 189,19.0 190,18.7 191,18.4 192,18.1 193,17.9 194,17.6 195,17.3 196,17.0 197,16.7 198,16.4 199,16.2 200,15.9 201,15.6 202,15.4 203,15.1 204,14.8 205,14.6 206,14.3 207,14.1 208,13.8 209,13.6 210,13.4 211,13.1 212,12.9 213,12.7 214,12.5 215,12.2 216,12.0 217,11.8 218,11.6 219,11.4 220,11.2 221,11.0 222,10.8 223,10.6 224,10.5 225,10.3 226,10.1 227,9.9 228,9.8 229,9.6 230,9.5 231,9.3 232,9.2 233,9.0 234,8.9 235,8.8 236,8.6 237,8.5 238,8.4 239,8.3 240,8.2 241,8.1 242,8.0 243,7.9 244,7.8 245,7.7 246,7.6 247,7.5 248,7.5 249,7.4 250,7.3 251,7.3 252,7.2 253,7.2 254,7.1 255,7.1 256,7.1 257,7.1 258,7.0 259,7.0 260,7.0 261,7.0 262,7.0 263,7.0 264,7.0 265,7.1 266,7.1 267,7.1 268,7.1 269,7.2 270,7.3 271,7.4 272,7.6 273,7.8 274,8.0 275,8.1 276,8.3 277,8.5 278,8.7 279,8.9 280,9.1 281,9.3 282,9.5 283,9.8 284,10.0 285,10.2 286,10.4 287,10.8 288,11.2 289,11.6 290,12.1 291,12.5 292,12.9 293,13.4 294,13.8 295,14.3 296,14.7 297,15.2 298,15.7 299,16.2 300,16.6 301,17.1 302,17.6 303,18.2 304,18.7 305,19.2 306,19.7 307,20.3 308,20.8 309,21.4 310,22.0 311,22.5 312,23.1 313,23.7 314,24.3 315,24.9 316,25.5 317,26.1 318,26.7 319,27.3 320,28.0 321,28.6 322,29.2 323,29.9 324,30.5 325,31.2 326,31.9 327,32.5 328,33.2 329,33.8 330,34.3 331,34.7 332,35.2 333,35.7 334,36.1 335,36.6 336,37.1 337,37.6 338,38.1 339,38.6 340,39.1 341,39.6 342,40.1 343,40.7 344,41.2 345,41.7 346,42.2 347,42.8 348,43.3 349,43.9 350,44.4 351,45.0 352,45.5 353,46.1 354,46.6 355,47.2 356,48.0 357,48.8 358,49.7 359,50.5 360,51.4 361,52.2 362,53.0 363,53.9 364,54.7 365,55.6 366,56.4 367,57.3 368,58.1 369,59.0 370,59.8 371,60.7 372,61.5 373,62.4 374,63.2 375,64.1 376,65.0 377,65.8 378,66.7 379,67.5 380,68.4 381,69.2 382,70.1 383,70.9 384,71.8 385,72.7 386,73.5 387,74.4 388,75.2 389,76.1 390,77.0 391,77.8 392,78.7 393,79.3 394,80.0 395,80.6 396,81.2 397,81.9 398,82.7 399,83.6 400,84.4 401,85.2 402,86.1 403,86.9 404,87.8 405,88.6 406,89.4 407,90.3 408,91.1 409,92.2 410,93.3 411,94.5 412,95.6 413,96.8 414,97.8 415,98.8 416,99.8 417,100.9 418,101.9 419,103.0 420,104.0 421,105.1 422,106.1 423,107.2 424,108.2 425,109.3 426,110.3 427,111.3 428,112.4 429,113.4 430,114.4 431,115.4 432,116.4 433,117.4 434,118.4 435,119.4 436,120.4 437,121.4 438,122.4 439,123.4 440,123.8 441,123.2 442,122.5 443,122.1 444,122.6 445,123.7 446,125.0 447,126.5 448,127.9 449,126.7 450,125.1 451,123.7 452,122.8 453,121.2 454,120.0 455,119.8 456,119.8 457,120.5 458,120.1 459,120.1 460,119.8 461,119.3 462,119.8 463,120.3 464,120.8 465,122.6 466,125.5 467,128.2 468,130.1 469,131.6 470,132.6 471,133.5 472,132.7 473,130.5 474,129.0 475,128.8 476,128.8 477,128.5 478,128.3 479,128.5 480,128.4 481,128.3 482,129.3 483,130.3 484,131.5 485,132.5 486,133.1 487,133.8 488,134.7 489,135.3 490,135.4 491,135.0 492,134.1 493,134.2 494,133.7 495,133.5 496,133.5 497,132.9 498,132.2 499,132.0 500,131.6 501,131.3 502,131.1 503,131.0 504,131.0 505,131.0 506,130.8 507,131.0 508,130.9 509,131.4 510,131.4 511,130.1 512,128.8 513,128.1 514,127.4 515,126.1 516,126.2 517,127.0 518,128.1 519,129.4 520,130.1 521,129.5 522,128.7 523,129.3 524,129.7 525,130.8 526,131.6 527,131.4 528,130.4 529,129.5 530,129.0 531,128.4 532,129.2 533,131.1 534,131.7 535,131.1 536,130.1 537,129.6 538,128.1 539,127.2 540,126.6 541,125.5 542,123.8 543,121.9 544,120.3 545,119.3 546,118.7 547,118.3 548,117.4 549,116.5 550,115.8 551,114.7 552,112.9 553,111.6 554,110.2 555,108.8 556,108.2 557,107.3 558,106.4 559,105.6 560,104.4 561,103.7 562,104.0 563,104.4 564,105.4 565,106.9 566,108.8 567,110.4 568,111.4 569,112.7 570,114.8 571,116.5 572,118.0 573,119.2 574,121.0 575,121.9 576,122.5 577,123.2 578,124.4 579,125.2 580,125.8 581,125.8 582,124.8 583,124.2 584,124.2 585,124.4 586,124.5 587,124.4 588,124.0 589,123.7 590,123.7 591,123.7 592,123.3 593,123.3 594,124.1 595,124.2 596,125.2 597,125.3 598,125.1 599,125.3 600,125.2 601,125.5 602,125.7 603,125.1 604,125.2 605,125.9 606,125.6 607,126.3 608,125.9 609,125.4 610,125.8 611,124.4 612,124.1 613,124.3 614,124.4 615,124.7 616,124.9 617,125.8 618,125.5 619,124.0 620,123.2 621,123.6 622,124.1 623,124.5 624,124.0 625,123.5 626,123.9 627,124.1 628,123.8 629,123.3 630,121.7 631,120.2 632,118.7 633,117.1 634,115.6 635,114.0 636,112.6 637,111.0 638,109.0 639,107.5 640,107.3 641,105.4 642,102.8 643,100.4 644,98.8 645,97.3 646,96.1 647,95.0 648,93.6 649,92.1 650,90.8 651,89.9 652,88.5 653,87.0 654,87.9 655,87.3 656,85.9 657,84.9 658,84.5 659,83.0 660,81.6 661,80.6 662,79.7 663,79.2 664,79.5 665,80.0 666,80.0 667,80.2 668,80.1 669,79.9 670,79.2 671,78.6 672,78.8 673,79.6 674,80.7 675,81.5 676,83.2 677,85.0 678,87.7 679,90.5 680,90.9 681,91.1 682,91.6 683,92.2 684,93.5 685,95.6 686,98.0 687,100.9 688,103.0 689,104.2 690,105.8 691,107.3 692,108.6 693,109.3 694,109.7 695,110.3 696,111.0 697,111.4 698,111.3 699,111.4 700,111.4 701,111.3 702,111.3 703,111.4 704,111.4 705,111.4 706,111.5 707,110.6 708,109.5 709,108.0 710,106.3 711,104.4 712,103.1 713,102.8 714,103.2 715,103.3 716,103.6 717,104.4 718,105.6 719,106.7 719,140" fill="var(--code-bg)"></polygon>
+      <polyline points="0,108.0 1,109.1 2,111.0 3,112.7 4,113.5 5,113.1 6,113.2 7,113.9 8,115.5 9,117.7 10,120.2 11,122.4 12,124.0 13,124.0 14,123.5 15,122.8 16,121.9 17,120.8 18,119.9 19,119.1 20,118.3 21,117.3 22,116.3 23,115.5 24,114.7 25,113.1 26,111.4 27,109.9 28,108.3 29,107.0 30,105.8 31,104.7 32,103.7 33,102.3 34,101.0 35,100.2 36,100.0 37,100.0 38,99.1 39,98.1 40,97.7 41,97.2 42,96.6 43,96.2 44,95.9 45,95.9 46,96.3 47,96.9 48,97.7 49,98.6 50,99.5 51,100.5 52,101.4 53,101.9 54,102.2 55,102.7 56,103.1 57,103.9 58,105.2 59,106.7 60,108.2 61,109.6 62,109.8 63,109.0 64,108.2 65,107.3 66,106.5 67,105.7 68,104.9 69,104.0 70,103.2 71,102.4 72,101.5 73,100.7 74,99.9 75,99.0 76,98.2 77,97.4 78,96.5 79,95.7 80,94.8 81,94.0 82,93.1 83,92.3 84,91.5 85,90.6 86,89.8 87,88.9 88,88.1 89,87.2 90,86.4 91,85.5 92,84.7 93,83.8 94,83.0 95,82.1 96,81.3 97,80.4 98,79.6 99,78.7 100,77.9 101,77.0 102,76.2 103,75.3 104,74.5 105,73.6 106,72.8 107,71.9 108,71.1 109,70.2 110,69.4 111,68.5 112,67.7 113,66.8 114,66.0 115,65.1 116,64.3 117,63.4 118,62.6 119,61.7 120,60.9 121,60.0 122,59.2 123,58.4 124,57.5 125,56.7 126,55.8 127,55.0 128,54.2 129,53.3 130,52.5 131,51.7 132,50.8 133,50.0 134,49.2 135,48.4 136,47.5 137,46.7 138,45.9 139,45.1 140,44.3 141,43.5 142,42.7 143,41.8 144,41.0 145,40.2 146,39.4 147,38.6 148,37.8 149,37.2 150,36.5 151,35.9 152,35.3 153,34.6 154,34.0 155,33.4 156,32.8 157,32.1 158,31.5 159,30.9 160,30.3 161,29.7 162,29.2 163,28.6 164,28.0 165,27.4 166,26.9 167,26.3 168,25.9 169,25.6 170,25.2 171,24.9 172,24.5 173,24.2 174,23.8 175,23.5 176,23.2 177,22.8 178,22.5 179,22.2 180,21.9 181,21.5 182,21.2 183,20.9 184,20.6 185,20.3 186,20.0 187,19.6 188,19.3 189,19.0 190,18.7 191,18.4 192,18.1 193,17.9 194,17.6 195,17.3 196,17.0 197,16.7 198,16.4 199,16.2 200,15.9 201,15.6 202,15.4 203,15.1 204,14.8 205,14.6 206,14.3 207,14.1 208,13.8 209,13.6 210,13.4 211,13.1 212,12.9 213,12.7 214,12.5 215,12.2 216,12.0 217,11.8 218,11.6 219,11.4 220,11.2 221,11.0 222,10.8 223,10.6 224,10.5 225,10.3 226,10.1 227,9.9 228,9.8 229,9.6 230,9.5 231,9.3 232,9.2 233,9.0 234,8.9 235,8.8 236,8.6 237,8.5 238,8.4 239,8.3 240,8.2 241,8.1 242,8.0 243,7.9 244,7.8 245,7.7 246,7.6 247,7.5 248,7.5 249,7.4 250,7.3 251,7.3 252,7.2 253,7.2 254,7.1 255,7.1 256,7.1 257,7.1 258,7.0 259,7.0 260,7.0 261,7.0 262,7.0 263,7.0 264,7.0 265,7.1 266,7.1 267,7.1 268,7.1 269,7.2 270,7.3 271,7.4 272,7.6 273,7.8 274,8.0 275,8.1 276,8.3 277,8.5 278,8.7 279,8.9 280,9.1 281,9.3 282,9.5 283,9.8 284,10.0 285,10.2 286,10.4 287,10.8 288,11.2 289,11.6 290,12.1 291,12.5 292,12.9 293,13.4 294,13.8 295,14.3 296,14.7 297,15.2 298,15.7 299,16.2 300,16.6 301,17.1 302,17.6 303,18.2 304,18.7 305,19.2 306,19.7 307,20.3 308,20.8 309,21.4 310,22.0 311,22.5 312,23.1 313,23.7 314,24.3 315,24.9 316,25.5 317,26.1 318,26.7 319,27.3 320,28.0 321,28.6 322,29.2 323,29.9 324,30.5 325,31.2 326,31.9 327,32.5 328,33.2 329,33.8 330,34.3 331,34.7 332,35.2 333,35.7 334,36.1 335,36.6 336,37.1 337,37.6 338,38.1 339,38.6 340,39.1 341,39.6 342,40.1 343,40.7 344,41.2 345,41.7 346,42.2 347,42.8 348,43.3 349,43.9 350,44.4 351,45.0 352,45.5 353,46.1 354,46.6 355,47.2 356,48.0 357,48.8 358,49.7 359,50.5 360,51.4 361,52.2 362,53.0 363,53.9 364,54.7 365,55.6 366,56.4 367,57.3 368,58.1 369,59.0 370,59.8 371,60.7 372,61.5 373,62.4 374,63.2 375,64.1 376,65.0 377,65.8 378,66.7 379,67.5 380,68.4 381,69.2 382,70.1 383,70.9 384,71.8 385,72.7 386,73.5 387,74.4 388,75.2 389,76.1 390,77.0 391,77.8 392,78.7 393,79.3 394,80.0 395,80.6 396,81.2 397,81.9 398,82.7 399,83.6 400,84.4 401,85.2 402,86.1 403,86.9 404,87.8 405,88.6 406,89.4 407,90.3 408,91.1 409,92.2 410,93.3 411,94.5 412,95.6 413,96.8 414,97.8 415,98.8 416,99.8 417,100.9 418,101.9 419,103.0 420,104.0 421,105.1 422,106.1 423,107.2 424,108.2 425,109.3 426,110.3 427,111.3 428,112.4 429,113.4 430,114.4 431,115.4 432,116.4 433,117.4 434,118.4 435,119.4 436,120.4 437,121.4 438,122.4 439,123.4 440,123.8 441,123.2 442,122.5 443,122.1 444,122.6 445,123.7 446,125.0 447,126.5 448,127.9 449,126.7 450,125.1 451,123.7 452,122.8 453,121.2 454,120.0 455,119.8 456,119.8 457,120.5 458,120.1 459,120.1 460,119.8 461,119.3 462,119.8 463,120.3 464,120.8 465,122.6 466,125.5 467,128.2 468,130.1 469,131.6 470,132.6 471,133.5 472,132.7 473,130.5 474,129.0 475,128.8 476,128.8 477,128.5 478,128.3 479,128.5 480,128.4 481,128.3 482,129.3 483,130.3 484,131.5 485,132.5 486,133.1 487,133.8 488,134.7 489,135.3 490,135.4 491,135.0 492,134.1 493,134.2 494,133.7 495,133.5 496,133.5 497,132.9 498,132.2 499,132.0 500,131.6 501,131.3 502,131.1 503,131.0 504,131.0 505,131.0 506,130.8 507,131.0 508,130.9 509,131.4 510,131.4 511,130.1 512,128.8 513,128.1 514,127.4 515,126.1 516,126.2 517,127.0 518,128.1 519,129.4 520,130.1 521,129.5 522,128.7 523,129.3 524,129.7 525,130.8 526,131.6 527,131.4 528,130.4 529,129.5 530,129.0 531,128.4 532,129.2 533,131.1 534,131.7 535,131.1 536,130.1 537,129.6 538,128.1 539,127.2 540,126.6 541,125.5 542,123.8 543,121.9 544,120.3 545,119.3 546,118.7 547,118.3 548,117.4 549,116.5 550,115.8 551,114.7 552,112.9 553,111.6 554,110.2 555,108.8 556,108.2 557,107.3 558,106.4 559,105.6 560,104.4 561,103.7 562,104.0 563,104.4 564,105.4 565,106.9 566,108.8 567,110.4 568,111.4 569,112.7 570,114.8 571,116.5 572,118.0 573,119.2 574,121.0 575,121.9 576,122.5 577,123.2 578,124.4 579,125.2 580,125.8 581,125.8 582,124.8 583,124.2 584,124.2 585,124.4 586,124.5 587,124.4 588,124.0 589,123.7 590,123.7 591,123.7 592,123.3 593,123.3 594,124.1 595,124.2 596,125.2 597,125.3 598,125.1 599,125.3 600,125.2 601,125.5 602,125.7 603,125.1 604,125.2 605,125.9 606,125.6 607,126.3 608,125.9 609,125.4 610,125.8 611,124.4 612,124.1 613,124.3 614,124.4 615,124.7 616,124.9 617,125.8 618,125.5 619,124.0 620,123.2 621,123.6 622,124.1 623,124.5 624,124.0 625,123.5 626,123.9 627,124.1 628,123.8 629,123.3 630,121.7 631,120.2 632,118.7 633,117.1 634,115.6 635,114.0 636,112.6 637,111.0 638,109.0 639,107.5 640,107.3 641,105.4 642,102.8 643,100.4 644,98.8 645,97.3 646,96.1 647,95.0 648,93.6 649,92.1 650,90.8 651,89.9 652,88.5 653,87.0 654,87.9 655,87.3 656,85.9 657,84.9 658,84.5 659,83.0 660,81.6 661,80.6 662,79.7 663,79.2 664,79.5 665,80.0 666,80.0 667,80.2 668,80.1 669,79.9 670,79.2 671,78.6 672,78.8 673,79.6 674,80.7 675,81.5 676,83.2 677,85.0 678,87.7 679,90.5 680,90.9 681,91.1 682,91.6 683,92.2 684,93.5 685,95.6 686,98.0 687,100.9 688,103.0 689,104.2 690,105.8 691,107.3 692,108.6 693,109.3 694,109.7 695,110.3 696,111.0 697,111.4 698,111.3 699,111.4 700,111.4 701,111.3 702,111.3 703,111.4 704,111.4 705,111.4 706,111.5 707,110.6 708,109.5 709,108.0 710,106.3 711,104.4 712,103.1 713,102.8 714,103.2 715,103.3 716,103.6 717,104.4 718,105.6 719,106.7" fill="none" stroke="var(--sun)" stroke-width="1.6"></polyline>
+      <g font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--muted)">
+        <text x="2" y="151">N 0°</text><text x="170" y="151">E 90°</text><text x="350" y="151">S 180°</text><text x="530" y="151">O 270°</text><text x="690" y="151">360°</text>
+        <text x="4" y="81">0° = horizon idéal</text>
+      </g>
+    </svg>
+    <figcaption>L'horizon réel de Haworth vu à 2 m : les 720 valeurs de <code>masks/haworth_2m.json</code>, une par demi-degré d'azimut, de −4,1° à +6,2°. Tout le backend sert à comparer le Soleil et la Terre à cette ligne.</figcaption>
+  </figure>
+  <div class="figures">
+    <div><b>16</b><span>endpoints sous <code>/api</code></span></div>
+    <div><b>32</b><span>sites, dont 31 avec relief LOLA</span></div>
+    <div><b>43 825</b><span>heures d'éphéméride JPL, 2026 à 2030</span></div>
+    <div><b>720</b><span>azimuts par horizon (pas de 0,5°)</span></div>
+    <div><b>97</b><span>tests xUnit en CI</span></div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Modules du cours">
+    <div class="eyebrow">Parcours</div>
+    <ol id="toc"></ol>
+    <div class="progress"><span id="progtxt">0 module lu</span><div class="bar"><i id="progbar"></i></div></div>
+  </nav>
+
+  <main>
+
+<!-- 1 -->
+<section class="mod" id="m1" data-title="Le produit en une minute">
+  <div class="modhead"><span class="num">Module 1</span><h2>Le produit en une minute</h2></div>
+  <p>Au pôle Sud lunaire, le Soleil reste à quelques degrés au-dessus de l'horizon et en fait le tour en un mois. La Terre, elle, oscille près de l'horizon (libration). Une crête à 20 km suffit à couper le courant d'un atterrisseur solaire ou sa liaison radio directe avec la Terre.</p>
+  <p>Le backend répond à trois questions de planificateur de mission :</p>
+  <ol>
+    <li><b>Ce site, à cette date :</b> combien d'heures de Soleil et de Terre pendant le séjour, quand est le prochain coucher, la batterie tient-elle ? (<code>/metrics</code>, <code>/battery</code>, <code>/timeline</code>)</li>
+    <li><b>Le lancement glisse de N semaines :</b> quel site devient le meilleur ? C'est la fonction phare (<code>/fallback</code>, alimentée par la <code>/heatmap</code>).</li>
+    <li><b>Peut-on faire confiance au chiffre ?</b> Marge d'horizon (<code>closeCall</code>), incertitude de position (<code>/uncertainty</code>), validation contre la NASA (<code>/validation</code>).</li>
+  </ol>
+  <div class="fact">Le backend ne fait que de la géométrie : direction du Soleil et de la Terre dans le ciel du site (éphéméride JPL), comparée à l'horizon réel (relief LOLA). Pas d'atmosphère sur la Lune, donc pas de réfraction : un astre est visible si et seulement s'il dépasse le relief.</div>
+  <details class="jury"><summary>En une phrase, que fait votre backend ?</summary><div>Il calcule, pour 32 sites du pôle Sud et n'importe quelle date de 2026 à 2030, quand le Soleil et la Terre sont visibles au-dessus du vrai relief, et en déduit les fenêtres de mission, l'énergie disponible et le meilleur site de repli si le lancement glisse.</div></details>
+  <details class="jury"><summary>Pourquoi Apollo 11 est-il dans la liste alors qu'il n'est pas au pôle ?</summary><div>Comme point de comparaison grand public. Il est hors de la carte LOLA du pôle (−80° à −90°), donc <code>terrain: false</code> : on utilise un horizon plat (<code>HorizonMask.Flat()</code>), et il n'est jamais classé devant un site avec du vrai relief (<code>/ranking</code> l'exclut, <code>/fallback</code> le met en dernier).</div></details>
+</section>
+
+<!-- 2 -->
+<section class="mod" id="m2" data-title="Architecture">
+  <div class="modhead"><span class="num">Module 2</span><h2>Architecture : trois projets, une règle</h2></div>
+  <p>La solution <code>LunarNav.slnx</code> (.NET 11) contient trois projets de code et deux projets de tests.</p>
+  <div class="flow wide">
+    <div><span class="tag">LunarNav.Core</span><b>Les maths</b>Géométrie, éphéméride, relief, analyse. Aucun fichier, aucun réseau, aucun HTTP. Que des fonctions pures.</div>
+    <div><span class="tag">LunarNav.Api</span><b>La porte d'entrée</b>ASP.NET Core minimal API : lit les fichiers, valide les paramètres, appelle Core, renvoie du JSON. Contient aussi les commandes <code>precompute</code>, <code>validate</code>, <code>manifest</code>.</div>
+    <div><span class="tag">LunarNav.Web</span><b>Le front</b>Blazor WebAssembly. Ses données statiques sont dans <code>wwwroot/data</code>, le même dossier que l'API lit.</div>
+    <div><span class="tag">Tests</span><b>Deux étages</b><code>Core.Tests</code> teste les maths ; <code>LunarNav.Tests</code> démarre la vraie API en mémoire.</div>
+  </div>
+  <p><b>La règle :</b> Core ne connaît ni les fichiers ni le web. <code>Program.cs</code> ne fait pas de maths. Résultat : les mêmes fonctions (<code>HorizonMask.Compute</code>, <code>Analysis.Timeline</code>) servent à l'API, au précalcul et à la validation scientifique. Ce que la validation mesure, c'est exactement le code qui tourne en production.</p>
+  <div class="why">Un seul code pour trois usages. Si la validation utilisait une copie du calcul, elle ne prouverait rien sur le produit. C'est pour ça qu'on a ajouté la commande <code>validate</code> en C# alors qu'une version Python existait déjà.</div>
+
+  <h3>Pourquoi C# / ASP.NET Core et pas FastAPI ?</h3>
+  <p>Le README prévoyait FastAPI. On a choisi C# pour quatre raisons, à donner dans cet ordre :</p>
+  <ol>
+    <li><b>Modèles partagés avec le front.</b> <code>Models.cs</code> (records <code>SiteMetrics</code>, <code>HeatmapDto</code>…) est désérialisé tel quel par le front Blazor. Un seul contrat, typé des deux côtés, pas de schéma à synchroniser à la main.</li>
+    <li><b>Calcul lourd et parallèle.</b> Un horizon = 720 azimuts × 3 125 pas de 80 m ≈ 2,25 millions de lectures du relief. <code>Parallel.For</code> utilise tous les cœurs ; en Python pur, le GIL bloque ce parallélisme et chaque boucle est des dizaines de fois plus lente.</li>
+    <li><b>Typage strict.</b> Les erreurs d'unités et de dates (UTC ou local) sont la première source de bugs dans ce domaine. Records immuables, <code>DateTime</code> avec <code>Kind</code>, enums <code>SunRule</code> et <code>EarthRule</code>.</li>
+    <li><b>Un seul livrable.</b> Une image Docker, un binaire, OpenAPI généré automatiquement.</li>
+  </ol>
+  <p>Python reste là où il est le meilleur : scripts ponctuels (<code>tools/fetch_ephem.py</code> pour JPL Horizons) et une réimplémentation indépendante qui sert de contre-vérification (<code>tools/validation</code>).</p>
+
+  <h3>Minimal API plutôt que contrôleurs</h3>
+  <p>Les 16 routes tiennent dans un seul <code>Program.cs</code> d'environ 290 lignes : <code>api.MapGet("/sites/{id}/metrics", (string id, AppData data, DateTime? at, double stayDays = 14, …) =&gt; …)</code>. Les paramètres de requête sont liés et typés automatiquement, les valeurs par défaut sont dans la signature, et OpenAPI les documente. Des contrôleurs ajouteraient des classes et des attributs sans rien apporter à une API en lecture seule de cette taille.</p>
+
+  <details class="jury"><summary>À quoi sert la ligne « public partial class Program; » à la fin de Program.cs ?</summary><div>Les instructions de haut niveau génèrent une classe <code>Program</code> interne. Cette ligne la rend publique pour que le projet de tests puisse écrire <code>WebApplicationFactory&lt;Program&gt;</code> et démarrer la vraie API en mémoire.</div></details>
+  <details class="jury"><summary>Pourquoi Program.cs commence-t-il par des « if (args is ["precompute", …]) » ?</summary><div>Le même exécutable sert d'API et d'outil en ligne de commande. <code>dotnet run -- precompute &lt;dem&gt; &lt;data&gt;</code>, <code>validate</code> et <code>manifest</code> tournent puis quittent avant que le serveur web soit construit. Pas de deuxième projet à maintenir, et les outils utilisent forcément le même Core que l'API. Les motifs de liste C# vérifient le nombre d'arguments.</div></details>
+  <button class="readbtn" data-read="m2">Marquer comme lu</button>
+</section>
+
+<!-- 3 -->
+<section class="mod" id="m3" data-title="Les données">
+  <div class="modhead"><span class="num">Module 3</span><h2>Les données : ce qui est calculé avant la démo</h2></div>
+  <p>Le backend sépare deux temps : le <b>hors-ligne</b> (lent, lancé à la main une fois) et le <b>en ligne</b> (chaque requête, doit être rapide).</p>
+  <div class="tw"><table>
+    <thead><tr><th>Fichier</th><th>Source</th><th>Produit par</th><th>Contenu</th></tr></thead>
+    <tbody>
+      <tr><td><code>ephem.csv</code></td><td>JPL Horizons, DE441</td><td><code>tools/fetch_ephem.py</code></td><td>Toutes les heures de 2026-01-01 à 2031-01-01 : point sub-solaire, point sub-Terre (lat, lon), distance Terre-Lune. 43 825 lignes, 3 Mo.</td></tr>
+      <tr><td><code>LDEM_80S_80M.IMG</code></td><td>NASA LOLA (PDS)</td><td>téléchargé</td><td>7 600 × 7 600 pixels de 80 m, entiers 16 bits, hauteur = valeur × 0,5 m. 115,5 Mo, hors git.</td></tr>
+      <tr><td><code>sites.json</code></td><td>NASA ACD-50044, régions Artemis III</td><td>à la main</td><td>32 sites : id, nom, lat, lon, catégorie, <code>terrain</code>.</td></tr>
+      <tr><td><code>masks/{id}_{2|10}m.json</code></td><td>LOLA</td><td><code>precompute</code></td><td>720 élévations d'horizon par site et par hauteur de mât.</td></tr>
+      <tr><td><code>heatmap_{2|10}m.json</code></td><td>LOLA + éphéméride</td><td><code>precompute</code></td><td>Pour chaque site et chaque jour de 2026-01-01 à 2030-10-31 : plus longue fenêtre en heures en atterrissant à la meilleure heure.</td></tr>
+      <tr><td><code>uncertainty_{2|10}m.json</code></td><td>LOLA + éphéméride</td><td><code>precompute</code></td><td>Statistiques sur 40 points autour de chaque site (100, 250, 500 m).</td></tr>
+      <tr><td><code>rules.json</code></td><td>équipe</td><td>à la main</td><td>Chaque seuil utilisé, marqué <i>assumed</i> ou <i>validated</i>.</td></tr>
+      <tr><td><code>validation.json</code></td><td>NASA PGDA + Python</td><td><code>validate</code></td><td>Comparaison du code C# à la carte NASA (module 8).</td></tr>
+      <tr><td><code>manifest.json</code></td><td>—</td><td><code>manifest</code></td><td>SHA-256, taille, source et commande de chaque fichier ci-dessus.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="why">Précalculer, parce qu'un horizon prend environ 1 s et l'incertitude d'un site plusieurs minutes (40 horizons de plus). Une démo ne peut pas attendre ça. Les fichiers précalculés sont petits, versionnés dans git, et le manifest permet à n'importe qui de vérifier qu'ils n'ont pas été modifiés à la main et de savoir quelle commande les reproduit.</div>
+  <div class="why">La heatmap stocke des <b>heures</b>, pas un verdict oui/non. La viabilité (heures ≥ <code>stayDays</code> × 24) est calculée au moment de la requête. Un seul fichier sert donc toutes les durées de séjour.</div>
+  <h3>Pourquoi une éphéméride en CSV et pas une bibliothèque (SPICE, Skyfield) ?</h3>
+  <p>On n'a besoin que de deux directions par heure. Les télécharger une fois depuis JPL Horizons donne la référence officielle (DE441), zéro dépendance au runtime et un fichier citable. Le script refuse une réponse dont l'en-tête ne contient pas <code>MOON_ME</code> et <code>{East-longitude positive}</code> : il vaut mieux planter que d'utiliser un repère faux sans le savoir. Entre deux heures, <code>Ephemeris.At</code> interpole (module 4).</p>
+  <details class="jury"><summary>Pourquoi pas de base de données ?</summary><div>Toutes les données sont immuables et produites hors-ligne ; l'API ne fait que lire. Il n'y a ni écriture, ni utilisateurs, ni requêtes libres. Des fichiers JSON chargés en mémoire au premier accès sont plus rapides qu'une base, ne coûtent rien à héberger, se versionnent dans git et se vérifient par SHA-256. Une base deviendra utile le jour où on stockera des missions d'utilisateurs.</div></details>
+  <details class="jury"><summary>Si on change un site dans sites.json, que faut-il relancer ?</summary><div><code>precompute</code> (masques, heatmap, incertitude, puis le manifest automatiquement) et <code>validate</code> si le site a du relief. Sans ça, <code>/metrics</code> renvoie 400 « no horizon mask computed yet » pour ce site : l'API refuse de répondre plutôt que d'utiliser un horizon faux.</div></details>
+  <button class="readbtn" data-read="m3">Marquer comme lu</button>
+</section>
+
+<!-- 4 -->
+<section class="mod" id="m4" data-title="Les maths du Core">
+  <div class="modhead"><span class="num">Module 4</span><h2>Les maths du Core</h2></div>
+  <p>Conventions partout : angles en degrés, longitude positive vers l'est, latitude −90 au pôle Sud, distances en km, heures en UTC, repère lunaire Moon Mean Earth.</p>
+
+  <h3>1. Où est le Soleil dans le ciel du site ? (<code>Geometry.SunAzEl</code>)</h3>
+  <p>L'éphéméride donne le point de la Lune où le Soleil est au zénith (point sub-solaire). On le transforme en vecteur unitaire, puis on le projette sur la base locale du site : <i>haut</i> = vecteur du site, <i>est</i> = (−sin lon, cos lon, 0), <i>nord</i> = (−sin lat cos lon, −sin lat sin lon, cos lat). Élévation = atan2(haut, √(est² + nord²)), azimut = atan2(est, nord).</p>
+  <h3>2. La Terre, avec parallaxe (<code>EarthAzEl</code>)</h3>
+  <p>Le Soleil est si loin que sa direction est la même partout sur la Lune. La Terre est à ~384 000 km : sa direction change jusqu'à <b>0,26°</b> selon l'endroit où on se tient. On calcule donc le vrai vecteur Terre − site en km. Son rayon apparent vaut atan(6 371 / distance) ≈ <b>0,95°</b> ; celui du Soleil varie de <b>0,262° à 0,272°</b> avec la distance Terre-Soleil (excentricité 0,0167).</p>
+  <h3>3. Interpoler l'éphéméride entre deux heures</h3>
+  <pre><code>// MATH-REVIEW: never interpolate longitudes directly (359 -> 1 would pass through 180).
+var va = Geometry.UnitVector(latA, lonA);
+var vb = Geometry.UnitVector(latB, lonB);
+var v  = va + f * (vb - va);          // puis retour en (lat, lon)</code></pre>
+  <div class="why">Interpoler 359° et 1° donne 180° : le Soleil sauterait de l'autre côté du ciel. Passer par les vecteurs 3D n'a pas ce problème, et c'est ce qui permet de calculer toutes les 10 minutes avec un fichier horaire.</div>
+  <h3>4. Lire le relief (<code>Dem</code>)</h3>
+  <p>La carte LOLA est en projection stéréographique polaire : ρ = 2R·tan(π/4 + lat/2), x = ρ sin lon, y = ρ cos lon, pixel = centre ± x/80. La hauteur est interpolée entre les 4 pixels voisins (bilinéaire). Le signe moins sur la ligne a été vérifié sur la vraie carte : le cratère Shackleton ne montre son fond profond qu'avec ce signe.</p>
+  <h3>5. Calculer l'horizon par lancer de rayons (<code>HorizonMask.Compute</code>)</h3>
+  <pre><code>Parallel.For(0, 720, i =&gt; {                  // un azimut tous les 0,5°
+  for (double d = 0.08; d &lt;= 250; d += 0.08) { // pas de 80 m = 1 pixel, jusqu'à 250 km
+    P = point du relief à la distance d (grand cercle), en vrai 3D
+    angle = asin((P - oeil) · haut / |P - oeil|)
+    best = max(best, angle)
+  }
+  mask[i] = best;
+});</code></pre>
+  <div class="why">250 km et pas 150 : depuis un sommet, l'horizon est 2 à 5° sous l'horizontale, donc du relief plus bas et très loin reste visible. Et parce que l'œil et chaque point du relief sont de vrais points 3D, la courbure de la Lune est prise en compte sans formule à part. Un test le prouve : sur une Lune lisse, l'horizon vaut exactement l'abaissement théorique −acos(R / (R + h)) à 0,001° près.</div>
+  <h3>6. Quelle part du disque dépasse du relief ? (<code>DiskFractionOverMask</code>)</h3>
+  <p>Le disque est découpé en <b>16 bandes verticales</b>, chacune comparée à l'horizon à son propre azimut, avec l'aire exacte du segment de cercle. La Terre fait ~1,9° de diamètre : l'horizon n'est pas plat sur toute cette largeur, et une seule comparaison au centre se tromperait. Les éclipses (la Terre devant le Soleil) réduisent ensuite <code>sunFrac</code> de la surface de recouvrement des deux disques.</p>
+
+  <div class="widget wide" id="diskw">
+    <h4>Essayez : le Soleil sur un horizon plat</h4>
+    <p class="muted" style="margin:0 0 .6rem">Déplacez le centre du Soleil par rapport à l'horizon. Rayon 0,2666°. Formule de <code>Geometry.DiskFraction</code> : 1 − (acos k − k√(1−k²)) / π avec k = marge / rayon.</p>
+    <div class="disk">
+      <svg viewBox="0 0 200 200" aria-label="Disque solaire et horizon">
+        <circle id="sundisk" cx="100" cy="100" r="60" fill="var(--sun)"></circle>
+        <rect x="0" y="100" width="200" height="100" fill="var(--code-bg)"></rect>
+        <line x1="0" x2="200" y1="100" y2="100" stroke="var(--ink)" stroke-width="1.5"></line>
+      </svg>
+      <div>
+        <label for="margin" class="lbl">Centre du Soleil − horizon : <b id="marginv">0,10°</b></label>
+        <input type="range" id="margin" min="-0.35" max="0.35" step="0.01" value="0.10">
+        <div class="out">
+          <div>sunFrac<b id="fracv">—</b></div>
+          <div>Règle edge (défaut)<b id="r-edge">—</b></div>
+          <div>Règle center<b id="r-center">—</b></div>
+          <div>Règle full<b id="r-full">—</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <details class="jury"><summary>Comment savez-vous que les directions du Soleil et de la Terre sont justes ?</summary><div>Test unitaire contre JPL Horizons (<code>SunAzEl_Haworth_MatchesJplHorizons</code>) : écart inférieur à 0,01°, et 0,006° au maximum sur nos contrôles. Le test échoue si on décale de 0,1° la longitude du Soleil ou du site, donc il n'est pas trop tolérant.</div></details>
+  <details class="jury"><summary>Pourquoi un pas de 80 m dans le lancer de rayons ?</summary><div>C'est la taille d'un pixel LOLA : un pas plus fin relirait le même pixel interpolé sans information nouvelle, un pas plus grand pourrait sauter une crête étroite. 720 × 3 125 pas ≈ 2,25 millions de lectures, environ une seconde en parallèle.</div></details>
+  <button class="readbtn" data-read="m4">Marquer comme lu</button>
+</section>
+
+<!-- 5 -->
+<section class="mod" id="m5" data-title="Le moteur d'analyse">
+  <div class="modhead"><span class="num">Module 5</span><h2>Le moteur d'analyse (<code>Analysis.cs</code>)</h2></div>
+  <p>Tout part d'une fonction : <code>Point(eph, site, mask, t)</code> renvoie à l'instant <i>t</i> l'azimut, l'élévation et la fraction visible du Soleil et de la Terre, plus un indice de puissance. Tout le reste compte, enchaîne ou classe ces points.</p>
+  <h3>Les définitions (<code>rules.json</code>)</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Règle</th><th>Valeur</th><th>Pourquoi</th><th>Statut</th></tr></thead>
+    <tbody>
+      <tr><td>Soleil levé</td><td><code>sunFrac &gt; 0</code> (bord supérieur visible)</td><td>Même convention que les cartes NASA PGDA (« any part of the disc ») et que les heures de lever/coucher. <code>sunRule=center|full</code> disponibles.</td><td><span class="pill bad">assumed</span></td></tr>
+      <tr><td>Terre en vue</td><td><code>earthFrac &gt; 0</code></td><td>La radio directe a besoin d'une ligne de vue. <code>earthRule=center</code> disponible.</td><td><span class="pill bad">assumed</span></td></tr>
+      <tr><td>Trou toléré</td><td>6 h</td><td>Une batterie couvre un trou court. Sans ça, près du pôle, une fenêtre passe de quelques heures à des semaines pour 0,05° d'horizon.</td><td><span class="pill bad">assumed</span></td></tr>
+      <tr><td>Règle VIPER</td><td>50 h</td><td>Plus longue période Soleil couché <b>et</b> Terre cachée qu'un rover solaire survit (planification VIPER).</td><td><span class="pill bad">assumed</span></td></tr>
+      <tr><td>Marge d'horizon</td><td>±0,2°</td><td>Pixel de 80 m et hauteur d'observateur : l'horizon est incertain d'environ ça.</td><td><span class="pill bad">assumed</span></td></tr>
+      <tr><td>Directions Soleil/Terre</td><td>≤ 0,006°</td><td>Comparé à JPL Horizons.</td><td><span class="pill ok">validated</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="why">Chaque seuil est écrit dans <code>rules.json</code>, servi par <code>/api/about</code> et marqué <i>assumed</i> ou <i>validated</i>. On ne cache pas qu'un seuil est un choix : on le montre et on permet de le changer.</div>
+
+  <h3>Fenêtres continues : <code>BridgeGaps</code> puis <code>RunLengths</code></h3>
+  <p>Une fenêtre = nombre d'heures consécutives de Soleil (ou Soleil + Terre) à partir de l'atterrissage, après avoir comblé les trous de 6 h ou moins entourés de Soleil. Les trous au début et à la fin ne sont jamais comblés. <b>Viable</b> = fenêtre ≥ durée du séjour.</p>
+  <div class="widget wide" id="gapw">
+    <h4>Essayez : cliquez les heures pour allumer ou éteindre le Soleil</h4>
+    <div class="lbl">Brut (36 h depuis l'atterrissage)</div>
+    <div class="cells click" id="rawcells"></div>
+    <div class="lbl">Après BridgeGaps (hachuré = trou comblé)</div>
+    <div class="cells" id="bridgedcells"></div>
+    <label for="maxgap" class="lbl">Trou maximal comblé : <b id="maxgapv">6 h</b></label>
+    <input type="range" id="maxgap" min="0" max="10" step="1" value="6">
+    <div class="out">
+      <div>Fenêtre depuis l'heure 0<b id="win0">—</b></div>
+      <div>Plus longue nuit (brut)<b id="dark">—</b></div>
+      <div>Séjour de 24 h viable ?<b id="viable">—</b></div>
+    </div>
+  </div>
+
+  <h3>Les métriques d'un séjour (<code>Metrics</code>)</h3>
+  <ul>
+    <li><b>Pourcentages et nuits</b> : pas de 10 minutes sur la durée du séjour (éphéméride interpolée).</li>
+    <li><b>Fenêtres</b> : pas d'une heure, jusqu'à 60 jours après l'atterrissage. Si la fenêtre touche la fin des 60 jours ou des données, <code>WindowLowerBound</code> dit « au moins ».</li>
+    <li><b>Prochains lever et coucher</b> (<code>NextCrossing</code>) : recherche heure par heure, puis affinage par pas de 10 minutes dans l'heure du changement.</li>
+    <li><b>Marge</b> : avec <code>marginDeg = 0,2</code>, tout est recalculé avec l'horizon monté et descendu de 0,2°. Résultat : <code>SunPctRange</code>, <code>HoursToSunsetRange</code>, et <code>CloseCall = true</code> si le verdict viable change.</li>
+    <li><b>DSN</b> : <code>DsnPct</code> = part du séjour où la Terre est en vue <b>et</b> la Lune est à plus de 10° au-dessus de Goldstone, Madrid ou Canberra (théorie lunaire basse précision, ~0,3°).</li>
+  </ul>
+
+  <h3>Le repli si le lancement glisse (<code>BestFallback</code>)</h3>
+  <p>La heatmap donne, pour chaque site et chaque jour, la meilleure fenêtre. Pour la date glissée, chaque site reçoit sa fenêtre, son verdict avant et après, le jour viable le plus proche, la robustesse (part des jours viables à ±2 semaines) et la tolérance au glissement. Tri :</p>
+  <pre><code>entries.OrderByDescending(e =&gt; e.Terrain)        // relief réel d'abord
+       .ThenByDescending(e =&gt; e.WindowHours)       // plus longue fenêtre
+       .ThenBy(e =&gt; e.LongestDarkHours)            // nuit la plus courte
+       .ThenByDescending(e =&gt; e.Robustness)        // le moins sensible à la date</code></pre>
+
+  <h3>Le classement robuste (<code>RobustRanking</code>)</h3>
+  <p>Classer des sites demande de pondérer Soleil, Terre et plus longue nuit. Au lieu d'imposer des poids, on tire <b>2 000 pondérations</b> au hasard, uniformément sur le simplexe (wᵢ = −ln(1−U) puis normalisation), avec une graine fixe (42) pour que la réponse soit stable. Pour chaque site : % de tirages où il est premier, rang moyen, et <b>optimum de Pareto</b> (aucun autre site n'est meilleur sur les trois critères à la fois). Les sites sans relief sont exclus.</p>
+
+  <h3>La batterie (<code>SimulateBattery</code>)</h3>
+  <p>Heure par heure, batterie pleine au départ : production = indice × 1 361 W/m² × surface × rendement ; consommation constante. Par défaut 5 000 Wh, 150 W, 2 m², 28 %, plancher 20 %. L'indice suppose un panneau <b>vertical qui suit le Soleil</b> (<code>sunFrac × cos(élévation)</code>), le bon choix quand le Soleil rase l'horizon. Batterie minimale pour survivre = déficit maximal / (1 − plancher).</p>
+  <h3>Incertitude et obstacles</h3>
+  <p><code>Uncertainty</code> recalcule tout en 40 points autour du site (8 à 100 m, 16 à 250 m, 16 à 500 m), chacun avec son propre horizon : un atterrisseur ne se pose jamais au mètre près. <code>Blockers</code> compare les heures de Soleil avec un horizon plat et avec le vrai, donne les 3 secteurs de 10° qui coûtent le plus, et le gain d'un mât de 10 m sur un de 2 m.</p>
+
+  <details class="jury"><summary>Que veut dire « close call » ?</summary><div>Le verdict « viable » change quand on monte ou descend tout l'horizon de 0,2°, l'ordre de grandeur de notre erreur de relief. Le front l'affiche en RISKY : viable, mais pas avec certitude.</div></details>
+  <details class="jury"><summary>Pourquoi 2 000 pondérations et une graine fixe ?</summary><div>2 000 tirages suffisent pour que les pourcentages se stabilisent pour une trentaine de sites, et le calcul reste instantané. La graine fixe garantit que deux appels identiques donnent le même classement : un jury qui recharge la page ne doit pas voir le classement changer.</div></details>
+  <button class="readbtn" data-read="m5">Marquer comme lu</button>
+</section>
+
+<!-- 6 -->
+<section class="mod" id="m6" data-title="L'API">
+  <div class="modhead"><span class="num">Module 6</span><h2>L'API, endpoint par endpoint</h2></div>
+  <p>Base en production : <code>https://lunarnav-api.onrender.com</code>. La racine <code>/</code> redirige vers Swagger, le schéma est sur <code>/openapi/v1.json</code>. Choisissez un endpoint :</p>
+  <div class="widget wide">
+    <div class="eps">
+      <div class="eplist" id="eplist" role="tablist" aria-label="Endpoints"></div>
+      <div class="epdetail" id="epdetail" aria-live="polite"></div>
+    </div>
+  </div>
+  <h3>Conventions communes</h3>
+  <ul>
+    <li><b>Dates en UTC.</b> Une date sans <code>Z</code> arrive en <code>Unspecified</code> : la fonction <code>Utc()</code> la traite comme UTC. Une date locale est convertie. Pas de date = maintenant.</li>
+    <li><b>Mât = 2 ou 10 m</b> sur les routes précalculées (<code>BadMast</code>), car seuls ces masques existent. <code>/custom</code> accepte 1 à 20 m puisqu'il calcule l'horizon en direct.</li>
+    <li><b>Codes d'erreur.</b> 400 = paramètre invalide ou date hors 2026–2030 ; 404 = site inconnu ou donnée pas encore produite ; 503 = carte du relief absente (seulement <code>/custom</code>).</li>
+  </ul>
+  <pre><code>static IResult Guard(Func&lt;IResult&gt; f)
+{
+    try { return f(); }
+    catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+    { return Results.BadRequest(ex.Message); }   // l'erreur de l'appelant devient un 400
+}</code></pre>
+  <div class="why">Core lance des exceptions claires (<code>ArgumentOutOfRangeException</code> « utc is outside the ephemeris range »). L'API ne revalide pas tout : <code>Guard</code> transforme ces exceptions en 400 avec le message. Toute autre exception reste un 500, parce que c'est un vrai bug et qu'il ne faut pas le masquer.</div>
+  <details class="jury"><summary>Pourquoi passer par votre serveur pour /moon au lieu d'appeler la NASA depuis le navigateur ?</summary><div>Dial-A-Moon n'envoie pas d'en-têtes CORS, donc le navigateur ne peut pas l'appeler. Le proxy ajoute un cache par heure, un délai max de 3 s et un repli local calculé depuis notre éphéméride si la NASA est lente, en panne, ou si la date est après 2026 (la NASA renvoie alors silencieusement 2026). Un échec n'est pas mis en cache, pour réessayer au prochain appel.</div></details>
+  <details class="jury"><summary>Pourquoi CORS est-il ouvert à toutes les origines ?</summary><div>L'API est publique et en lecture seule : pas de cookies, pas de compte, pas de secret. Le front est servi depuis une autre origine. <code>AllowAnyOrigin</code> n'expose donc rien de plus que ce que <code>curl</code> voit déjà. Le vrai risque n'est pas CORS mais la charge (module 10).</div></details>
+  <button class="readbtn" data-read="m6">Marquer comme lu</button>
+</section>
+
+<!-- 7 -->
+<section class="mod" id="m7" data-title="Mémoire, cache, concurrence">
+  <div class="modhead"><span class="num">Module 7</span><h2>Mémoire, cache et concurrence</h2></div>
+  <p><code>AppData</code> est un <b>singleton</b> : une seule instance pour toutes les requêtes.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Donnée</th><th>Quand chargée</th><th>Mécanisme</th></tr></thead>
+    <tbody>
+      <tr><td>sites.json</td><td>au démarrage</td><td>constructeur ; plante si absent ou vide (échouer tôt)</td></tr>
+      <tr><td>éphéméride</td><td>premier appel</td><td><code>Lazy&lt;Ephemeris&gt;</code></td></tr>
+      <tr><td>relief LOLA (115 Mo)</td><td>premier <code>/custom</code></td><td><code>Lazy&lt;Dem?&gt;</code> ; <code>null</code> si fichier absent, donc 503</td></tr>
+      <tr><td>masques</td><td>premier appel par site et mât</td><td><code>ConcurrentDictionary</code>, longueur 720 vérifiée</td></tr>
+      <tr><td>heatmap, incertitude</td><td>premier appel par mât</td><td><code>ConcurrentDictionary.GetOrAdd</code></td></tr>
+    </tbody>
+  </table></div>
+  <div class="why"><code>Lazy&lt;T&gt;</code> est thread-safe par défaut (une seule construction même si dix requêtes arrivent en même temps), et le serveur démarre vite parce qu'il ne charge rien d'inutile. Render vérifie <code>/api/health</code> au démarrage : ce endpoint ne touche que la liste des sites.</div>
+  <h3>Charger 115 Mo sur 512 Mo de RAM</h3>
+  <pre><code>var dn = new short[7600 * 7600];
+file.ReadExactly(MemoryMarshal.AsBytes(dn.AsSpan()));   // lu directement dans le tableau final</code></pre>
+  <p>Lire les octets dans un <code>byte[]</code> puis les convertir créerait deux copies (230 Mo). <code>MemoryMarshal.AsBytes</code> voit le <code>short[]</code> comme des octets : une seule copie. Le plan gratuit de Render a 512 Mo. La taille est vérifiée avant (7600 × 7600 × 2 = 115 520 000 octets).</p>
+  <h3>Parallélisme dans le calcul</h3>
+  <p><code>Parallel.For</code> sur les 720 azimuts, sur les sites (heatmap, classement) et sur les points d'incertitude (limité à 4). Chaque itération écrit dans sa propre case du tableau : pas de verrou nécessaire. Dans <code>Ranking</code>, la date est vérifiée <b>avant</b> le <code>Parallel.For</code> : une exception dans une boucle parallèle arrive emballée dans une <code>AggregateException</code>, que <code>Guard</code> ne reconnaîtrait pas, d'où un 500 au lieu d'un 400.</p>
+  <details class="jury"><summary>L'API peut-elle passer à plusieurs instances ?</summary><div>Oui, sans changement : elle est sans état. Les caches sont de simples copies en mémoire de fichiers immuables embarqués dans l'image Docker. Chaque instance les recharge à son rythme et elles donnent toutes les mêmes réponses.</div></details>
+  <button class="readbtn" data-read="m7">Marquer comme lu</button>
+</section>
+
+<!-- 8 -->
+<section class="mod" id="m8" data-title="Validation et tests">
+  <div class="modhead"><span class="num">Module 8</span><h2>Validation scientifique et tests</h2></div>
+  <p>La commande <code>validate</code> exécute le <b>vrai code du produit</b> (<code>HorizonMask.Compute</code> + <code>Analysis.Timeline</code>) sur les 31 sites avec relief, heure par heure sur les 43 825 heures, et compare au <b>produit 69 de la NASA PGDA</b> (cartes d'illumination moyenne de E. Mazarico).</p>
+  <div class="tw"><table>
+    <thead><tr><th>Critère fixé à l'avance</th><th class="num">Seuil</th><th class="num">Résultat</th><th></th></tr></thead>
+    <tbody>
+      <tr><td>Sites Soleil à ±5 points</td><td class="num">≥ 25/31</td><td class="num">26/31</td><td><span class="pill ok">réussi</span></td></tr>
+      <tr><td>Sites Terre à ±5 points</td><td class="num">≥ 27/31</td><td class="num">28/31</td><td><span class="pill ok">réussi</span></td></tr>
+      <tr><td>Sites « problème »</td><td class="num">0</td><td class="num">0</td><td><span class="pill ok">réussi</span></td></tr>
+      <tr><td>Écart C# / Python</td><td class="num">≤ 0,05 pt</td><td class="num">0,08 / 0,42</td><td><span class="pill bad">échoué</span></td></tr>
+      <tr><td>Contrôle « azimut miroir » doit échouer</td><td class="num">&lt; 25/31</td><td class="num">24/31</td><td><span class="pill ok">réussi</span></td></tr>
+      <tr><td>Contrôle « Soleil tourné 180° » doit échouer</td><td class="num">&lt; 25/31</td><td class="num">25/31</td><td><span class="pill bad">échoué</span></td></tr>
+      <tr><td>Contrôle « date + 14,77 j » doit échouer</td><td class="num">&lt; 25/31</td><td class="num">26/31</td><td><span class="pill bad">échoué</span></td></tr>
+    </tbody>
+  </table></div>
+  <p>Écart médian : <b>0,78 point</b> (Soleil), <b>0,74 point</b> (Terre). Corrélation 0,970 et 0,996. Les 8 écarts de plus de 5 points sont tous sur des crêtes ou des bords de plateau, où la valeur NASA elle-même varie de 20 à 60 points d'un pixel au voisin.</p>
+  <div class="why"><b>Seuils écrits avant le calcul.</b> <code>thresholds.json</code> a été commité (commit <code>8ed64ee</code>) avant la première exécution du C#. On ne peut donc pas les avoir ajustés aux résultats. Les échecs sont publiés tels quels.</div>
+  <h3>Les trois points à connaître par cœur</h3>
+  <ol>
+    <li><b>Pourquoi à 0 m ?</b> Les cartes PGDA sont des cartes de surface. Les valeurs du produit à 2 et 10 m sont aussi publiées dans <code>validation.json</code>.</li>
+    <li><b>Verdict par site.</b> OK si l'écart ≤ 5 points ; « expliqué » si notre valeur est dans la fourchette 3×3 pixels de la NASA (ou la NASA dans nos 8 voisins à 80 m), à 5 points près ; sinon « problème ».</li>
+    <li><b>Contrôles négatifs.</b> On fausse volontairement le calcul : s'il donne encore un bon accord, la comparaison ne distingue pas le vrai du faux. Deux sur trois passent. Explication : une moyenne sur 5 ans ne dépend presque pas du moment où le Soleil passe, puisqu'il fait le tour de l'horizon. Cette comparaison valide donc <b>l'horizon</b>, pas le calendrier. Le calendrier est validé par le test JPL Horizons à 0,01°.</li>
+  </ol>
+  <h3>Pourquoi l'écart C# / Python dépasse le seuil</h3>
+  <p>Depuis la PR 26, le C# compare 16 bandes du disque à l'horizon réel ; le Python compare le disque entier à l'horizon pris en son centre. La Terre étant environ 4 fois plus large que le Soleil, l'effet y est plus fort (0,42 contre 0,08). Ce changement était connu et écrit dans les seuils avant le calcul. On n'a pas modifié le seuil après coup.</p>
+  <h3>Les tests</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Projet</th><th>Fichiers</th><th class="num">Tests</th><th>Ce qu'ils prouvent</th></tr></thead>
+    <tbody>
+      <tr><td>Core.Tests</td><td>Geometry, Ephemeris, Dem, HorizonMask, Analysis, Gap, MoonPhase, SaadTasks</td><td class="num">62</td><td>JPL à 0,01°, sphère lisse à 0,001°, aller-retour pixel ↔ lat/lon, comblement des trous, batterie…</td></tr>
+      <tr><td>LunarNav.Tests</td><td>Api, SaadApi, MoonApi, Tools, Validation, ValidationEndpoint</td><td class="num">35</td><td>La vraie API démarre en mémoire (<code>WebApplicationFactory</code>) sur les vraies données, avec un faux chemin de relief pour tester le 503.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Après déploiement, <code>scripts/smoke.sh</code> appelle chaque endpoint une fois et échoue sur tout code différent de 200.</p>
+  <details class="jury"><summary>Qu'est-ce qui n'est PAS validé ?</summary><div>Le relief lui-même (la NASA et nous utilisons LOLA : on valide la méthode, pas la donnée). La période (5 ans chez nous, 18,6 ans chez la NASA ; un site varie de 2 à 3 points d'une année à l'autre). Les hauteurs 2 et 10 m (pas de carte NASA ; seule la comparaison à Gläser et al. 2014 sur la Connecting Ridge, écart de −2,5 et −2,2 points). Et les crêtes, lissées par le pixel de 80 m.</div></details>
+  <details class="jury"><summary>Deux contrôles négatifs sur trois passent : votre validation ne vaut rien ?</summary><div>Elle vaut pour ce qu'elle mesure : l'horizon. Le contrôle miroir, qui casse l'horizon, échoue bien. Les deux autres cassent le calendrier, que la moyenne sur 5 ans ne voit pas. Le calendrier est couvert par un autre test, JPL Horizons à 0,01°, qui échoue avec un décalage de 0,1°. On l'a écrit dans le document plutôt que de retirer ces contrôles.</div></details>
+  <button class="readbtn" data-read="m8">Marquer comme lu</button>
+</section>
+
+<!-- 9 -->
+<section class="mod" id="m9" data-title="Déploiement">
+  <div class="modhead"><span class="num">Module 9</span><h2>Déploiement et exploitation</h2></div>
+  <div class="flow wide">
+    <div><span class="tag">branche</span><b>PR vers dev</b>CI : restore, build Release, 97 tests. Approbation du propriétaire obligatoire.</div>
+    <div><span class="tag">release</span><b>PR dev → main</b><code>main</code> n'accepte que des PR venant de <code>dev</code>.</div>
+    <div><span class="tag">Render</span><b>Build Docker</b>Blueprint <code>render.yaml</code>, déploiement automatique à chaque merge dans main.</div>
+    <div><span class="tag">contrôle</span><b>Santé + smoke</b><code>/api/health</code> par Render, puis <code>smoke.sh</code> sur les 16 routes.</div>
+  </div>
+  <h3>Le Dockerfile, ligne par ligne</h3>
+  <pre><code>FROM mcr.microsoft.com/dotnet/sdk:11.0 AS build          # étape 1 : compiler
+COPY *.csproj …  ;  RUN dotnet restore                     # seulement les .csproj : restore reste en cache
+COPY sources …   ;  RUN dotnet publish -c Release
+RUN curl … ldem_80s_80m.img &amp;&amp; [ taille = 115520000 ] || rm -f …   # relief, toléré s'il échoue
+
+FROM mcr.microsoft.com/dotnet/aspnet:11.0                  # étape 2 : runtime seul, sans SDK
+COPY --from=build /app . ; COPY dem/ ; COPY wwwroot/data/ /app/data/
+ENV DataDir=/app/data DemPath=/app/dem/LDEM_80S_80M.IMG ASPNETCORE_HTTP_PORTS=10000
+USER app                                                   # pas root</code></pre>
+  <div class="why">Multi-étapes : l'image finale ne contient ni SDK ni sources. Copier les <code>.csproj</code> avant le code garde la couche <code>restore</code> en cache tant que les dépendances ne changent pas. La carte LOLA (115 Mo) est trop grosse pour git : elle est téléchargée au build, avec vérification de taille. Si le téléchargement échoue, seul <code>/custom</code> est coupé (503) : le reste de l'API fonctionne.</div>
+  <h3>Render, plan gratuit</h3>
+  <ul>
+    <li>Région Ohio (la plus proche de Toronto), <code>healthCheckPath: /api/health</code>, <code>autoDeploy: true</code> depuis <code>main</code>.</li>
+    <li>512 Mo de RAM (d'où la lecture du relief en une seule copie).</li>
+    <li>Le service s'endort après 15 minutes sans requête ; le réveil prend ~60 s. Le workflow <code>keep-alive.yml</code> appelle <code>/api/health</code> toutes les 5 minutes (GitHub peut décaler un cron de quelques minutes, d'où la marge).</li>
+  </ul>
+  <h3>Garde-fous Git</h3>
+  <p><code>owner-approval.yml</code> : la PR est verte seulement si le propriétaire l'a approuvée sur le dernier commit, ou a posé le label <code>approved</code>. Un nouveau commit retire le label : il faut réapprouver. Un second job refuse toute PR vers <code>main</code> qui ne vient pas de <code>dev</code>.</p>
+  <details class="jury"><summary>Pourquoi Render et pas Azure, AWS ou Vercel ?</summary><div>Gratuit, déploie directement un Dockerfile, et se configure par un fichier dans le dépôt (<code>render.yaml</code>) avec déploiement automatique sur main. Vercel vise le front et les fonctions courtes, pas un serveur .NET qui garde 115 Mo en mémoire. Azure ou AWS auraient marché mais demandent plus de configuration pour un hackathon. Limites assumées : mise en veille et 512 Mo.</div></details>
+  <details class="jury"><summary>Que se passe-t-il si le build Docker n'arrive pas à télécharger la carte LOLA ?</summary><div>Le fichier partiel est supprimé, le build continue, l'API démarre. <code>AppData.Dem</code> vaut <code>null</code> et <code>POST /api/custom</code> renvoie 503 « terrain map not loaded ». Tout le reste utilise les masques précalculés et marche normalement.</div></details>
+  <button class="readbtn" data-read="m9">Marquer comme lu</button>
+</section>
+
+<!-- 10 -->
+<section class="mod" id="m10" data-title="Limites assumées">
+  <div class="modhead"><span class="num">Module 10</span><h2>Limites assumées</h2></div>
+  <p>Un jury fait confiance à une équipe qui connaît ses limites. Celles-ci sont toutes écrites dans <code>/api/about</code> ou dans <code>docs/validation.md</code>, sauf la dernière ligne, à connaître quand même.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Limite</th><th>Effet</th><th>Ce qu'on ferait ensuite</th></tr></thead>
+    <tbody>
+      <tr><td>Pixel de 80 m</td><td>Crêtes lissées ; tous les écarts de plus de 5 points y sont.</td><td>Cartes LOLA à 20 m ou 5 m autour des sites retenus.</td></tr>
+      <tr><td>Un point, pas une zone</td><td>Quelques centaines de mètres changent le Soleil de dizaines de points.</td><td>C'est le rôle de <code>/uncertainty</code> ; l'étendre en carte.</td></tr>
+      <tr><td>Précision</td><td>±5 points sur les %, ±2 h sur les heures (±4 h quand le Soleil rase).</td><td>Pas plus fin que 10 min, horizon à 0,5°.</td></tr>
+      <tr><td>5 ans de données</td><td>Dates hors 2026–2030 : 400.</td><td>Relancer <code>fetch_ephem.py</code> sur une autre période.</td></tr>
+      <tr><td>Batterie et seuils</td><td>Valeurs par défaut <i>assumed</i>, à confirmer par l'équipe science.</td><td>Paramètres de missions réelles (VIPER, Artemis).</td></tr>
+      <tr><td>Pas d'authentification ni de limite de débit</td><td><code>/custom</code> calcule un horizon (~1 s de CPU) à chaque appel : quelques appels simultanés saturent le plan gratuit.</td><td><code>AddRateLimiter</code> d'ASP.NET Core, cache par point arrondi, file d'attente.</td></tr>
+    </tbody>
+  </table></div>
+  <details class="jury"><summary>Que se passe-t-il si 100 personnes appellent /custom en même temps ?</summary><div>Chaque appel lance un lancer de rayons parallèle d'environ une seconde de CPU, sur une petite machine gratuite. Les réponses ralentiraient fortement, voire expireraient ; rien ne protège ce endpoint aujourd'hui. Les autres routes lisent du précalculé et tiennent mieux. La correction est connue et courte : un limiteur de débit sur <code>/custom</code> et un cache des horizons par coordonnées arrondies au pixel.</div></details>
+  <button class="readbtn" data-read="m10">Marquer comme lu</button>
+</section>
+
+<!-- 11 -->
+<section class="mod" id="m11" data-title="Oral blanc">
+  <div class="modhead"><span class="num">Module 11</span><h2>Oral blanc</h2></div>
+  <p>Lisez la question, répondez à voix haute (ou l'un pose, l'autre répond), puis comparez avec la réponse modèle. Les cartes marquées « à revoir » restent dans la pile.</p>
+  <div class="row" style="margin:.6rem 0">
+    <button id="fc-all" class="on">Toutes les cartes</button>
+    <button id="fc-review">Seulement à revoir</button>
+    <span class="muted" id="fc-count"></span>
+  </div>
+  <div class="card wide" id="fc-card" style="max-width:72ch"></div>
+  <button class="readbtn" data-read="m11">Marquer comme lu</button>
+</section>
+
+<!-- 12 -->
+<section class="mod" id="m12" data-title="Examen final">
+  <div class="modhead"><span class="num">Module 12</span><h2>Examen final</h2></div>
+  <p>Questions à choix multiples, avec l'explication après chaque réponse. Les scores sont gardés dans ce navigateur, par joueur.</p>
+  <div class="row" style="margin:.8rem 0">
+    <label for="qz-player" class="lbl">Joueur</label>
+    <select id="qz-player"><option>Saad</option><option>Nizar</option></select>
+    <label for="qz-mod" class="lbl">Module</label>
+    <select id="qz-mod"></select>
+    <label for="qz-len" class="lbl">Longueur</label>
+    <select id="qz-len"><option value="15">15 questions</option><option value="0">Toutes</option></select>
+    <button class="primary" id="qz-start">Commencer</button>
+  </div>
+  <div class="card wide" id="qz-card" style="max-width:72ch"></div>
+  <div class="hist" id="qz-hist"></div>
+</section>
+
+  </main>
+</div>
+
+<script>
+(function () {
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  };
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const fmt = (x, d = 2) => x.toFixed(d).replace(".", ",");
+
+  /* ---------- table of contents + reading progress ---------- */
+  const mods = [...document.querySelectorAll("section.mod")];
+  let read = store.get("lnc-read", []);
+  if (!read.includes("m1")) { read.push("m1"); store.set("lnc-read", read); } // module 1 has no button
+  function renderToc() {
+    $("#toc").innerHTML = mods.map((m, i) =>
+      `<li><a href="#${m.id}" class="${read.includes(m.id) ? "done" : ""}"><span class="n">${i + 1}</span>${esc(m.dataset.title)}</a></li>`).join("");
+    const n = read.length;
+    $("#progtxt").textContent = `${n} module${n > 1 ? "s" : ""} lu${n > 1 ? "s" : ""} sur ${mods.length}`;
+    $("#progbar").style.width = (100 * n / mods.length) + "%";
+    document.querySelectorAll("[data-read]").forEach((b) => {
+      const done = read.includes(b.dataset.read);
+      b.textContent = done ? "Lu ✓ (cliquer pour annuler)" : "Marquer comme lu";
+      b.classList.toggle("on", done);
+    });
+  }
+  document.querySelectorAll("[data-read]").forEach((b) => b.addEventListener("click", () => {
+    const id = b.dataset.read;
+    read = read.includes(id) ? read.filter((x) => x !== id) : [...read, id];
+    store.set("lnc-read", read); renderToc();
+  }));
+  renderToc();
+
+  /* ---------- disk fraction widget (Geometry.DiskFraction) ---------- */
+  const R = 0.2666;
+  function diskFraction(m, r) {
+    if (m >= r) return 1; if (m <= -r) return 0;
+    const k = m / r; return 1 - (Math.acos(k) - k * Math.sqrt(1 - k * k)) / Math.PI;
+  }
+  function renderDisk() {
+    const m = parseFloat($("#margin").value), f = diskFraction(m, R);
+    $("#marginv").textContent = (m > 0 ? "+" : "") + fmt(m) + "°";
+    $("#fracv").textContent = fmt(f, 3);
+    const yes = (b) => b ? "levé" : "couché";
+    $("#r-edge").textContent = yes(f > 0);
+    $("#r-center").textContent = yes(f >= 0.5);
+    $("#r-full").textContent = yes(f >= 1 - 1e-9);
+    $("#sundisk").setAttribute("cy", String(100 - m / R * 60));
+  }
+  $("#margin").addEventListener("input", renderDisk); renderDisk();
+
+  /* ---------- BridgeGaps / RunLengths widget (same logic as Analysis.cs) ---------- */
+  const raw = [1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1].map(Boolean);
+  function bridge(up, maxGap) {
+    const r = up.slice(); let i = 0;
+    while (i < up.length) {
+      if (up[i]) { i++; continue; }
+      let j = i; while (j < up.length && !up[j]) j++;
+      if (i > 0 && j < up.length && j - i <= maxGap) for (let k = i; k < j; k++) r[k] = true;
+      i = j;
+    }
+    return r;
+  }
+  function longestRun(a) { let m = 0, c = 0; for (const x of a) { c = x ? c + 1 : 0; m = Math.max(m, c); } return m; }
+  function renderGap() {
+    const g = parseInt($("#maxgap").value, 10), b = bridge(raw, g);
+    $("#maxgapv").textContent = g + " h";
+    $("#rawcells").innerHTML = raw.map((x, i) => `<span class="${x ? "up" : ""}" data-i="${i}" role="button" tabindex="0" aria-label="heure ${i}, ${x ? "Soleil" : "nuit"}"></span>`).join("");
+    $("#bridgedcells").innerHTML = b.map((x, i) => `<span class="${x ? (raw[i] ? "up" : "bridged") : ""}"></span>`).join("");
+    let w = 0; while (w < b.length && b[w]) w++;
+    $("#win0").textContent = w + " h" + (w === b.length ? " (au moins)" : "");
+    $("#dark").textContent = longestRun(raw.map((x) => !x)) + " h";
+    $("#viable").textContent = w >= 24 ? "oui" : "non";
+  }
+  function toggleCell(e) { const i = e.target.dataset.i; if (i === undefined) return; raw[+i] = !raw[+i]; renderGap(); }
+  $("#rawcells").addEventListener("click", toggleCell);
+  $("#rawcells").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleCell(e); } });
+  $("#maxgap").addEventListener("input", renderGap); renderGap();
+
+  /* ---------- endpoint explorer ---------- */
+  const EP = [
+    { m: "GET", p: "/api/health", what: "Vivant ? Renvoie { status: \"ok\", sites: 32 }.", params: "aucun", core: "aucun (liste des sites en mémoire)", err: "—", why: "Ne touche que la liste des sites : rapide, utilisé par Render au démarrage et par le keep-alive toutes les 5 min." },
+    { m: "GET", p: "/api/about", what: "Règles (rules.json), phrases de précision, sources.", params: "aucun", core: "aucun", err: "—", why: "Rend visibles les hypothèses : chaque seuil est marqué assumed ou validated." },
+    { m: "GET", p: "/api/sites", what: "Les 32 sites : id, nom, lat, lon, catégorie, terrain.", params: "aucun", core: "aucun", err: "—", why: "Chargés au démarrage ; le serveur refuse de démarrer si sites.json manque." },
+    { m: "GET", p: "/api/sites/{id}/mask", what: "Les 720 élévations d'horizon (bin i = azimut i × 0,5°).", params: "mast = 2 | 10", core: "aucun (fichier précalculé)", err: "400 mât invalide · 404 site inconnu ou masque absent", why: "Le front dessine l'horizon polaire sans rien calculer." },
+    { m: "GET", p: "/api/sites/{id}/metrics", what: "Tout pour « j'arrive à at, je reste stayDays » : comptes à rebours, % Soleil/Terre, nuits, VIPER, fenêtres, viable, marge ±0,2°, closeCall, DSN.", params: "at, stayDays (0–60, défaut 14), mast, sunRule = edge|center|full, earthRule = any|center", core: "Analysis.Metrics(…, marginDeg 0,2) : 3 calculs (normal, +0,2°, −0,2°)", err: "400 règle, durée, mât ou date hors 2026–2030 · 404 site", why: "Une seule requête remplit la vue détail. Le recalcul avec marge donne une fourchette au lieu d'un chiffre faussement exact." },
+    { m: "GET", p: "/api/sites/{id}/battery", what: "Charge de la batterie heure par heure, verdict viable, batterie minimale pour survivre.", params: "at, stayDays, mast, capacityWh 5000, loadW 150, panelM2 2, efficiency 0,28, minSocPct 20", core: "Analysis.Battery puis SimulateBattery", err: "400 paramètre hors bornes · 404", why: "Traduit les heures de Soleil en question d'ingénieur : est-ce que ça tient ? Tous les défauts sont modifiables." },
+    { m: "GET", p: "/api/sites/{id}/uncertainty", what: "Fourchettes Soleil/Terre/viable sur 40 points à 100, 250 et 500 m, et le meilleur point.", params: "mast", core: "aucun (précalculé, des minutes de calcul)", err: "404 site sans relief ou pas encore calculé", why: "Un atterrisseur ne se pose pas au mètre près ; on montre combien la réponse bouge." },
+    { m: "GET", p: "/api/sites/{id}/blockers", what: "Heures de Soleil perdues à cause du relief, 3 pires secteurs de 10°, gain d'un mât de 10 m.", params: "from, to (défaut : toute l'éphéméride), mast", core: "Analysis.Blockers (masques 2 m et 10 m)", err: "400 période · 404", why: "Dit quelle montagne coûte de l'énergie et si un mât plus haut vaut la peine." },
+    { m: "GET", p: "/api/sites/{id}/timeline", what: "Série : azimut, élévation, fraction visible du Soleil et de la Terre, puissance.", params: "from, days 1–366 (défaut 30), stepMinutes ≥ 10 (défaut 60), mast", core: "Analysis.Timeline", err: "400 · 404", why: "Le chronogramme du front. Pas minimal de 10 min pour borner le coût d'une requête." },
+    { m: "GET", p: "/api/sites/{id}/export.csv", what: "La même série horaire en CSV, avec un en-tête qui cite sources, repère et règles.", params: "from, days 1–366, mast", core: "Analysis.Timeline", err: "400 · 404", why: "Pour les ingénieurs qui ont leurs propres outils. CultureInfo.InvariantCulture : toujours des points décimaux, même sur un serveur réglé en français." },
+    { m: "GET", p: "/api/heatmap", what: "Pour chaque site et chaque jour de 2026-01-01 à 2030-10-31 : meilleure fenêtre (Soleil, Soleil + Terre, batterie) et heure d'atterrissage.", params: "mast", core: "aucun (précalculé)", err: "404 pas encore calculé", why: "Des heures et non un oui/non : un seul fichier sert toutes les durées de séjour." },
+    { m: "GET", p: "/api/fallback", what: "La fonction phare : le lancement glisse de slipWeeks, quels sites sont viables, classés.", params: "date (obligatoire), slipWeeks 0–52, stayDays, requireEarth (défaut true), mast", core: "Analysis.BestFallback + LongestDarkHours + ViableAt(±0,2°) à la demande", err: "400 · 404 heatmap absente", why: "Lit la heatmap (instantané) et ne recalcule que le départage et le close call." },
+    { m: "GET", p: "/api/ranking", what: "Classement robuste des 31 sites avec relief : % premier sur 2 000 pondérations, rang moyen, Pareto.", params: "date (obligatoire), stayDays 0–60, mast", core: "Analysis.Ranking puis RobustRanking (graine 42)", err: "400 date ou durée", why: "Évite d'imposer des poids arbitraires ; la graine fixe rend la réponse stable." },
+    { m: "GET", p: "/api/validation", what: "Le fichier validation.json : C# contre NASA PGDA et Python.", params: "aucun", core: "aucun", err: "404 pas encore produit", why: "La preuve est servie par l'API elle-même. Chemin complet obligatoire : Results.File lit un chemin relatif comme un fichier de wwwroot." },
+    { m: "POST", p: "/api/custom", what: "N'importe quel point du pôle : horizon calculé en direct + métriques sur 14 jours.", params: "corps JSON { lat −89,9 à −80,5, lon, mast 1–20, at? }", core: "HorizonMask.Compute (~1 s) + Analysis.Metrics", err: "400 lat ou mât · 503 carte du relief absente", why: "Seule route qui lit la carte LOLA de 115 Mo. POST parce que c'est un calcul à la demande avec un corps." },
+    { m: "GET", p: "/api/moon", what: "Aspect de la Lune vue de la Terre à l'heure demandée : phase, distance, image NASA.", params: "at", core: "MoonService (proxy Dial-A-Moon) ou Analysis.MoonPhasePercent", err: "400 date hors éphéméride (si la NASA ne répond pas)", why: "Proxy pour contourner CORS, cache par heure, délai 3 s, repli local." },
+  ];
+  let epSel = 4;
+  function renderEp() {
+    $("#eplist").innerHTML = EP.map((e, i) =>
+      `<button role="tab" aria-selected="${i === epSel}" class="${i === epSel ? "on" : ""}" data-i="${i}"><span class="m">${e.m}</span>${esc(e.p.replace("/api", ""))}</button>`).join("");
+    const e = EP[epSel];
+    $("#epdetail").innerHTML = `<h4>${e.m} ${esc(e.p)}</h4><dl>
+      <dt>Renvoie</dt><dd>${esc(e.what)}</dd><dt>Paramètres</dt><dd>${esc(e.params)}</dd>
+      <dt>Core appelé</dt><dd>${esc(e.core)}</dd><dt>Erreurs</dt><dd>${esc(e.err)}</dd><dt>Pourquoi</dt><dd>${esc(e.why)}</dd></dl>`;
+  }
+  $("#eplist").addEventListener("click", (ev) => { const b = ev.target.closest("button"); if (b) { epSel = +b.dataset.i; renderEp(); } });
+  renderEp();
+
+  /* ---------- flashcards ---------- */
+  const FC = [
+    ["Pourquoi C# et pas Python / FastAPI comme prévu ?", "Les modèles C# sont partagés avec le front Blazor (un seul contrat typé). Le calcul est lourd et parallèle (2,25 millions de lectures du relief par horizon) : .NET compilé et Parallel.For, sans GIL. Typage strict des dates et des unités. Un seul livrable Docker. Python reste pour les scripts ponctuels et pour une réimplémentation indépendante qui sert de contre-vérification."],
+    ["Pourquoi pas de base de données ?", "Données immuables, produites hors-ligne, API en lecture seule. Des fichiers JSON chargés en mémoire au premier accès sont plus rapides, gratuits, versionnés dans git et vérifiables par SHA-256 (manifest.json). Une base servira quand on stockera des missions d'utilisateurs."],
+    ["Comment savez-vous que vos résultats sont justes ?", "Trois niveaux. Directions Soleil/Terre : JPL Horizons à 0,006°. Horizon : sphère lisse à 0,001° de la formule théorique. Résultat final : le vrai code C# comparé aux cartes NASA PGDA sur 31 sites, 26/31 (Soleil) et 28/31 (Terre) à ±5 points, écart médian 0,8 point, avec des seuils fixés avant le calcul."],
+    ["Pourquoi précalculer au lieu de calculer à la demande ?", "Un horizon coûte ~1 s, l'incertitude d'un site plusieurs minutes, la heatmap des 32 sites sur 5 ans encore plus. La démo doit répondre instantanément. Les fichiers sont petits, versionnés, hachés, et reproductibles par une commande écrite dans le manifest."],
+    ["Que veut dire closeCall ?", "Le verdict viable change si on monte ou descend tout l'horizon de 0,2°, notre ordre de grandeur d'erreur de relief. Viable mais fragile : affiché RISKY."],
+    ["Pourquoi tolérer des trous de 6 h dans une fenêtre ?", "Une batterie couvre une courte ombre. Sans ça, près du pôle, la durée d'une fenêtre saute de quelques heures à plusieurs semaines pour 0,05° d'horizon : un chiffre instable n'aide pas à décider. La valeur est marquée assumed, et la simulation de batterie donne la réponse précise."],
+    ["Pourquoi l'heure UTC partout ?", "Une mission lunaire n'a pas de fuseau ; l'éphéméride JPL est en UTC. Une date sans Z est lue comme UTC, une date locale est convertie : on évite des décalages de quelques heures, exactement l'ordre de grandeur des fenêtres."],
+    ["Votre API est-elle sécurisée ?", "Elle ne contient aucun secret, aucune donnée personnelle et n'écrit rien : CORS ouvert et OpenAPI public n'exposent rien. Le conteneur tourne sans root. Le point faible est la charge : pas de limite de débit, et /custom coûte ~1 s de CPU par appel. Correction prévue : AddRateLimiter et un cache par point."],
+    ["Comment l'API passerait-elle à l'échelle ?", "Elle est sans état : les données sont dans l'image, les caches sont des copies en mémoire de fichiers immuables. On ajoute des instances derrière un répartiteur sans rien changer. Le seul endpoint coûteux est /custom, à protéger par une file ou un cache."],
+    ["Qu'est-ce qui n'est pas validé ?", "Le relief LOLA lui-même (même source que la NASA), la période (5 ans contre 18,6), les hauteurs 2 et 10 m (une seule comparaison publiée, Gläser 2014), et les crêtes lissées par le pixel de 80 m."],
+    ["Deux contrôles négatifs sur trois passent. C'est grave ?", "Non, et c'est publié. Une moyenne sur 5 ans ne dépend pas du moment où le Soleil passe : tourner le Soleil ou décaler la date ne la change presque pas. La comparaison NASA valide l'horizon (le contrôle miroir échoue bien). Le calendrier est validé par le test JPL à 0,01°, qui casse avec 0,1° de décalage."],
+    ["Pourquoi l'écart C# / Python dépasse-t-il votre seuil, et pourquoi ne pas l'avoir corrigé ?", "Le C# compare 16 bandes du disque à l'horizon réel, le Python seulement le centre ; l'effet est plus fort sur la Terre, 4 fois plus large que le Soleil (0,42 contre 0,08 point). C'était prévu et écrit avant le calcul. Changer le seuil après coup rendrait toute la validation suspecte."],
+    ["Pourquoi Render ?", "Gratuit, déploie un Dockerfile, configuré par render.yaml dans le dépôt, redéploie à chaque merge sur main. Limites : 512 Mo et mise en veille après 15 min, compensées par la lecture du relief en une copie et un ping toutes les 5 min."],
+    ["Décrivez votre chaîne de déploiement.", "PR vers dev : CI (build + 97 tests) et approbation du propriétaire. PR dev → main (seule source acceptée). Render reconstruit l'image Docker multi-étapes, vérifie /api/health, puis smoke.sh appelle les 16 routes."],
+    ["Si la NASA Dial-A-Moon tombe pendant la démo ?", "Après 3 s, MoonService calcule la phase depuis notre éphéméride et, pour 2026, reconstruit même l'URL de l'image NASA. L'échec n'est pas mis en cache : la NASA est réessayée au prochain appel."],
+    ["Quelle est la précision de vos chiffres ?", "Directions à 0,006°. Pourcentages à ±5 points. Heures de lever et coucher à ±2 h, jusqu'à ±4 h quand le Soleil rase l'horizon. Pour un observateur à 2 ou 10 m au-dessus d'un pixel de 80 m, pas pour une région."],
+    ["Pourquoi la Terre bouge-t-elle dans le ciel du pôle Sud ?", "La libration : l'orbite de la Lune est elliptique et inclinée, donc le point sub-Terre oscille de quelques degrés. Au pôle, la Terre est près de l'horizon et ces oscillations la font passer derrière le relief puis réapparaître. C'est pourquoi l'éphéméride contient le point sub-Terre heure par heure."],
+    ["Comment testez-vous l'API elle-même ?", "WebApplicationFactory<Program> démarre la vraie API en mémoire avec les vraies données (DataDir) et un faux chemin de relief, ce qui teste aussi le 503 de /custom. 35 tests côté API, 62 côté Core, tous lancés en CI à chaque PR."],
+    ["Pourquoi 2 m et 10 m de hauteur ?", "Deux cas typiques : instruments et panneaux d'un atterrisseur (~2 m) et un mât (10 m). Seuls ces deux horizons sont précalculés ; /blockers chiffre le gain du mât, et /custom accepte 1 à 20 m pour les autres cas."],
+    ["Pourquoi un panneau vertical qui suit le Soleil dans le modèle de batterie ?", "Au pôle, le Soleil reste à quelques degrés au-dessus de l'horizon : un panneau horizontal ne recevrait presque rien (sinus de l'élévation). Un panneau vertical tourné vers le Soleil reçoit sunFrac × cos(élévation), proche du maximum."],
+  ];
+  let fcState = store.get("lnc-fc", {}); // card index -> "ok" | "review"
+  let fcMode = "all", fcPos = 0, fcShow = false;
+  const deck = () => FC.map((_, i) => i).filter((i) => fcMode === "all" || fcState[i] !== "ok");
+  function renderFc() {
+    const d = deck();
+    const known = Object.values(fcState).filter((v) => v === "ok").length;
+    $("#fc-count").textContent = `${known} sur ${FC.length} maîtrisées`;
+    if (!d.length) { $("#fc-card").innerHTML = `<div class="q">Toutes les cartes sont maîtrisées.</div><div class="row"><button id="fc-reset">Recommencer à zéro</button></div>`; return; }
+    fcPos = fcPos % d.length;
+    const i = d[fcPos];
+    $("#fc-card").innerHTML = `<div class="lbl">Carte ${fcPos + 1} sur ${d.length}${fcState[i] === "review" ? " · à revoir" : ""}</div><div class="q">${esc(FC[i][0])}</div>` +
+      (fcShow ? `<div class="a">${esc(FC[i][1])}</div><div class="row"><button class="primary" data-fc="ok">Je savais</button><button data-fc="review">À revoir</button></div>`
+              : `<div class="row"><button class="primary" data-fc="show">Voir la réponse</button><button data-fc="skip">Passer</button></div>`);
+  }
+  $("#fc-card").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button"); if (!b) return;
+    if (b.id === "fc-reset") { fcState = {}; store.set("lnc-fc", fcState); fcPos = 0; fcShow = false; return renderFc(); }
+    const a = b.dataset.fc, i = deck()[fcPos];
+    if (a === "show") fcShow = true;
+    else if (a === "skip") { fcPos++; fcShow = false; }
+    else { fcState[i] = a; store.set("lnc-fc", fcState); fcShow = false; if (!(fcMode === "review" && a === "ok")) fcPos++; }
+    renderFc();
+  });
+  function setFcMode(m) { fcMode = m; fcPos = 0; fcShow = false; $("#fc-all").classList.toggle("on", m === "all"); $("#fc-review").classList.toggle("on", m === "review"); renderFc(); }
+  $("#fc-all").addEventListener("click", () => setFcMode("all"));
+  $("#fc-review").addEventListener("click", () => setFcMode("review"));
+  renderFc();
+
+  /* ---------- final exam: [module, question, choices, correct index, explanation] ---------- */
+  const Q = [
+    ["m1", "Quelle question répond /api/fallback ?", ["Quel site a le plus de Soleil sur 5 ans", "Le lancement a glissé de N semaines : quels sites restent viables, et lequel est le meilleur", "À quelle heure se lève le Soleil demain", "Quel site voit le mieux le réseau DSN"], 1, "C'est la fonction phare : elle lit la heatmap à la date glissée, compare au verdict de la date d'origine et classe les sites."],
+    ["m1", "Pourquoi Apollo 11 a-t-il terrain: false ?", ["Le site n'existe plus", "Il est hors de la carte LOLA du pôle Sud (−80° à −90°)", "La NASA interdit de l'analyser", "Son relief est trop plat pour être mesuré"], 1, "Hors carte, on utilise HorizonMask.Flat() et le site n'est jamais classé devant un site avec du vrai relief."],
+    ["m2", "Pourquoi LunarNav.Core n'a-t-il aucun accès aux fichiers ni au réseau ?", ["Pour réduire la taille de la DLL", "Pour que les mêmes fonctions pures servent à l'API, au précalcul et à la validation, et soient faciles à tester", "Parce que .NET l'interdit dans une bibliothèque", "Pour pouvoir le compiler en WebAssembly"], 1, "La validation mesure ainsi exactement le code qui tourne en production."],
+    ["m2", "Meilleur argument pour C# plutôt que FastAPI dans ce projet ?", ["FastAPI ne sait pas produire du JSON", "Render n'héberge pas Python", "Modèles partagés avec le front Blazor et calcul parallèle lourd sans GIL", "La NASA impose .NET"], 2, "Models.cs est désérialisé par le front ; Parallel.For utilise tous les cœurs pour les 2,25 millions de lectures par horizon."],
+    ["m2", "À quoi sert « public partial class Program; » ?", ["À accélérer le démarrage", "À rendre la classe Program visible pour WebApplicationFactory<Program> dans les tests", "À activer OpenAPI", "À autoriser CORS"], 1, "Les instructions de haut niveau génèrent une classe interne ; les tests d'intégration en ont besoin."],
+    ["m3", "Que contient ephem.csv ?", ["Les photos LROC", "Heure par heure : point sub-solaire, point sub-Terre et distance Terre-Lune, de 2026 à 2030, depuis JPL Horizons", "Les hauteurs du relief", "Les résultats de la heatmap"], 1, "43 825 lignes, DE441, repère Moon Mean Earth, longitudes positives vers l'est."],
+    ["m3", "Pourquoi la heatmap stocke-t-elle des heures plutôt qu'un oui/non ?", ["Pour réduire la taille du fichier", "Pour qu'un seul fichier serve toutes les durées de séjour (viable = heures ≥ séjour × 24)", "Parce que JSON ne gère pas les booléens", "Pour l'afficher en couleur"], 1, "La viabilité est calculée au moment de la requête avec le stayDays demandé."],
+    ["m3", "À quoi sert manifest.json ?", ["À lister les endpoints", "À donner pour chaque fichier de données son SHA-256, sa source et la commande qui le reproduit", "À configurer Render", "À stocker les scores du quiz"], 1, "Provenance et intégrité : n'importe qui peut vérifier et reproduire les données."],
+    ["m3", "Que fait fetch_ephem.py si la réponse de Horizons ne contient pas MOON_ME ?", ["Il convertit le repère", "Il lève une erreur : mieux vaut planter qu'utiliser un repère faux", "Il ignore la ligne", "Il prend le repère par défaut"], 1, "Le script vérifie MOON_ME, {East-longitude positive}, $$SOE et $$EOE."],
+    ["m4", "Pourquoi interpoler l'éphéméride via des vecteurs 3D ?", ["C'est plus rapide", "Interpoler 359° et 1° directement donnerait 180°", "Pour gérer l'heure d'été", "Parce que les latitudes sont négatives"], 1, "Les vecteurs unitaires n'ont pas de discontinuité à 0°/360°."],
+    ["m4", "Pourquoi la direction de la Terre tient-elle compte de la position du site, et pas celle du Soleil ?", ["La Terre est assez proche pour que sa direction change jusqu'à 0,26° selon le site", "Le Soleil n'a pas d'éphéméride", "Par simplicité", "La Terre est plus grosse"], 0, "Parallaxe : on calcule le vecteur Terre − site en km."],
+    ["m4", "Pourquoi le lancer de rayons va-t-il jusqu'à 250 km et pas 150 ?", ["Pour couvrir toute la carte", "Depuis un sommet, l'horizon est 2 à 5° sous l'horizontale : du relief lointain et plus bas reste visible", "Pour être plus rapide", "Parce que la Lune a un rayon de 250 km"], 1, "Commentaire dans HorizonMask.Compute."],
+    ["m4", "Comment la courbure de la Lune est-elle prise en compte dans l'horizon ?", ["Par une correction empirique", "Automatiquement : l'œil et chaque point du relief sont de vrais points 3D", "Elle est ignorée", "Par la projection stéréographique"], 1, "Un test sur sphère lisse retrouve −acos(R/(R+h)) à 0,001° près."],
+    ["m4", "Pourquoi découper le disque en 16 bandes verticales ?", ["Pour l'affichage", "Pour comparer chaque bande à l'horizon à son propre azimut, l'horizon n'étant pas plat sur la largeur du disque", "Parce que le Soleil a 16 taches", "Pour paralléliser"], 1, "Surtout utile pour la Terre, ~1,9° de diamètre."],
+    ["m4", "Pourquoi la taille apparente du Soleil varie-t-elle de 0,262° à 0,272° ?", ["À cause de la libration", "À cause de la distance Terre-Soleil (excentricité 0,0167)", "À cause du relief", "À cause de l'atmosphère lunaire"], 1, "SunAngularRadiusAt. La distance Terre-Lune change le rayon de moins de 0,001° et est ignorée."],
+    ["m4", "Pourquoi le pas du lancer de rayons est-il de 80 m ?", ["C'est la taille d'un pixel LOLA", "C'est la taille d'un atterrisseur", "Pour aller plus vite", "C'est la limite de Render"], 0, "Plus fin : aucune information nouvelle. Plus gros : risque de sauter une crête."],
+    ["m5", "Par défaut, quand le Soleil est-il « levé » ?", ["Quand son centre est au-dessus de l'horizon", "Quand tout le disque est visible", "Dès que son bord supérieur dépasse le relief (sunFrac > 0)", "Quand l'élévation dépasse 1°"], 2, "Même convention que les cartes NASA PGDA ; center et full sont disponibles via sunRule."],
+    ["m5", "À quoi sert BridgeGaps avec 6 h ?", ["À supprimer le bruit de l'éphéméride", "À combler les courtes ombres qu'une batterie couvre, pour que les fenêtres ne sautent pas de quelques heures à des semaines", "À arrondir les heures", "À accélérer le calcul"], 1, "Les trous au début et à la fin ne sont jamais comblés."],
+    ["m5", "CloseCall = true signifie…", ["Le site est trop proche d'un autre", "Le verdict viable change quand l'horizon est monté ou descendu de 0,2°", "La date est proche de la fin des données", "La batterie est à moins de 20 %"], 1, "Affiché RISKY : viable mais fragile."],
+    ["m5", "La règle VIPER est violée quand…", ["Le Soleil est couché plus de 50 h", "Le Soleil est couché ET la Terre cachée plus de 50 h d'affilée", "La batterie tombe à 0", "Le rover roule plus de 50 h"], 1, "LongestDarkNoEarthHours > 50."],
+    ["m5", "Ordre de tri de /fallback ?", ["Robustesse, puis fenêtre", "Relief réel d'abord, puis fenêtre la plus longue, puis nuit la plus courte, puis robustesse", "Ordre alphabétique", "Latitude"], 1, "OrderByDescending(Terrain).ThenByDescending(WindowHours).ThenBy(LongestDarkHours).ThenByDescending(Robustness)."],
+    ["m5", "Pourquoi RobustRanking utilise-t-il une graine fixe (42) ?", ["Pour que deux appels identiques donnent le même classement", "Parce que 42 donne le meilleur résultat", "Pour aller plus vite", "C'est imposé par .NET"], 0, "Un jury qui recharge la page ne doit pas voir le classement changer."],
+    ["m5", "wᵢ = −ln(1 − U) puis normalisation produit…", ["Des poids tous égaux", "Des poids uniformes sur le simplexe (Dirichlet(1,1,1))", "Une loi normale", "Des poids entiers"], 1, "Chaque combinaison de poids qui somme à 1 a la même chance."],
+    ["m5", "Batterie minimale pour survivre = …", ["capacité × plancher", "déficit maximal / (1 − plancher)", "consommation × durée", "production moyenne × 24"], 1, "Une batterie C pleine au départ ne descend sous le plancher que si C − déficit max < plancher × C."],
+    ["m5", "Pourquoi les % du séjour sont-ils calculés toutes les 10 min alors que les fenêtres sont horaires ?", ["Les fenêtres regardent jusqu'à 60 jours en avant : le pas horaire limite le coût ; les statistiques du séjour gagnent en précision à 10 min", "Par erreur", "Parce que l'éphéméride est à 10 min", "Pour le front"], 0, "L'éphéméride horaire est interpolée pour le pas de 10 min."],
+    ["m5", "DsnPct mesure…", ["Le % du séjour avec la Terre en vue ET la Lune à plus de 10° pour Goldstone, Madrid ou Canberra", "Le débit radio", "Le % de Soleil", "La distance aux antennes"], 0, "Théorie lunaire basse précision, ~0,3°, suffisante pour un seuil de 10°."],
+    ["m6", "GET /api/sites/haworth/metrics?mast=5 renvoie…", ["200 avec un mât interpolé", "400 « mast must be 2 or 10 »", "404", "500"], 1, "Seuls les masques 2 et 10 m sont précalculés."],
+    ["m6", "Une date « 2027-01-15T00:00 » sans Z est interprétée…", ["En heure locale du serveur", "En UTC", "Rejetée", "En heure de Paris"], 1, "La fonction Utc() traite Unspecified comme UTC et convertit Local."],
+    ["m6", "metrics avec at=2035-01-01 renvoie…", ["500", "400, car Ephemeris lève ArgumentOutOfRangeException et Guard la transforme", "200 avec des valeurs extrapolées", "404"], 1, "Guard attrape ArgumentException (dont ArgumentOutOfRangeException) et InvalidOperationException."],
+    ["m6", "POST /api/custom quand la carte LOLA n'a pas pu être téléchargée au build :", ["500", "503 « terrain map not loaded »", "400", "Le serveur ne démarre pas"], 1, "Seul /custom dépend de la carte ; le reste fonctionne."],
+    ["m6", "Pourquoi /api/moon passe-t-il par notre serveur ?", ["Pour cacher une clé d'API", "Dial-A-Moon n'envoie pas d'en-têtes CORS ; le proxy ajoute aussi un cache et un repli local", "Pour modifier les images", "Pour suivre les utilisateurs"], 1, "Délai 3 s, cache par heure, échec non mis en cache."],
+    ["m6", "Une erreur inattendue (NullReferenceException) dans une route donne…", ["400", "500, car Guard ne masque que les erreurs de l'appelant", "404", "200 vide"], 1, "Un vrai bug doit rester visible."],
+    ["m7", "Pourquoi AppData utilise-t-il Lazy<T> ?", ["Pour charger chaque fichier une seule fois, au premier besoin, de façon thread-safe", "Pour écrire dans les fichiers", "Pour le garbage collector", "Pour CORS"], 0, "Le serveur démarre vite et dix requêtes simultanées ne chargent pas dix fois l'éphéméride."],
+    ["m7", "Pourquoi lire le relief avec MemoryMarshal.AsBytes ?", ["Pour le compresser", "Pour n'avoir qu'une copie de 115 Mo en mémoire sur un plan à 512 Mo", "Pour le chiffrer", "Pour le lire en parallèle"], 1, "Un byte[] puis une conversion ferait deux copies."],
+    ["m7", "Pourquoi Ranking vérifie-t-il la date avant Parallel.For ?", ["Pour aller plus vite", "Une exception dans la boucle parallèle arriverait en AggregateException, que Guard ne reconnaît pas (500 au lieu de 400)", "Parce que Parallel.For ignore les dates", "Pour les logs"], 1, "Le commentaire du code le dit : « here, not inside Parallel.For »."],
+    ["m8", "Pourquoi les seuils de validation ont-ils été commités avant le premier calcul C# ?", ["Pour respecter la date limite", "Pour qu'on ne puisse pas les ajuster aux résultats", "Parce que la CI l'exige", "Pour le README"], 1, "Commit 8ed64ee. Les échecs sont publiés tels quels."],
+    ["m8", "Pourquoi la comparaison NASA est-elle faite à 0 m ?", ["Parce que c'est plus simple", "Parce que les cartes PGDA sont des cartes de surface", "Parce que 2 m donne de mauvais résultats", "Par erreur"], 1, "Les valeurs à 2 et 10 m sont aussi publiées."],
+    ["m8", "Résultat Soleil contre NASA PGDA ?", ["31/31 identiques", "26/31 à ±5 points, écart médian 0,78 point", "15/31", "Aucune comparaison faite"], 1, "Terre : 28/31, médiane 0,74."],
+    ["m8", "Pourquoi « Soleil tourné de 180° » ne fait-il pas échouer la comparaison ?", ["Bug dans le contrôle", "Une moyenne sur 5 ans ne dépend presque pas du moment où le Soleil passe ; la comparaison valide l'horizon, pas le calendrier", "La NASA a fait la même erreur", "Le Soleil est symétrique"], 1, "Le calendrier est validé par le test JPL Horizons à 0,01°."],
+    ["m9", "Pourquoi un workflow appelle-t-il /api/health toutes les 5 minutes ?", ["Pour mesurer la latence", "Le plan gratuit de Render endort le service après 15 min sans requête et le réveil prend ~60 s", "Pour vider le cache", "Pour la CI"], 1, "5 min laisse de la marge car GitHub peut retarder un cron."],
+    ["m9", "Pourquoi copier les .csproj avant le reste du code dans le Dockerfile ?", ["C'est obligatoire en .NET", "Pour garder la couche dotnet restore en cache tant que les dépendances ne changent pas", "Pour réduire la taille", "Pour la sécurité"], 1, "Les builds suivants ne retéléchargent pas les paquets."],
+    ["m9", "Que fait « USER app » dans le Dockerfile ?", ["Crée un compte utilisateur de l'API", "Fait tourner le processus sans les droits root", "Active l'authentification", "Rien"], 1, "Moins de dégâts possibles si le processus est compromis."],
+    ["m9", "Dans owner-approval.yml, que se passe-t-il quand on pousse un nouveau commit sur une PR approuvée ?", ["Rien", "Le label approved est retiré : il faut réapprouver", "La PR est fusionnée", "La PR est fermée"], 1, "L'approbation porte sur le dernier commit."],
+    ["m10", "Quel endpoint est le plus exposé à une surcharge ?", ["/api/health", "/api/heatmap", "POST /api/custom, qui calcule un horizon (~1 s de CPU) à chaque appel", "/api/sites"], 2, "Pas de limite de débit aujourd'hui ; correction : AddRateLimiter et cache par point."],
+  ];
+  const modNames = Object.fromEntries(mods.map((m, i) => [m.id, `${i + 1}. ${m.dataset.title}`]));
+  const usedMods = [...new Set(Q.map((q) => q[0]))];
+  $("#qz-mod").innerHTML = `<option value="">Tous les modules</option>` + usedMods.map((m) => `<option value="${m}">${esc(modNames[m])}</option>`).join("");
+  let run = null;
+  function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  function startQuiz() {
+    const mod = $("#qz-mod").value, len = +$("#qz-len").value;
+    let pool = shuffle(Q.map((_, i) => i).filter((i) => !mod || Q[i][0] === mod));
+    if (len) pool = pool.slice(0, len);
+    run = { pool, pos: 0, right: 0, answered: null, missed: [], order: null, player: $("#qz-player").value, mod, saved: false };
+    renderQuiz();
+  }
+  function renderQuiz() {
+    const card = $("#qz-card");
+    if (!run) {
+      card.innerHTML = `<div class="q">${Q.length} questions sur les 10 modules de cours.</div><p class="muted" style="margin:0">Choisissez le joueur, un module ou tous, puis Commencer. Méthode conseillée : chacun passe l'examen complet, puis refait seulement les modules ratés.</p>`;
+      return renderHist();
+    }
+    if (run.pos >= run.pool.length) {
+      const n = run.pool.length, pct = Math.round(100 * run.right / n);
+      if (!run.saved) {
+        const hist = store.get("lnc-hist", []);
+        hist.unshift({ p: run.player, s: run.right, n, m: run.mod, d: new Date().toISOString().slice(0, 10) });
+        store.set("lnc-hist", hist.slice(0, 30)); run.saved = true;
+      }
+      const verdict = pct >= 90 ? "Prêt pour le jury." : pct >= 70 ? "Solide. Relisez les modules des questions ratées." : "À retravailler : relisez les modules ci-dessous puis refaites l'examen.";
+      card.innerHTML = `<div class="lbl">${esc(run.player)} · résultat</div><div class="score">${run.right} / ${n}</div><div class="meter"><i style="width:${pct}%"></i></div><p style="margin:0">${verdict}</p>` +
+        (run.missed.length ? `<div><b>À revoir</b><ul class="missed">${run.missed.map((i) => `<li><a href="#${Q[i][0]}">${esc(modNames[Q[i][0]])}</a> : ${esc(Q[i][1])}<br><span class="muted">Réponse : ${esc(Q[i][2][Q[i][3]])}</span></li>`).join("")}</ul></div>` : "") +
+        `<div class="row"><button class="primary" id="qz-again">Refaire</button></div>`;
+      return renderHist();
+    }
+    const q = Q[run.pool[run.pos]];
+    if (!run.order) run.order = shuffle(q[2].map((_, i) => i));
+    const done = run.answered !== null;
+    card.innerHTML = `<div class="row" style="justify-content:space-between"><span class="lbl">${esc(run.player)} · question ${run.pos + 1} sur ${run.pool.length} · ${esc(modNames[q[0]])}</span><span class="lbl">score ${run.right}</span></div>
+      <div class="meter"><i style="width:${100 * run.pos / run.pool.length}%"></i></div>
+      <div class="q">${esc(q[1])}</div>
+      <div class="choices">${run.order.map((c) => {
+        const cls = !done ? "" : c === q[3] ? "right" : c === run.answered ? "wrong" : "";
+        return `<button data-c="${c}" class="${cls}" ${done ? "disabled" : ""}>${esc(q[2][c])}</button>`; }).join("")}</div>` +
+      (done ? `<div class="expl"><b>${run.answered === q[3] ? "Correct." : "Faux."}</b> ${esc(q[4])} <a href="#${q[0]}">Revoir le module</a></div><div class="row"><button class="primary" id="qz-next">${run.pos + 1 < run.pool.length ? "Question suivante" : "Voir le résultat"}</button></div>` : "");
+    if (done) $("#qz-next").focus({ preventScroll: true });
+  }
+  function renderHist() {
+    const hist = store.get("lnc-hist", []);
+    if (!hist.length) { $("#qz-hist").innerHTML = ""; return; }
+    const best = {};
+    hist.forEach((h) => { const pct = h.s / h.n; if (!(h.p in best) || pct > best[h.p]) best[h.p] = pct; });
+    $("#qz-hist").innerHTML = `<h3>Historique dans ce navigateur</h3><p class="muted">${Object.entries(best).map(([p, v]) => `Meilleur score de ${esc(p)} : ${Math.round(100 * v)} %`).join(" · ")}</p>
+      <div class="tw"><table><thead><tr><th>Date</th><th>Joueur</th><th>Module</th><th class="num">Score</th></tr></thead><tbody>${hist.slice(0, 10).map((h) =>
+        `<tr><td>${esc(h.d)}</td><td>${esc(h.p)}</td><td>${h.m ? esc(modNames[h.m] || h.m) : "Tous"}</td><td class="num">${h.s} / ${h.n}</td></tr>`).join("")}</tbody></table></div>`;
+  }
+  $("#qz-card").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button"); if (!b || !run) return;
+    if (b.id === "qz-next") { run.pos++; run.answered = null; run.order = null; return renderQuiz(); }
+    if (b.id === "qz-again") return startQuiz();
+    if (b.dataset.c !== undefined && run.answered === null) {
+      const c = +b.dataset.c, qi = run.pool[run.pos];
+      run.answered = c;
+      if (c === Q[qi][3]) run.right++; else run.missed.push(qi);
+      renderQuiz();
+    }
+  });
+  $("#qz-start").addEventListener("click", startQuiz);
+  renderQuiz();
+})();
+</script>
+
+</body></html>
