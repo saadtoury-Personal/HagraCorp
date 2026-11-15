@@ -1,0 +1,67 @@
+name: Owner approval
+
+# Green only when the repo owner approved the current head commit:
+#  - an APPROVED review by the owner on the head SHA (PRs opened by someone else), or
+#  - the "approved" label, applied by the owner (your own PRs: GitHub won't let you review them).
+# New commits remove the label, so approval must be given again.
+on:
+  pull_request:
+    branches: [main, dev]
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+  pull_request_review:
+    types: [submitted, dismissed]
+
+permissions:
+  contents: read
+  pull-requests: write # to remove the label on new commits
+
+jobs:
+  # Rulesets can't filter on the source branch, so main only accepts PRs from dev here.
+  source-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: main accepts PRs from dev only
+        env:
+          BASE: ${{ github.event.pull_request.base.ref }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "$BASE" = "main" ] && { [ "$HEAD_REF" != "dev" ] || [ "$HEAD_REPO" != "$REPO" ]; }; then
+            echo "::error::PRs into main must come from $REPO:dev (got '$HEAD_REPO:$HEAD_REF')."
+            exit 1
+          fi
+
+  approval:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check owner approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          OWNER: ${{ github.repository_owner }}
+          ACTION: ${{ github.event.action }}
+        run: |
+          set -euo pipefail
+          if [ "$ACTION" = "synchronize" ]; then
+            gh api -X DELETE "repos/$REPO/issues/$PR/labels/approved" >/dev/null 2>&1 || true
+            echo "::error::New commits pushed. Owner must approve again (add the 'approved' label)."
+            exit 1
+          fi
+
+          reviewed=$(gh api --paginate "repos/$REPO/pulls/$PR/reviews" \
+            --jq "[.[] | select(.user.login == \"$OWNER\" and .commit_id == \"$HEAD\" and .state == \"APPROVED\")] | length" \
+            | awk '{s+=$1} END {print s+0}')
+
+          has_label=$(gh api "repos/$REPO/issues/$PR/labels" --jq '[.[] | select(.name == "approved")] | length')
+          labeler=$(gh api --paginate "repos/$REPO/issues/$PR/events" \
+            --jq '.[] | select(.event == "labeled" and .label.name == "approved") | .actor.login' | tail -n1)
+
+          if [ "$reviewed" -gt 0 ] || { [ "$has_label" -gt 0 ] && [ "$labeler" = "$OWNER" ]; }; then
+            echo "Approved by $OWNER."
+          else
+            echo "::error::Not approved by $OWNER. Approve the PR, or add the 'approved' label yourself."
+            exit 1
+          fi

@@ -1,0 +1,11 @@
+@LunarNav.Api_HostAddress = http://localhost:5204
+
+GET {{LunarNav.Api_HostAddress}}/openapi/v1.json
+Accept: application/json
+
+###
+
+GET {{LunarNav.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
