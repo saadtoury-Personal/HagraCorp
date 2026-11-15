@@ -1,5 +1,6 @@
 import { Html, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { create } from 'zustand'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { AdditiveBlending, BufferGeometry, CanvasTexture, DoubleSide, Float32BufferAttribute, Mesh, PerspectiveCamera, Quaternion, Vector2, Vector3, type DirectionalLight, type Group, type Material } from 'three'
 import bodies from '../../data/bodies.json'
@@ -404,11 +405,16 @@ function SunLight() {
 }
 
 // Html renders in its own React root, so no router context here: navigation goes through onOpen.
+// Which marker the pointer is on, shared by all markers so that only one summary card is ever open.
+const useHovered = create<{ i: number | null; set: (i: number | null) => void }>((set) => ({ i: null, set: (i) => set({ i }) }))
+const leave = (i: number) => useHovered.getState().i === i && useHovered.getState().set(null)
+
 function Marker({ i, level, onSelect, onOpen }: { i: number; level: Level; onSelect: (i: number) => void; onOpen: (i: number) => void }) {
   const s = SITES[i]
   const { camera } = useThree()
   const wrap = useRef<HTMLDivElement>(null)
-  const [hover, setHover] = useState(false)
+  const hovered = useHovered((st) => st.i)
+  const [place, setPlace] = useState({ left: false, edge: 'mid' as 'mid' | 'top' | 'bottom' })
   const selected = useScenario((st) => st.site === i)
   const day = useScenario((st) => st.day)
   const dur = useScenario((st) => st.dur)
@@ -424,28 +430,34 @@ function Marker({ i, level, onSelect, onOpen }: { i: number; level: Level; onSel
     el.style.display = level > 0 && q.dot(tmp) > 0.02 ? '' : 'none'
   })
 
-  const open = hover || (selected && level === 2)
+  // One card at a time: the one under the pointer, or, when the pointer is on no marker, the selected region's.
+  const open = hovered === i || (selected && level === 2 && hovered === null)
+  // The card opens on the side, and at the height, where there is room for it.
+  useEffect(() => {
+    const r = wrap.current?.getBoundingClientRect()
+    if (open && r) setPlace({ left: r.left > innerWidth * 0.55, edge: r.top < 190 ? 'top' : r.bottom > innerHeight - 190 ? 'bottom' : 'mid' })
+  }, [open])
   // The server is only asked for the card that is open: 32 markers must not each call it.
   const m = useSiteMetrics(i, s.id, day, dur, mast, open)
   const v = verdict(m.E, m.D)
   return (
-    <Html position={q} center zIndexRange={[20, 0]}>
+    <Html position={q} center zIndexRange={open ? [70, 50] : [20, 0]}>
       <div ref={wrap} className="relative">
         <button
           type="button"
           aria-label={`${s.name}, region ${i + 1} of ${SITES.length}`}
           aria-pressed={selected}
           onClick={() => onSelect(i)}
-          onPointerEnter={() => setHover(true)}
-          onPointerLeave={() => setHover(false)}
-          onFocus={() => setHover(true)}
-          onBlur={() => setHover(false)}
+          onPointerEnter={() => useHovered.getState().set(i)}
+          onPointerLeave={() => leave(i)}
+          onFocus={() => useHovered.getState().set(i)}
+          onBlur={() => leave(i)}
           className="group relative grid size-8 place-items-center"
         >
           <span className={`block size-3 rounded-full border-2 border-ink bg-bg/50 shadow-[0_0_0_1px_rgb(0_0_0/0.6)] transition-transform duration-200 ${selected ? 'scale-150 bg-ink' : 'group-hover:scale-150 group-hover:bg-ink'}`} />
         </button>
         {open && (
-          <div className="absolute left-9 top-1/2 z-10 w-64 -translate-y-1/2 border border-line bg-bg p-4 text-left" role="group" aria-label={`${s.name} summary`}>
+          <div className={`absolute z-10 w-64 border border-line bg-bg p-4 text-left shadow-[0_12px_40px_rgb(0_0_0/0.7)] ${place.left ? 'right-9' : 'left-9'} ${place.edge === 'top' ? 'top-0' : place.edge === 'bottom' ? 'bottom-0' : 'top-1/2 -translate-y-1/2'}`} role="group" aria-label={`${s.name} summary`}>
             <h3 className="text-lg font-normal leading-tight">{s.name}</h3>
             <p className="mb-3 mt-1 text-[13px] text-dim">{coords(s.lat, s.lonE)}</p>
             <dl className="mb-3 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1.5 text-sm">
