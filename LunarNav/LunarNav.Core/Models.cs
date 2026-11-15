@@ -24,6 +24,7 @@ public record TimelinePoint(DateTime T, double SunAz, double SunEl, double SunFr
 
 /// <summary>Answers for "site + arrival time + stay length".
 /// HoursTo* = countdown from At to the next event, null if none within the search horizon.
+/// Sun up = any part of the Sun's disk visible (upper edge above the terrain). Earth in view = any part of the Earth visible.
 /// SunPct / EarthPct / BothDownPct = percent (0..100) of the stay with Sun up / Earth in view / both down.
 /// LongestDarkHours = longest continuous Sun-down period in the stay.
 /// LongestDarkNoEarthHours = longest period with Sun down AND Earth down; ViperRuleViolated when it exceeds 50 h.
@@ -35,17 +36,21 @@ public record SiteMetrics(DateTime At, double? HoursToSunset, double? HoursToSun
     double LongestDarkHours, double LongestDarkNoEarthHours, bool ViperRuleViolated,
     double WindowSunHours, double WindowBothHours, bool Viable);
 
-/// <summary>Slip heatmap. SunH[site][day] = continuous hours of Sun starting at 06:00 UTC of Days[day].
-/// BothH = same, also requiring Earth in view. A cell is viable when hours >= stayDays * 24
+/// <summary>Slip heatmap. SunH[site][day] = longest continuous hours of Sun when landing at the best hour of Days[day] (UTC);
+/// SunStartHour[site][day] = that hour (0..23). BothH / BothStartHour = same, also requiring Earth in view (the design's cell).
+/// Dark gaps of 6 h or less are bridged. A cell is viable when hours >= stayDays * 24
 /// (computed by the caller, so one file serves every stay length).</summary>
-public record HeatmapDto(string[] Sites, DateTime[] Days, float[][] SunH, float[][] BothH);
+public record HeatmapDto(string[] Sites, DateTime[] Days, float[][] SunH, float[][] BothH,
+    int[][]? SunStartHour = null, int[][]? BothStartHour = null);
 
 /// <summary>One site in the fallback ranking. NearestViableDate = closest viable day at this site
 /// (before or after the slipped date), null if none. Robustness = fraction (0..1) of days within
-/// +-N weeks of the slipped date that are viable.</summary>
-public record FallbackEntry(string SiteId, double WindowHours, bool Viable, DateTime? NearestViableDate, double Robustness);
+/// +-N weeks of the slipped date that are viable. LongestDarkHours = longest Sun-down period of the stay (tie-breaker).
+/// WindowHoursBefore / ViableBefore = the same site on the original (unslipped) date, to mark verdicts that changed.</summary>
+public record FallbackEntry(string SiteId, double WindowHours, bool Viable, DateTime? NearestViableDate, double Robustness,
+    double LongestDarkHours = 0, double WindowHoursBefore = 0, bool ViableBefore = false);
 
-/// <summary>Sites ranked best first (longest window) for SlippedDate = OriginalDate + slip.</summary>
+/// <summary>Sites ranked best first (longest window, then shortest dark period, then robustness) for SlippedDate = OriginalDate + slip.</summary>
 public record FallbackDto(DateTime OriginalDate, DateTime SlippedDate, FallbackEntry[] Ranked);
 
 /// <summary>POST /api/custom body. Mast = observer height above ground in meters. At defaults to now.</summary>
