@@ -3,7 +3,9 @@ import { categoryLabel, coords, signed, toneClass } from '../../lib/format'
 import SourceTag from '../../components/SourceTag'
 import Term from '../../components/Term'
 import { useSiteMetrics } from '../../lib/useSiteMetrics'
+import BatteryPanel from './BatteryPanel'
 import ServerPanel from './ServerPanel'
+import Uncertainty from './Uncertainty'
 
 type Props = { site: number; series: Series; day: number; dur: number; mast: number; minD: number; onMast: (m: number) => void }
 
@@ -44,10 +46,10 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
   return (
     <div>
       <div className="border-b border-line-soft pb-5">
-        <span className="flex items-baseline justify-between gap-3">
-          <span className="lab">
-            <Term>Assessment</Term>
-          </span>
+          <span className="flex items-center justify-between gap-3">
+            <span className="lab">
+              <Term>Assessment</Term>
+            </span>
           <SourceTag source={m.source} />
         </span>
         <b className={`mt-1 block text-4xl font-light leading-tight tracking-tight ${toneClass[v.tone]}`}>{v.word}</b>
@@ -67,6 +69,8 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
       </section>
 
       <ServerPanel dur={dur} mast={mast} server={m.server} />
+      <Uncertainty siteId={s.id} mast={mast} />
+      <BatteryPanel siteId={s.id} day={day} dur={dur} mast={mast} />
 
       <div className="mt-5">
         <div className="flex justify-between">
@@ -98,7 +102,7 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
         <a className="underline underline-offset-4 hover:text-ink" href="https://www.nasa.gov/wp-content/uploads/2024/02/15-2024-architecture-workshop-white-paper-lunar-site-selection.pdf" target="_blank" rel="noopener">
           Lunar Site Selection white paper
         </a>
-        . Simplified analytic model, not real ephemeris data.
+        . Sun and Earth from the JPL Horizons table, horizon from the LOLA terrain map.
       </p>
     </div>
   )

@@ -1,10 +1,18 @@
 // Client for the LunarNav API (LunarNav/LunarNav.Api). The server computes from the real LOLA terrain and JPL Horizons data.
-// Set VITE_API_URL to point at another server; by default it is the one `dotnet run` starts locally (launchSettings.json).
-export const API_BASE = ((import.meta.env.VITE_API_URL as string | undefined) ?? 'http://localhost:5204').replace(/\/$/, '')
+// Default: the team's deployed server (Render, deployed from main). For a local `dotnet run` set VITE_API_URL=http://localhost:5204.
+export const API_BASE = ((import.meta.env.VITE_API_URL as string | undefined) ?? 'https://lunarnav-api.onrender.com').replace(/\/$/, '')
 
 /** Response shapes, mirroring LunarNav.Core/Models.cs (System.Text.Json camelCase). */
 export type Health = { status: string; sites: number }
-export type About = { precision: string[]; sources: string[] }
+/** rules / validated come from rules.json (Nizar's branch); older servers omit them. */
+export type Rule = { id: string; label: string; value: unknown; unit?: string; description: string; status: 'assumed' | 'validated'; source: string }
+/** The deployed server nests the rules file: rules = { note, rules, validated }. Older builds returned flat arrays. */
+export type About = { precision: string[]; sources: string[]; rules?: Rule[] | { note?: string; rules?: Rule[]; validated?: Rule[] }; validated?: Rule[] }
+export const aboutRules = (a: About | null): Rule[] => {
+  if (!a) return []
+  const r = a.rules
+  return Array.isArray(r) ? [...r, ...(a.validated ?? [])] : [...(r?.rules ?? []), ...(r?.validated ?? [])]
+}
 export type ServerMetrics = {
   at: string
   hoursToSunset: number | null
@@ -20,16 +28,20 @@ export type ServerMetrics = {
   windowSunHours: number
   windowBothHours: number
   viable: boolean
+  sunPctRange?: number[] | null
+  closeCall?: boolean
+  dsnPct?: number | null
 }
 
-async function getJson<T>(path: string, signal?: AbortSignal): Promise<T> {
-  const timeout = AbortSignal.timeout(5000)
+async function getJson<T>(path: string, signal?: AbortSignal, ms = 15000): Promise<T> {
+  const timeout = AbortSignal.timeout(ms)
   const res = await fetch(`${API_BASE}${path}`, { signal: signal ? AbortSignal.any([signal, timeout]) : timeout, headers: { Accept: 'application/json' } })
   if (!res.ok) throw new Error(`${path}: ${res.status} ${res.statusText}`)
   return (await res.json()) as T
 }
 
-export const fetchHealth = (signal?: AbortSignal) => getJson<Health>('/api/health', signal)
+// Render's free plan sleeps when idle and takes up to a minute to wake: give the health check that long.
+export const fetchHealth = (signal?: AbortSignal) => getJson<Health>('/api/health', signal, 70000)
 export const fetchAbout = (signal?: AbortSignal) => getJson<About>('/api/about', signal)
 
 /** The server only has horizon masks for observers 2 m and 10 m tall: pick the closer one. */
@@ -40,12 +52,30 @@ export function fetchMetrics(siteId: string, at: Date, stayDays: number, mastM: 
   return getJson<ServerMetrics>(`/api/sites/${encodeURIComponent(siteId)}/metrics?${q}`, signal)
 }
 
-export type FallbackEntry = { siteId: string; windowHours: number; viable: boolean; nearestViableDate: string | null; robustness: number }
+/** GET /api/fallback (Analysis.BestFallback). windowHours = longest continuous Sun (and Earth when required) window when landing
+ * at the best hour of the slipped day, dark gaps of 6 h or less bridged. Viable = windowHours >= stay. */
+export type FallbackEntry = {
+  siteId: string
+  windowHours: number
+  viable: boolean
+  nearestViableDate: string | null
+  robustness: number
+  longestDarkHours: number
+  windowHoursBefore: number
+  viableBefore: boolean
+  slipToleranceDays: number
+  minShiftToViableDays: number | null
+  lowerBound: boolean
+  terrain: boolean
+  closeCall: boolean | null
+}
 export type Fallback = { originalDate: string; slippedDate: string; ranked: FallbackEntry[] }
 
-/** Sites ranked by the continuous Sunlight window on the slipped date (precomputed slip heatmap on the server). */
+/** Day part of a date as the server's heatmap keys it (UTC). */
+export const isoDay = (d: Date) => d.toISOString().slice(0, 10)
+
 export function fetchFallback(date: Date, slipWeeks: number, stayDays: number, requireEarth: boolean, mastM: number, signal?: AbortSignal) {
-  const q = new URLSearchParams({ date: date.toISOString(), slipWeeks: String(slipWeeks), stayDays: String(stayDays), requireEarth: String(requireEarth), mast: String(serverMast(mastM)) })
+  const q = new URLSearchParams({ date: isoDay(date), slipWeeks: String(slipWeeks), stayDays: String(stayDays), requireEarth: String(requireEarth), mast: String(serverMast(mastM)) })
   return getJson<Fallback>(`/api/fallback?${q}`, signal)
 }
 
@@ -56,3 +86,33 @@ export function fetchTimeline(siteId: string, from: Date, days: number, stepMinu
   const q = new URLSearchParams({ from: from.toISOString(), days: String(days), stepMinutes: String(stepMinutes), mast: String(serverMast(mastM)) })
   return getJson<TimelinePoint[]>(`/api/sites/${encodeURIComponent(siteId)}/timeline?${q}`, signal)
 }
+/** GET /api/sites/{id}/uncertainty: how the answer changes within 100, 250 and 500 m of the published point (2026 to 2030). */
+export type PctRange = { official: number; min: number; max: number }
+export type UncertaintyPoint = { latDeg: number; lonDeg: number; distanceM: number; bearingDeg: number; sunPct: number; earthPct: number; bothPct: number; viable14Pct: number }
+export type Uncertainty = { siteId: string; mastM: number; radiiM: number[]; sunPct: PctRange; earthPct: PctRange; bothPct: PctRange; viable14Pct: PctRange; best: UncertaintyPoint; points: UncertaintyPoint[] }
+export const fetchUncertainty = (siteId: string, mastM: number, signal?: AbortSignal) =>
+  getJson<Uncertainty>(`/api/sites/${encodeURIComponent(siteId)}/uncertainty?mast=${serverMast(mastM)}`, signal)
+
+/** GET /api/sites/{id}/battery (Analysis.Battery, hourly). */
+export type BatteryParams = { capacityWh: number; loadW: number; panelM2: number; efficiency: number; minSocPct: number }
+export type Battery = { viable: boolean; minSocPct: number; hoursBelowMin: number; endSocPct: number; minBatteryWhToSurvive: number; params: BatteryParams; series: { t: string; socPct: number; powerW: number }[] }
+export function fetchBattery(siteId: string, at: Date, stayDays: number, mastM: number, p: BatteryParams, signal?: AbortSignal) {
+  const q = new URLSearchParams({ at: at.toISOString(), stayDays: String(stayDays), mast: String(serverMast(mastM)) })
+  for (const [k, v] of Object.entries(p)) q.set(k, String(v))
+  return getJson<Battery>(`/api/sites/${encodeURIComponent(siteId)}/battery?${q}`, signal)
+}
+
+/** GET /api/validation: the C# check against NASA PGDA product 69, with thresholds fixed before the run. Only the fields the app shows are typed. */
+type Stat = { n: number; within: number; bias: number; rmse: number; r: number; maxAbs: number; maxAbsSite: string }
+type SiteCheck = { ours0m: number; pgda: number; diff: number; verdict: string }
+export type Validation = {
+  generated: string
+  reference: string
+  thresholds?: { note?: string }
+  summary: { sun: Stat; earth: Stat; sunVerdicts?: Record<string, number>; earthVerdicts?: Record<string, number> }
+  pass: Record<string, boolean>
+  sites: { siteId: string; sun: SiteCheck; earth: SiteCheck }[]
+}
+export const fetchValidation = (signal?: AbortSignal) => getJson<Validation>('/api/validation', signal)
+export const exportCsvUrl = (siteId: string, from: Date, days: number, mastM: number) =>
+  `${API_BASE}/api/sites/${encodeURIComponent(siteId)}/export.csv?${new URLSearchParams({ from: from.toISOString(), days: String(days), mast: String(serverMast(mastM)) })}`

@@ -12,9 +12,9 @@ const DAYS = 110 // samples run past SPAN so a window starting on day 90 is comp
 export const N = Math.round(DAYS / STEP)
 const MOON_KM = bodies.moonRadiusKm
 // Same rules as the server (LunarNav.Core/Analysis.cs), so the numbers do not jump when the server comes and goes:
-// "Sun up" = at least half of its disk above the terrain, which is its centre above the horizon;
+// "Sun up" = its upper edge above the terrain (default SunRule.Edge since Saad's S5: Analysis.SunUp, sunFrac > 0);
 // "Earth in view" = any part of its disk above the terrain, and its apparent radius follows its distance (Geometry.cs).
-export const sunUpAt = (elDeg: number, horizonDeg: number) => elDeg >= horizonDeg
+export const sunUpAt = (elDeg: number, horizonDeg: number) => elDeg + bodies.sunAngularRadiusDeg > horizonDeg
 export const earthRadiusDeg = (distMoons: number) => (Math.atan(bodies.earthRadiusKm / bodies.moonRadiusKm / distMoons) * 180) / Math.PI
 export const earthUpAt = (elDeg: number, horizonDeg: number, distMoons: number) => elDeg + earthRadiusDeg(distMoons) > horizonDeg
 /** Earth-Moon distance in lunar radii at day t, from the Horizons table. */
@@ -191,7 +191,7 @@ export function timeToChange(arr: Uint8Array, t: number) {
   const cur = arr[k0]
   let k = k0
   while (k < N && arr[k] === cur) k++
-  if (k >= N) return 'beyond the window'
+  if (k >= N) return 'stays that way to the end of the data'
   const d = (k - k0) * STEP
   const h = d * 24
   const w = cur ? 'sets' : 'rises'

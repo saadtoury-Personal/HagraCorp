@@ -4,13 +4,13 @@ import { SITES } from '../lib/sites'
 import { useScenario } from '../store/scenario'
 
 // A scenario is a link: site, date, needs and delay live in the query string so the page can be shared.
-const KEYS = { site: 's', day: 'd', dur: 'u', minE: 'e', minD: 'l', mast: 'm', maxDark: 'b', slip: 'x' } as const
+const KEYS = { site: 's', day: 'd', dur: 'u', minE: 'e', minD: 'l', mast: 'm', maxDark: 'b', slip: 'x', requireEarth: 'r' } as const
 type Key = keyof typeof KEYS
 
 const toQuery = () => {
   const st = useScenario.getState()
   const q = new URLSearchParams()
-  ;(Object.keys(KEYS) as Key[]).forEach((k) => q.set(KEYS[k], String(k === 'day' ? Math.round(st[k] * 10) / 10 : st[k])))
+  ;(Object.keys(KEYS) as Key[]).forEach((k) => q.set(KEYS[k], k === 'requireEarth' ? (st[k] ? '1' : '0') : String(k === 'day' ? Math.round(st[k] * 10) / 10 : st[k])))
   return q
 }
 
@@ -21,10 +21,10 @@ export default function UrlSync() {
   // Read the link once on load.
   useEffect(() => {
     const q = new URLSearchParams(search)
-    const patch: Record<string, number> = {}
+    const patch: Record<string, number | boolean> = {}
     ;(Object.keys(KEYS) as Key[]).forEach((k) => {
       const v = Number(q.get(KEYS[k]))
-      if (q.has(KEYS[k]) && Number.isFinite(v)) patch[k] = v
+      if (q.has(KEYS[k]) && Number.isFinite(v)) patch[k] = k === 'requireEarth' ? v !== 0 : v
     })
     if (typeof patch.site === 'number' && !(patch.site >= 0 && patch.site < SITES.length)) delete patch.site
     useScenario.setState(patch)

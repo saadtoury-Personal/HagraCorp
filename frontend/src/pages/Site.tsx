@@ -11,7 +11,7 @@ import { useSky } from '../lib/sky'
 import Horizon from '../features/site/Horizon'
 import Lanes from '../features/site/Lanes'
 import { categoryLabel, coords, pad2, toneClass } from '../lib/format'
-import { frac, getSeries, metrics, SITES, verdict } from '../lib/sites'
+import { frac, getSeries, idxAt, metrics, SITES, timeToChange, verdict } from '../lib/sites'
 import { SPAN_DAYS } from '../lib/ephemeris'
 import { useScenario } from '../store/scenario'
 
@@ -113,6 +113,10 @@ export default function Site() {
               <b className="mb-1 mt-3 block font-medium text-ink">Right now</b>
               {Math.round(sky.sunFrac * 100)}% of the Sun is above the terrain and Earth is {Math.round(sky.earthFrac * 100)}% in view ({sky.source === 'server' ? 'figures from the server' : 'figures from the bundled data'}).
             </InfoTip>
+          </p>
+          <p className="mt-3 max-w-[40ch] text-base text-ink [text-shadow:0_1px_8px_#000]" aria-live="polite">
+            {sr.sun[idxAt(day)] ? 'The Sun is up' : 'The Sun is down'} and {timeToChange(sr.sun, day)}. {sr.earth[idxAt(day)] ? 'Earth is in view' : 'Earth is hidden'} and{' '}
+            {timeToChange(sr.earth, day)}.
           </p>
           {tour && (
             <div className="mt-3 flex items-center gap-3 text-xs uppercase tracking-[0.16em] text-dim">

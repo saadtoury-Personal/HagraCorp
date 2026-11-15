@@ -18,8 +18,10 @@ type Scenario = {
   mast: number
   /** Longest stretch without sunlight the batteries can bridge, hours. */
   maxDark: number
-  /** Launch delay explored on the Slip page, days. */
+  /** Launch delay explored on the Slip page, days (whole weeks). */
   slip: number
+  /** Viable needs Earth in view as well as the Sun (direct-to-Earth link). */
+  requireEarth: boolean
   set: (patch: Partial<Omit<Scenario, 'set'>>) => void
 }
 
@@ -27,11 +29,12 @@ export const useScenario = create<Scenario>((set) => ({
   site: 0,
   day: 17, // waning gibbous: the visible hemisphere is lit, so the first screen is not a black disc
   playing: false,
-  dur: 6.5, // 2023 NASA white paper: a first landing site should be sunlit about 6 to 6.5 days
+  dur: 6, // team plan: 6 days (at 14 days only 3% of cells are viable); NASA white paper: about 6 to 6.5 days
   minE: 90,
   minD: 50,
   mast: 3,
   maxDark: 96, // four days: a lander with a large battery or a radioisotope heater
   slip: 14,
+  requireEarth: true,
   set: (patch) => set(patch),
 }))
