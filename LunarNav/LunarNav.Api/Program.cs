@@ -140,7 +140,8 @@ api.MapGet("/sites/{id}/export.csv", (string id, AppData data, DateTime? from, i
 api.MapGet("/validation", (AppData data) =>
 {
     var path = Path.Combine(data.DataDir, "validation.json");
-    return File.Exists(path) ? Results.File(path, "application/json") : Results.NotFound("validation.json not produced yet");
+    // Full path: Results.File treats a relative path as a file under wwwroot, not on disk (DataDir=data at deployment).
+    return File.Exists(path) ? Results.File(Path.GetFullPath(path), "application/json") : Results.NotFound("validation.json not produced yet");
 }).WithName("GetValidation");
 
 api.MapGet("/heatmap",(AppData data, int mast = 2) =>
