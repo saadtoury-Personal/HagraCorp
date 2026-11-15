@@ -1,7 +1,9 @@
 import { MoonIcon } from '@phosphor-icons/react'
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, NavLink, Route, Routes } from 'react-router'
+import ServerStatus from './components/ServerStatus'
 import Compare from './pages/Compare'
+import Contact from './pages/Contact'
 
 // The Globe (three.js) and Site pages are split out so the Compare page stays light.
 const Globe = lazy(() => import('./pages/Globe'))
@@ -11,6 +13,7 @@ const links = [
   ['/', 'Globe'],
   ['/site', 'Site'],
   ['/compare', 'Compare'],
+  ['/contact', 'Contact'],
 ] as const
 
 export default function App() {
@@ -37,6 +40,7 @@ export default function App() {
             </NavLink>
           ))}
         </nav>
+        <ServerStatus />
         <span className="hidden shrink-0 text-xs text-faint lg:block">NASA Space Apps 2026</span>
       </header>
       <Suspense fallback={<div className="grid min-h-dvh place-items-center text-sm text-dim" role="status">Loading</div>}>
@@ -44,6 +48,7 @@ export default function App() {
           <Route path="/" element={<Globe />} />
           <Route path="/site" element={<Site />} />
           <Route path="/compare" element={<Compare />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

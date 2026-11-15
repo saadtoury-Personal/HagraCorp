@@ -43,6 +43,8 @@ const SITE_DEF = sitesJson as SiteRow[]
 
 export type Site = {
   i: number
+  /** Same id as the server (LunarNav.Api /api/sites). */
+  id: string
   name: string
   lat: number
   lonE: number
@@ -114,7 +116,7 @@ export const SITES: Site[] = SITE_DEF.map(({ id, name, latDeg: lat, lonDeg: lonE
   const sky2 = skyline(id, MAST_LO)
   const sky10 = skyline(id, MAST_HI)
   const s: Site = {
-    i, name, lat, lonE, category, terrain, q, n, e, sky2, sky10,
+    i, id, name, lat, lonE, category, terrain, q, n, e, sky2, sky10,
     sEl: new Float32Array(N), sMk2: new Float32Array(N), sMk10: new Float32Array(N),
     eEl: new Float32Array(N), eMk2: new Float32Array(N), eMk10: new Float32Array(N),
   }

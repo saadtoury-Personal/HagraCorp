@@ -1,14 +1,15 @@
 import { Html, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { BufferGeometry, DoubleSide, type Group, Float32BufferAttribute, Matrix4, Mesh, PerspectiveCamera, Vector2, Vector3, type DirectionalLight, type Material } from 'three'
+import { BufferGeometry, CanvasTexture, DoubleSide, SRGBColorSpace, type Group, Float32BufferAttribute, Mesh, PerspectiveCamera, Vector2, Vector3, type DirectionalLight, type Material } from 'three'
 import bodies from '../../data/bodies.json'
-import { earthFrame } from '../../lib/earthOrientation'
+import { sunAxis } from '../../lib/earthOrientation'
+import { earthQuaternion } from './earthPose'
 import { earthDistKm, earthVec, sunVec } from '../../lib/ephemeris'
 import { toneClass } from '../../lib/format'
 import { getSeries, metrics, SITES, verdict } from '../../lib/sites'
 import { useScenario } from '../../store/scenario'
-import { EARTH_R, kmToUnits, MODEL_URLS, MOON_KM, normalise, SUN_DIST, SUN_R } from './models'
+import { EARTH_R, kmToUnits, MODEL_URLS, MOON_KM, normalise, SUN_DIST, SUN_R, SUN_ROTATION_DAYS } from './models'
 
 /** 0 = whole Moon, 1 = south pole, 2 = one candidate region, 3 = Moon, Earth and Sun at true scale. */
 export type Level = 0 | 1 | 2 | 3
@@ -34,16 +35,6 @@ function Earth({ labelled }: { labelled: boolean }) {
   const clone = useMemo(() => scene.clone(true), [scene])
   const group = useRef<Group>(null)
   const spin = useRef<Group>(null)
-  const tmp = useMemo(
-    () => ({
-      world: new Matrix4(),
-      model: new Matrix4().makeBasis(new Vector3(0, 0, -1), new Vector3(0, 1, 0), new Vector3(1, 0, 0)).transpose(),
-      prime: new Vector3(),
-      axis: new Vector3(),
-      third: new Vector3(),
-    }),
-    [],
-  )
   useLayoutEffect(() => {
     normalise(clone, EARTH_R)
   }, [clone])
@@ -52,13 +43,7 @@ function Earth({ labelled }: { labelled: boolean }) {
     const e = earthVec(t)
     const d = kmToUnits(earthDistKm(t))
     group.current?.position.set(e[0] * d, e[1] * d, e[2] * d)
-    const f = earthFrame(t)
-    tmp.prime.set(...f.prime)
-    tmp.axis.set(...f.axis)
-    tmp.third.crossVectors(tmp.prime, tmp.axis)
-    // Rotation taking the model's (prime meridian, north, east-ish) basis onto Earth's real one in the Moon frame.
-    tmp.world.makeBasis(tmp.prime, tmp.axis, tmp.third).multiply(tmp.model)
-    spin.current?.quaternion.setFromRotationMatrix(tmp.world)
+    if (spin.current) earthQuaternion(t, spin.current.quaternion)
   })
   return (
     <group ref={group}>
@@ -79,18 +64,89 @@ function Earth({ labelled }: { labelled: boolean }) {
 /** The Sun at its real size (about 400 Moon radii) and real distance (about 1 AU), in its real direction from the Horizons table. */
 function SunBody() {
   const group = useRef<Group>(null)
+  const spin = useRef<Group>(null)
+  const map = useMemo(() => sunSurface(), [])
+  useEffect(() => () => map.dispose(), [map])
   useFrame(() => {
-    const v = sunVec(useScenario.getState().day)
+    const day = useScenario.getState().day
+    const v = sunVec(day)
     group.current?.position.set(v[0] * SUN_DIST, v[1] * SUN_DIST, v[2] * SUN_DIST)
+    // Real axis (tilted 7.25 degrees from ecliptic north) and real spin: one turn per 25.4 days of the shared clock.
+    const a = sunAxis(day)
+    group.current?.quaternion.setFromUnitVectors(Y, new Vector3(a[0], a[1], a[2]))
+    if (spin.current) spin.current.rotation.y = (2 * Math.PI * day) / SUN_ROTATION_DAYS
   })
   return (
     <group ref={group}>
-      <mesh>
-        <sphereGeometry args={[SUN_R, 32, 16]} />
-        <meshBasicMaterial color="#ffd98a" toneMapped={false} />
-      </mesh>
+      <group ref={spin}>
+        <mesh>
+          <sphereGeometry args={[SUN_R, 64, 32]} />
+          <meshBasicMaterial map={map} toneMapped={false} />
+        </mesh>
+      </group>
     </group>
   )
+}
+
+/**
+ * Surface texture for the Sun: granulation and a few dark spots, drawn once. It is illustrative, not a photograph;
+ * what is real is the size, distance, axis tilt and spin of the body that wears it.
+ */
+function sunSurface() {
+  const W = 1024
+  const H = 512
+  const canvas = document.createElement('canvas')
+  canvas.width = W
+  canvas.height = H
+  const ctx = canvas.getContext('2d')!
+  const img = ctx.createImageData(W, H)
+  const hash = (x: number, y: number, z: number) => {
+    const s = Math.sin(x * 127.1 + y * 311.7 + z * 74.7) * 43758.5453
+    return s - Math.floor(s)
+  }
+  const smooth = (t: number) => t * t * (3 - 2 * t)
+  const noise = (x: number, y: number, z: number) => {
+    const xi = Math.floor(x)
+    const yi = Math.floor(y)
+    const zi = Math.floor(z)
+    const fx = smooth(x - xi)
+    const fy = smooth(y - yi)
+    const fz = smooth(z - zi)
+    const l = (a: number, b: number, t: number) => a + (b - a) * t
+    const c = (dx: number, dy: number, dz: number) => hash(xi + dx, yi + dy, zi + dz)
+    return l(
+      l(l(c(0, 0, 0), c(1, 0, 0), fx), l(c(0, 1, 0), c(1, 1, 0), fx), fy),
+      l(l(c(0, 0, 1), c(1, 0, 1), fx), l(c(0, 1, 1), c(1, 1, 1), fx), fy),
+      fz,
+    )
+  }
+  const spots = [[-0.32, 0.42, 0.07], [-0.28, 0.36, 0.05], [0.4, 3.2, 0.06], [0.26, -1.6, 0.05], [-0.1, 4.6, 0.04]] // [latitude rad, longitude rad, size rad]
+  for (let j = 0; j < H; j++) {
+    const lat = Math.PI / 2 - (j / (H - 1)) * Math.PI
+    for (let i = 0; i < W; i++) {
+      const lon = (i / W) * 2 * Math.PI
+      // Sampling a 3D field on the sphere makes the texture seamless around the poles and the date line.
+      const x = Math.cos(lat) * Math.cos(lon)
+      const y = Math.sin(lat)
+      const z = Math.cos(lat) * Math.sin(lon)
+      let n = 0.5 * noise(x * 38, y * 38, z * 38) + 0.3 * noise(x * 90, y * 90, z * 90) + 0.2 * noise(x * 14, y * 14, z * 14)
+      for (const [sl, so, sr] of spots) {
+        const d = Math.acos(Math.min(1, Math.sin(lat) * Math.sin(sl) + Math.cos(lat) * Math.cos(sl) * Math.cos(lon - so)))
+        if (d < sr * 2) n -= (1 - d / (sr * 2)) * (d < sr ? 0.9 : 0.4)
+      }
+      const t = Math.max(0, Math.min(1, n))
+      const k = (j * W + i) * 4
+      img.data[k] = 255
+      img.data[k + 1] = 150 + t * 85
+      img.data[k + 2] = 40 + t * 95
+      img.data[k + 3] = 255
+    }
+  }
+  ctx.putImageData(img, 0, 0)
+  const tex = new CanvasTexture(canvas)
+  tex.colorSpace = SRGBColorSpace
+  tex.anisotropy = 4
+  return tex
 }
 
 /** Labels and a pointer toward the Sun for the true-scale view. */
@@ -306,15 +362,17 @@ function Rig({ level, view, focus }: { level: Level; view: RefObject<View>; focu
       // Above the site, tilted a little toward the camera side, looking down at it.
       goalPos.copy(goalLook).multiplyScalar(1.7 * z).addScaledVector(side, 0.55 * Math.max(1, fit * 0.7) * z)
     }
-    pos.current.lerp(goalPos, k)
-    look.current.lerp(goalLook, k)
+    // The flights between the Earth-Moon overview, Earth and the Sun are slower (about 3 s) so the approach can be followed.
+    const kFly = reduce ? 1 : level === 3 ? 1 - Math.exp(-dt * 1.1) : k
+    pos.current.lerp(goalPos, kFly)
+    look.current.lerp(goalLook, kFly)
     camera.position.copy(pos.current)
     // Looking straight up the axis from below the pole, +y is degenerate, so tilt the up vector.
     const yaw = cur.current.yaw * D2R
     if (level === 3 && focus === 'system') want.set(Math.sin(yaw), 0, -Math.cos(yaw))
     else if (level === 3) want.copy(Y)
     else want.copy(level === 2 ? negSide : Y)
-    up.lerp(want, k).normalize()
+    up.lerp(want, kFly).normalize()
     camera.up.copy(up)
     camera.lookAt(look.current)
     // Push the Moon right of the headline on wide screens, and a little low on narrow ones.

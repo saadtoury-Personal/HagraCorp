@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
+import SiteFooter from '../components/SiteFooter'
 import TimeBar from '../components/TimeBar'
-import MoonScene, { type Focus, type Level } from '../features/globe/MoonScene'
+import MoonScene, { type Level } from '../features/globe/MoonScene'
 import { ageDays, earthDistKm, libration, phaseName, subSolarLonE, sunDecDeg } from '../lib/ephemeris'
 import { signed } from '../lib/format'
 import { SITES } from '../lib/sites'
@@ -9,7 +10,7 @@ import { useScenario } from '../store/scenario'
 import bodies from '../data/bodies.json'
 import { MOON_KM, SUN_DIST } from '../features/globe/models'
 
-const LEVELS = ['Moon', 'Pole', 'Region', 'Space'] as const
+const LEVELS = ['Moon', 'Pole', 'Region'] as const
 
 function Readouts() {
   const day = useScenario((s) => s.day)
@@ -76,15 +77,10 @@ function Facts() {
 
 export default function Globe() {
   const [level, setLevel] = useState<Level>(0)
-  const [focus, setFocus] = useState<Focus>('system')
   const site = useScenario((s) => s.site)
   const set = useScenario((s) => s.set)
   const navigate = useNavigate()
-  // Leaving the true-scale view also goes back to the overview of the Earth-Moon system.
-  const changeLevel = (l: Level) => {
-    setFocus('system')
-    setLevel(l)
-  }
+  const changeLevel = (l: Level) => setLevel(l)
 
   const select = (i: number) => {
     set({ site: i })
@@ -92,11 +88,12 @@ export default function Globe() {
   }
 
   return (
+    <>
     <div className="relative flex h-dvh min-h-[640px] flex-col overflow-hidden">
       <div className="absolute inset-0">
         <MoonScene
           level={level}
-          focus={focus}
+          focus="system"
           onSelect={select}
           onOpen={(i) => {
             set({ site: i })
@@ -132,20 +129,10 @@ export default function Globe() {
             <button type="button" className="pointer-events-auto hover:text-ink" onClick={() => changeLevel(0)}>
               Moon
             </button>
-            {level !== 3 && (
-              <>
-                <span aria-hidden>&rsaquo;</span>
-                <button type="button" className="pointer-events-auto hover:text-ink" onClick={() => changeLevel(1)}>
-                  South Pole
-                </button>
-              </>
-            )}
-            {level === 3 && (
-              <>
-                <span aria-hidden>&rsaquo;</span>
-                <b className="font-medium text-ink">Earth and Sun, true scale</b>
-              </>
-            )}
+            <span aria-hidden>&rsaquo;</span>
+            <button type="button" className="pointer-events-auto hover:text-ink" onClick={() => changeLevel(1)}>
+              South Pole
+            </button>
             {level === 2 && (
               <>
                 <span aria-hidden>&rsaquo;</span>
@@ -153,36 +140,15 @@ export default function Globe() {
               </>
             )}
           </nav>
-          {level === 3 && (
-            <div className="pointer-events-auto mt-4 flex w-fit border border-line bg-bg/70" role="group" aria-label="Fly the camera to">
-              {(
-                [
-                  ['system', 'Earth and Moon'],
-                  ['earth', 'Fly to Earth'],
-                  ['sun', 'Fly to the Sun'],
-                ] as [Focus, string][]
-              ).map(([id, name]) => (
-                <button
-                  key={id}
-                  type="button"
-                  aria-pressed={focus === id}
-                  onClick={() => setFocus(id)}
-                  className="min-h-11 border-l border-line px-4 text-xs font-medium uppercase tracking-[0.14em] text-dim transition-colors first:border-l-0 hover:text-ink aria-pressed:bg-ink aria-pressed:text-bg"
-                >
-                  {name}
-                </button>
-              ))}
-            </div>
-          )}
           </div>
         )}
 
         <div>
           <div className="mb-3 flex flex-wrap items-center gap-x-8 gap-y-2">
             <p className="max-w-[55%] text-xs uppercase md:max-w-none tracking-[0.16em] text-dim [text-shadow:0_1px_8px_#000]">Drag to rotate. Pinch or scroll to zoom.</p>
-            {(level === 0 || level === 3) && <Facts />}
+            {level === 0 && <Facts />}
           </div>
-          <div className="pointer-events-auto">{(level === 0 || level === 3) && <Readouts />}</div>
+          <div className="pointer-events-auto">{level === 0 && <Readouts />}</div>
         </div>
       </main>
 
@@ -205,5 +171,7 @@ export default function Globe() {
         <TimeBar />
       </div>
     </div>
+    <SiteFooter />
+    </>
   )
 }
