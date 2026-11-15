@@ -122,6 +122,19 @@ public class EphemerisTests
     }
 
     [Fact]
+    public void Constructor_DuplicateAndGapWithRightSpan_Throws()
+    {
+        // 0 h, 2 h, 2 h: the total span (2 h for 3 rows) looks right, but the grid is not hourly.
+        Assert.Throws<ArgumentException>(() => new Ephemeris(new[] { Row(0), Row(2), Row(2) }));
+    }
+
+    [Fact]
+    public void Constructor_RowsOutOfOrder_Throws()
+    {
+        Assert.Throws<ArgumentException>(() => new Ephemeris(new[] { Row(0), Row(2), Row(1), Row(3) }));
+    }
+
+    [Fact]
     public void Constructor_StoresSamplesAndExposesStartEnd()
     {
         var eph = new Ephemeris(new[] { Row(0), Row(1), Row(2) });
