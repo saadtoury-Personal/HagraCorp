@@ -143,7 +143,7 @@ export default function Compare() {
             ))}
             {SITES.map((s) => (
               <div key={s.i} className="contents">
-                <button type="button" onClick={() => open(s.i)} className="flex min-h-[34px] items-center gap-2.5 text-left text-sm text-dim transition-colors hover:text-ink">
+                <button type="button" onClick={() => open(s.i)} className="flex min-h-[34px] [@media(pointer:coarse)]:min-h-11 items-center gap-2.5 text-left text-sm text-dim transition-colors hover:text-ink">
                   <span className="w-5 text-xs text-faint">{pad2(s.i + 1)}</span>
                   {s.name}
                 </button>
@@ -160,7 +160,7 @@ export default function Compare() {
                         onClick={() => open(s.i, c.t0)}
                         title={`${s.name}, ${dayLabel(c.t0)}, sunlight ${c.m.E}%, Earth link ${c.m.D}%`}
                         aria-label={`${s.name}, start ${dayLabel(c.t0)}: ${state}, score ${c.sc}%`}
-                        className={`relative grid min-h-[34px] place-items-center text-xs font-medium outline-offset-0 hover:z-10 hover:outline hover:outline-1 hover:outline-ink focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink ${
+                        className={`relative grid min-h-[34px] [@media(pointer:coarse)]:min-h-11 place-items-center text-xs font-medium outline-offset-0 hover:z-10 hover:outline hover:outline-1 hover:outline-ink focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ink ${
                           c.pass ? (strong ? 'bg-[#2da673] text-[#04130c]' : 'bg-[#1f7f58] text-white') : c.near ? 'hatch bg-[#6f5412] text-white' : 'bg-[#12161d] text-faint'
                         } ${best ? 'z-[1] outline outline-2 outline-ink' : ''}`}
                       >

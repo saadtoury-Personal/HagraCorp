@@ -77,7 +77,7 @@ export default function ServerPanel({ dur, mast, server: m }: Props) {
       )}
       {about && (
         <details className="mt-2 text-[13px] text-dim">
-          <summary className="cursor-pointer hover:text-ink">How precise is this?</summary>
+          <summary className="flex min-h-11 cursor-pointer items-center hover:text-ink">How precise is this?</summary>
           <ul className="mt-2 list-disc space-y-1 pl-5">
             {about.precision.map((p) => (
               <li key={p}>{p}</li>

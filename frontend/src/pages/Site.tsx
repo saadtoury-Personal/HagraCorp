@@ -7,11 +7,13 @@ import TimeBar from '../components/TimeBar'
 import DetailsPanel from '../features/site/DetailsPanel'
 import ElevationChart from '../features/site/ElevationChart'
 import OrbitDiagram from '../features/site/OrbitDiagram'
+import SourceTag from '../components/SourceTag'
 import { useSky } from '../lib/sky'
+import { useSiteMetrics } from '../lib/useSiteMetrics'
 import Horizon from '../features/site/Horizon'
 import Lanes from '../features/site/Lanes'
 import { categoryLabel, coords, pad2, toneClass } from '../lib/format'
-import { frac, getSeries, idxAt, metrics, SITES, timeToChange, verdict } from '../lib/sites'
+import { frac, getSeries, idxAt, SITES, timeToChange, verdict } from '../lib/sites'
 import { SPAN_DAYS } from '../lib/ephemeris'
 import { useScenario } from '../store/scenario'
 
@@ -43,12 +45,13 @@ function Seg({ children, label }: { children: React.ReactNode; label: string }) 
 const segBtn = 'min-h-11 px-4 text-xs font-medium uppercase tracking-[0.14em] text-dim transition-colors hover:text-ink aria-pressed:bg-ink aria-pressed:text-bg border-l border-line first:border-l-0'
 
 export default function Site() {
-  const { site, day, dur, mast, minD, set } = useScenario()
+  const { site, day, dur, mast, minE, minD, maxDark, set } = useScenario()
   const series = useMemo(() => getSeries(mast), [mast])
   const sr = series[site]
   const s = SITES[site]
-  const m = metrics(sr, day, dur)
-  const v = verdict(m.E, m.D)
+  // The headline figures come from the server when it answers (see lib/useSiteMetrics); the bundled data fills in until then.
+  const live = useSiteMetrics(site, s.id, day, dur, mast)
+  const v = verdict(live.E, live.D)
 
   const sky = useSky(site, s.id, day, mast)
   const [mode, setMode] = useState<Mode>('panorama')
@@ -88,80 +91,105 @@ export default function Site() {
   }
   const toggle = (d: 'regions' | 'details') => setDrawer((x) => (x === d ? null : d))
 
-  const stats = [
-    ['Assessment', v.word, toneClass[v.tone]],
-    ['Sunlight', `${m.E}%`, ''],
-    ['Earth link', `${m.D}%`, ''],
-    ['Longest night', `${Math.round(sr.night)} h`, ''],
+  // Four simple indicators: a value, a colour and one word. Green meets the mission's need, amber is within 8 points, red falls short.
+  const share = (value: number, min: number) => (value >= min ? { dot: 'bg-ok', word: 'Enough' } : value >= min - 8 ? { dot: 'bg-warn', word: 'Close' } : { dot: 'bg-bad', word: 'Too low' })
+  const darkH = Math.round(live.server ? live.server.longestDarkHours : sr.night)
+  type Indicator = { label: string; value: string; text: string; dot: string; word: string; fill?: number }
+  const stats: Indicator[] = [
+    { label: 'Assessment', value: v.word, text: toneClass[v.tone], dot: v.tone === 'ok' ? 'bg-ok' : v.tone === 'warn' ? 'bg-warn' : 'bg-bad', word: v.tone === 'ok' ? 'Go' : v.tone === 'warn' ? 'Risky' : 'No-go' },
+    { label: 'Sunlight', value: `${live.E}%`, text: '', ...share(live.E, minE), fill: live.E },
+    { label: 'Earth link', value: `${live.D}%`, text: '', ...share(live.D, minD), fill: live.D },
+    { label: 'Longest night', value: `${darkH} h`, text: '', dot: darkH <= maxDark ? 'bg-ok' : 'bg-bad', word: darkH <= maxDark ? 'Battery holds' : 'Too long' },
   ]
 
   return (
     <div className="relative flex min-h-dvh flex-col">
       <div className="relative flex flex-1 flex-col overflow-hidden bg-black pb-[170px] md:pb-[150px]">
-        <div className="pointer-events-none relative z-30 flex shrink-0 flex-col gap-3 px-5 pt-20 md:px-9 lg:flex-row lg:items-start lg:justify-between">
-        <header className="pointer-events-none">
-          <h1 className="max-w-[14em] text-[clamp(24px,3.8vw,52px)] font-light uppercase leading-[1.12] tracking-[0.16em] [text-shadow:0_1px_16px_#000]">{s.name}</h1>
-          <p className="mt-2 text-sm text-dim [text-shadow:0_1px_8px_#000]">Region {site + 1} of {SITES.length}</p>
-          <p className="mt-1 text-sm text-ink [text-shadow:0_1px_8px_#000]">
-            {coords(s.lat, s.lonE)} · {categoryLabel(s.category)}
-          </p>
-          <p className="mt-2 max-w-[46ch] text-sm leading-snug text-ink [text-shadow:0_1px_8px_#000]">
-            {v.why}{' '}
-            <InfoTip label="How to read this view">
-              <b className="mb-1 block font-medium text-ink">How to read this view</b>
-              {MODE_HELP[mode]}
-              <b className="mb-1 mt-3 block font-medium text-ink">Right now</b>
-              {Math.round(sky.sunFrac * 100)}% of the Sun is above the terrain and Earth is {Math.round(sky.earthFrac * 100)}% in view ({sky.source === 'server' ? 'figures from the server' : 'figures from the bundled data'}).
-            </InfoTip>
-          </p>
-          <p className="mt-3 max-w-[40ch] text-base text-ink [text-shadow:0_1px_8px_#000]" aria-live="polite">
-            {sr.sun[idxAt(day)] ? 'The Sun is up' : 'The Sun is down'} and {timeToChange(sr.sun, day)}. {sr.earth[idxAt(day)] ? 'Earth is in view' : 'Earth is hidden'} and{' '}
-            {timeToChange(sr.earth, day)}.
-          </p>
-          {tour && (
-            <div className="mt-3 flex items-center gap-3 text-xs uppercase tracking-[0.16em] text-dim">
-              <span>
-                Segment {site + 1} / {SITES.length}
-              </span>
-              <i key={site} className="relative block h-px w-28 bg-line">
-                <b className="tour-bar absolute inset-y-0 left-0 bg-ink" style={{ animationDuration: `${TOUR_MS}ms` }} />
-              </i>
-            </div>
-          )}
-        </header>
+        <div className="relative z-20 flex shrink-0 flex-col gap-4 px-5 pt-20 md:px-9 lg:flex-row lg:items-start lg:justify-between">
+          <header className="max-w-[56ch]">
+            <h1 className="text-[clamp(22px,2.6vw,36px)] font-light uppercase leading-tight tracking-[0.1em] text-balance">{s.name}</h1>
+            <p className="mt-2 text-sm text-dim">
+              Region {site + 1} of {SITES.length} · {coords(s.lat, s.lonE)} · {categoryLabel(s.category)}
+            </p>
+            <p className="mt-3 text-base leading-snug text-ink">
+              {v.why}{' '}
+              <InfoTip label="How to read this view">
+                <b className="mb-1 block font-medium text-ink">How to read this view</b>
+                {MODE_HELP[mode]}
+                <b className="mb-1 mt-3 block font-medium text-ink">Right now</b>
+                {Math.round(sky.sunFrac * 100)}% of the Sun is above the terrain and Earth is {Math.round(sky.earthFrac * 100)}% in view ({sky.source === 'server' ? 'figures from the server' : 'figures from the bundled data'}).
+              </InfoTip>
+            </p>
+            <p className="mt-1 text-sm text-dim" aria-live="polite">
+              {sr.sun[idxAt(day)] ? 'The Sun is up' : 'The Sun is down'} and {timeToChange(sr.sun, day)}. {sr.earth[idxAt(day)] ? 'Earth is in view' : 'Earth is hidden'} and {timeToChange(sr.earth, day)}.
+            </p>
+            {tour && (
+              <div className="mt-3 flex items-center gap-3 text-xs uppercase tracking-[0.16em] text-dim">
+                <span>
+                  Segment {site + 1} / {SITES.length}
+                </span>
+                <i key={site} className="relative block h-px w-28 bg-line">
+                  <b className="tour-bar absolute inset-y-0 left-0 bg-ink" style={{ animationDuration: `${TOUR_MS}ms` }} />
+                </i>
+              </div>
+            )}
+          </header>
 
-        <div className="pointer-events-auto flex gap-2 overflow-x-auto [scrollbar-width:none] max-lg:-mx-5 max-lg:px-5 lg:flex-wrap lg:justify-end lg:gap-2.5 lg:overflow-visible [&>*]:shrink-0 [&::-webkit-scrollbar]:hidden">
-          <Seg label="Region">
-            <button type="button" className={segBtn} aria-label="Previous region" onClick={() => go(site - 1)}>
-              <CaretLeftIcon size={14} />
-            </button>
-            <span className="grid min-w-20 place-items-center border-l border-line text-xs tracking-[0.14em]">
-              {pad2(site + 1)} / {SITES.length}
-            </span>
-            <button type="button" className={segBtn} aria-label="Next region" onClick={() => go(site + 1)}>
-              <CaretRightIcon size={14} />
-            </button>
-          </Seg>
-          <Seg label="Point of view">
-            {MODES.map(([id, name]) => (
-              <button key={id} type="button" className={segBtn} aria-pressed={mode === id} onClick={() => setMode(id)}>
-                {name}
+          <div className="flex items-center gap-2 overflow-x-auto [scrollbar-width:none] max-lg:-mx-5 max-lg:px-5 lg:flex-wrap lg:justify-end lg:overflow-visible [&>*]:shrink-0 [&::-webkit-scrollbar]:hidden">
+            <Seg label="Region">
+              <button type="button" className={segBtn} aria-label="Previous region" onClick={() => go(site - 1)}>
+                <CaretLeftIcon size={14} />
               </button>
-            ))}
-          </Seg>
-          <Seg label="Panels">
-            <button type="button" className={segBtn} aria-pressed={drawer === 'regions'} onClick={() => toggle('regions')}>
-              Regions
+              <span className="grid min-w-20 place-items-center border-l border-line text-xs tracking-[0.14em]">
+                {pad2(site + 1)} / {SITES.length}
+              </span>
+              <button type="button" className={segBtn} aria-label="Next region" onClick={() => go(site + 1)}>
+                <CaretRightIcon size={14} />
+              </button>
+            </Seg>
+            <Seg label="Panels">
+              <button type="button" className={segBtn} aria-pressed={drawer === 'regions'} onClick={() => toggle('regions')}>
+                Regions
+              </button>
+              <button type="button" className={segBtn} aria-pressed={drawer === 'details'} onClick={() => toggle('details')}>
+                Details
+              </button>
+            </Seg>
+            <button type="button" className="btn btn-ghost" aria-pressed={tour} onClick={() => setTour((t) => !t)}>
+              {tour ? <StopIcon size={12} weight="fill" /> : <PlayIcon size={12} weight="fill" />}
+              {tour ? 'Stop' : 'Tour'}
+              <span className="max-sm:hidden">{tour ? ' tour' : ' of all regions'}</span>
             </button>
-            <button type="button" className={segBtn} aria-pressed={drawer === 'details'} onClick={() => toggle('details')}>
-              Details
-            </button>
-          </Seg>
-          <button type="button" className="btn btn-ghost bg-bg/70" aria-pressed={tour} onClick={() => setTour((t) => !t)}>
-            {tour ? <StopIcon size={12} weight="fill" /> : <PlayIcon size={12} weight="fill" />}
-            {tour ? 'Stop tour' : 'Guided tour'}
-          </button>
+          </div>
         </div>
+
+        {/* The four views are tabs of one thing, so they sit right above the view they switch. */}
+        <div
+          role="tablist"
+          aria-label="View"
+          className="relative z-20 mt-4 flex shrink-0 gap-1 overflow-x-auto border-b border-line-soft px-4 [scrollbar-width:none] md:px-8 [&::-webkit-scrollbar]:hidden"
+          onKeyDown={(e) => {
+            if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
+            const i = MODES.findIndex(([id]) => id === mode)
+            const next = MODES[(i + (e.key === 'ArrowRight' ? 1 : MODES.length - 1)) % MODES.length][0]
+            setMode(next)
+            requestAnimationFrame(() => document.getElementById(`tab-${next}`)?.focus())
+          }}
+        >
+          {MODES.map(([id, name]) => (
+            <button
+              key={id}
+              id={`tab-${id}`}
+              type="button"
+              role="tab"
+              aria-selected={mode === id}
+              tabIndex={mode === id ? 0 : -1}
+              onClick={() => setMode(id)}
+              className="relative min-h-11 shrink-0 px-4 text-xs font-medium uppercase tracking-[0.14em] text-dim transition-colors hover:text-ink aria-selected:text-ink after:absolute after:inset-x-4 after:-bottom-px after:h-0.5 after:bg-transparent aria-selected:after:bg-ink"
+            >
+              {name}
+            </button>
+          ))}
         </div>
 
         <div className={`relative ${mode === 'polar' ? 'h-[clamp(320px,64vh,680px)]' : 'h-[clamp(300px,46vh,560px)]'}`}>
@@ -176,13 +204,25 @@ export default function Site() {
           </div>
         </div>
 
+        <span className="absolute bottom-[150px] right-5 z-[5] hidden md:bottom-[calc(150px-1.75rem)] md:right-9 md:block">
+          <SourceTag source={live.source} />
+        </span>
         <dl className="absolute inset-x-5 bottom-[0px] z-[4] grid grid-cols-2 border-t border-line md:inset-x-9 md:grid-cols-4">
-          {stats.map(([k, val, tone], i) => (
-            <div key={k} className={`py-2.5 pr-4 ${i % 2 ? 'border-l border-line-soft pl-4' : ''} ${i > 1 ? 'border-t border-line-soft md:border-t-0' : ''} md:border-l md:pl-5 md:first:border-l-0 md:first:pl-0`}>
+          {stats.map((k, i) => (
+            <div key={k.label} className={`py-2.5 pr-4 ${i % 2 ? 'border-l border-line-soft pl-4' : ''} ${i > 1 ? 'border-t border-line-soft md:border-t-0' : ''} md:border-l md:pl-5 md:first:border-l-0 md:first:pl-0`}>
               <dt className="lab">
-                <Term>{k}</Term>
+                <Term>{k.label}</Term>
               </dt>
-              <dd className={`text-[26px] font-light leading-tight [text-shadow:0_1px_12px_#000] ${tone}`}>{val}</dd>
+              <dd className={`text-[26px] font-light leading-tight [text-shadow:0_1px_12px_#000] ${k.text}`}>{k.value}</dd>
+              {k.fill != null && (
+                <dd className="my-1 h-0.5 bg-line-soft" aria-hidden>
+                  <i className={`block h-full ${k.dot}`} style={{ width: `${Math.min(100, k.fill)}%` }} />
+                </dd>
+              )}
+              <dd className="flex items-center gap-1.5 text-xs text-dim">
+                <i className={`size-2 rounded-full ${k.dot}`} aria-hidden />
+                {k.word}
+              </dd>
             </div>
           ))}
         </dl>

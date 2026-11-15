@@ -33,11 +33,11 @@ function Header() {
   }, [pathname])
   return (
     <header className="fixed inset-x-0 top-0 z-30 flex h-16 items-center gap-2 bg-bg px-3 md:gap-6 md:bg-gradient-to-b md:from-bg md:to-transparent md:px-9">
-      <NavLink to="/" className="flex shrink-0 items-center gap-3 text-sm font-medium uppercase tracking-[0.3em]" aria-label="LunarNav home">
+      <NavLink to="/" className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-3 text-sm font-medium uppercase tracking-[0.3em]" aria-label="LunarNav home">
         <MoonIcon size={22} weight="light" aria-hidden />
         <span className="hidden sm:inline">LunarNav</span>
       </NavLink>
-      <nav aria-label="Main" className="flex min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [mask-image:linear-gradient(to_right,#000_88%,transparent)] md:justify-center md:[mask-image:none] [&::-webkit-scrollbar]:hidden">
+      <nav aria-label="Main" className="flex min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_88%,transparent)] md:justify-center md:[mask-image:none] [&::-webkit-scrollbar]:hidden">
         {links.map(([to, label]) => (
           <NavLink
             key={to}

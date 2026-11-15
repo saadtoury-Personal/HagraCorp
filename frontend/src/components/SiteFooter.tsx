@@ -1,5 +1,5 @@
 import { MoonIcon } from '@phosphor-icons/react'
-import { Link } from 'react-router'
+import { Link, useLocation } from 'react-router'
 
 // Drop image files into src/assets/photos and they appear in the Photos card, in file-name order.
 const PHOTOS = Object.entries(import.meta.glob('../assets/photos/*.{jpg,jpeg,png,webp,avif}', { eager: true, query: '?url', import: 'default' }))
@@ -8,6 +8,7 @@ const PHOTOS = Object.entries(import.meta.glob('../assets/photos/*.{jpg,jpeg,png
 
 export default function SiteFooter({ photos = false }: { photos?: boolean }) {
   const single = PHOTOS.length === 1
+  const onContact = useLocation().pathname === '/contact' // no link to the page we are already on
   return (
     <footer className="relative z-10 border-t border-line bg-bg px-5 pb-8 pt-12 md:px-9">
       {photos && (
@@ -16,9 +17,11 @@ export default function SiteFooter({ photos = false }: { photos?: boolean }) {
           <h2 id="photos-title" className="lab">
             Photos
           </h2>
-          <Link to="/contact" className="text-xs font-medium uppercase tracking-[0.16em] text-dim transition-colors hover:text-ink">
-            Meet the team
-          </Link>
+          {!onContact && (
+            <Link to="/contact" className="inline-flex min-h-11 items-center text-xs font-medium uppercase tracking-[0.16em] text-dim transition-colors hover:text-ink">
+              Meet the team
+            </Link>
+          )}
         </div>
         {PHOTOS.length > 0 ? (
           <ul className={`mt-4 grid gap-2 ${single ? '' : 'grid-cols-2 sm:grid-cols-3'}`}>

@@ -1,7 +1,8 @@
 import { Html, Stars, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { create } from 'zustand'
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { AdditiveBlending, CanvasTexture, Mesh, PerspectiveCamera, Vector3, type DirectionalLight, type Group, type Material, type MeshStandardMaterial } from 'three'
+import { AdditiveBlending, CanvasTexture, Mesh, PerspectiveCamera, Quaternion, Vector3, type DirectionalLight, type Group, type Material, type MeshStandardMaterial } from 'three'
 import { sunAxis } from '../../lib/earthOrientation'
 import { sunVec } from '../../lib/ephemeris'
 import { coords, toneClass } from '../../lib/format'
@@ -194,12 +195,24 @@ function Moon() {
   return <primitive object={mesh} />
 }
 
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
+const TRANSITION_S = 1.5
+
+/**
+ * The camera. Changing level (Moon, Pole, Region) is one smooth move of fixed length: the camera swings around the Moon along an arc
+ * (never cutting through it), the target, the roll and the framing offset all ease together, and nothing jumps. Once there, the camera
+ * follows the user's drag and zoom with a light damping.
+ */
 function Rig({ level, view }: { level: Level; view: RefObject<View> }) {
   const { camera, size } = useThree()
   const pos = useRef(toVec(-38, LON0, 7))
   const look = useRef(new Vector3())
-  const cur = useRef({ yaw: 0, zoom: 1 })
+  const cur = useRef({ yaw: 0, zoom: 1, ox: 0, oy: 0 })
   const goal = useRef({ pos: new Vector3(), look: new Vector3(), up: new Vector3(0, 1, 0), side: new Vector3(), negSide: new Vector3(), want: new Vector3() })
+  const last = useRef<Level>(level)
+  const tween = useRef<{ t: number; from: { pos: Vector3; look: Vector3; up: Vector3; ox: number; oy: number } } | null>(null)
+  const tmp = useMemo(() => ({ q: new Quaternion(), id: new Quaternion(), da: new Vector3(), db: new Vector3(), pos: new Vector3() }), [])
+
   useFrame((_, dt) => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
     const { pos: goalPos, look: goalLook, up, side, negSide, want } = goal.current
@@ -223,17 +236,44 @@ function Rig({ level, view }: { level: Level; view: RefObject<View> }) {
       // Above the site, tilted a little toward the camera side, looking down at it.
       goalPos.copy(goalLook).multiplyScalar(1.7 * z).addScaledVector(side, 0.55 * Math.max(1, fit * 0.7) * z)
     }
-    pos.current.lerp(goalPos, k)
-    look.current.lerp(goalLook, k)
-    camera.position.copy(pos.current)
-    // Looking straight up the axis from below the pole, +y is degenerate, so tilt the up vector.
     want.copy(level === 2 ? negSide : Y)
-    up.lerp(want, k).normalize()
-    camera.up.copy(up)
-    camera.lookAt(look.current)
     // Push the Moon right of the headline on wide screens, and a little low on narrow ones.
     const wide = size.width >= 1024
-    ;(camera as PerspectiveCamera).setViewOffset(size.width, size.height, wide && level === 0 ? -size.width * 0.15 : 0, wide ? 0 : size.height * 0.04, size.width, size.height)
+    const goalOx = wide && level === 0 ? -size.width * 0.15 : 0
+    const goalOy = wide ? 0 : size.height * 0.04
+
+    // A level change starts one move from wherever the camera is right now.
+    if (last.current !== level) {
+      last.current = level
+      tween.current = { t: 0, from: { pos: pos.current.clone(), look: look.current.clone(), up: up.clone(), ox: cur.current.ox, oy: cur.current.oy } }
+    }
+    const tw = tween.current
+    if (tw) {
+      tw.t += reduce ? 1 : dt / TRANSITION_S
+      const e = easeInOut(Math.min(1, tw.t))
+      // Position: swing around the Moon (spherical interpolation of the direction), radius eased on its own.
+      tmp.da.copy(tw.from.pos).normalize()
+      tmp.db.copy(goalPos).normalize()
+      tmp.q.setFromUnitVectors(tmp.da, tmp.db)
+      tmp.id.identity().slerp(tmp.q, e)
+      const r = tw.from.pos.length() + (goalPos.length() - tw.from.pos.length()) * e
+      pos.current.copy(tmp.da.applyQuaternion(tmp.id)).multiplyScalar(r)
+      look.current.lerpVectors(tw.from.look, goalLook, e)
+      up.copy(tw.from.up).lerp(want, e).normalize()
+      cur.current.ox = tw.from.ox + (goalOx - tw.from.ox) * e
+      cur.current.oy = tw.from.oy + (goalOy - tw.from.oy) * e
+      if (tw.t >= 1) tween.current = null
+    } else {
+      pos.current.lerp(goalPos, k)
+      look.current.lerp(goalLook, k)
+      up.lerp(want, k).normalize()
+      cur.current.ox += (goalOx - cur.current.ox) * k
+      cur.current.oy += (goalOy - cur.current.oy) * k
+    }
+    camera.position.copy(pos.current)
+    camera.up.copy(up)
+    camera.lookAt(look.current)
+    ;(camera as PerspectiveCamera).setViewOffset(size.width, size.height, cur.current.ox, cur.current.oy, size.width, size.height)
   })
   return null
 }
@@ -340,11 +380,16 @@ function DoublesCheck() {
 }
 
 // Html renders in its own React root, so no router context here: navigation goes through onOpen.
+// Which marker the pointer is on, shared by all markers so that only one summary card is ever open.
+const useHovered = create<{ i: number | null; set: (i: number | null) => void }>((set) => ({ i: null, set: (i) => set({ i }) }))
+const leave = (i: number) => useHovered.getState().i === i && useHovered.getState().set(null)
+
 function Marker({ i, level, onSelect, onOpen }: { i: number; level: Level; onSelect: (i: number) => void; onOpen: (i: number) => void }) {
   const s = SITES[i]
   const { camera } = useThree()
   const wrap = useRef<HTMLDivElement>(null)
-  const [hover, setHover] = useState(false)
+  const hovered = useHovered((st) => st.i)
+  const [place, setPlace] = useState({ left: false, edge: 'mid' as 'mid' | 'top' | 'bottom' })
   const selected = useScenario((st) => st.site === i)
   const day = useScenario((st) => st.day)
   const dur = useScenario((st) => st.dur)
@@ -360,28 +405,34 @@ function Marker({ i, level, onSelect, onOpen }: { i: number; level: Level; onSel
     el.style.display = level > 0 && q.dot(tmp) > 0.02 ? '' : 'none'
   })
 
-  const open = hover || (selected && level === 2)
+  // One card at a time: the one under the pointer, or, when the pointer is on no marker, the selected region's.
+  const open = hovered === i || (selected && level === 2 && hovered === null)
+  // The card opens on the side, and at the height, where there is room for it.
+  useEffect(() => {
+    const r = wrap.current?.getBoundingClientRect()
+    if (open && r) setPlace({ left: r.left > innerWidth * 0.55, edge: r.top < 190 ? 'top' : r.bottom > innerHeight - 190 ? 'bottom' : 'mid' })
+  }, [open])
   // The server is only asked for the card that is open: 32 markers must not each call it.
   const m = useSiteMetrics(i, s.id, day, dur, mast, open)
   const v = verdict(m.E, m.D)
   return (
-    <Html position={q} center zIndexRange={[20, 0]}>
+    <Html position={q} center zIndexRange={open ? [70, 50] : [20, 0]}>
       <div ref={wrap} className="relative">
         <button
           type="button"
           aria-label={`${s.name}, region ${i + 1} of ${SITES.length}`}
           aria-pressed={selected}
           onClick={() => onSelect(i)}
-          onPointerEnter={() => setHover(true)}
-          onPointerLeave={() => setHover(false)}
-          onFocus={() => setHover(true)}
-          onBlur={() => setHover(false)}
+          onPointerEnter={() => useHovered.getState().set(i)}
+          onPointerLeave={() => leave(i)}
+          onFocus={() => useHovered.getState().set(i)}
+          onBlur={() => leave(i)}
           className="group relative grid size-8 place-items-center"
         >
           <span className={`block size-3 rounded-full border-2 border-ink bg-bg/50 shadow-[0_0_0_1px_rgb(0_0_0/0.6)] transition-transform duration-200 ${selected ? 'scale-150 bg-ink' : 'group-hover:scale-150 group-hover:bg-ink'}`} />
         </button>
         {open && (
-          <div className="absolute left-9 top-1/2 z-10 w-64 -translate-y-1/2 border border-line bg-bg p-4 text-left" role="group" aria-label={`${s.name} summary`}>
+          <div className={`absolute z-10 w-64 border border-line bg-bg p-4 text-left shadow-[0_12px_40px_rgb(0_0_0/0.7)] ${place.left ? 'right-9' : 'left-9'} ${place.edge === 'top' ? 'top-0' : place.edge === 'bottom' ? 'bottom-0' : 'top-1/2 -translate-y-1/2'}`} role="group" aria-label={`${s.name} summary`}>
             <h3 className="text-lg font-normal leading-tight">{s.name}</h3>
             <p className="mb-3 mt-1 text-[13px] text-dim">{coords(s.lat, s.lonE)}</p>
             <dl className="mb-3 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1.5 text-sm">
