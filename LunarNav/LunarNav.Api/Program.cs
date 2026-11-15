@@ -1,41 +1,48 @@
+using LunarNav.Api;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+var dataDir = builder.Configuration["DataDir"] ?? Path.Combine(builder.Environment.ContentRootPath, "..", "LunarNav.Web", "wwwroot", "data");
+
 builder.Services.AddOpenApi();
+
+builder.Services.AddSingleton(new AppData(dataDir));
+
+builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app.MapOpenApi();   // the OpenAPI document is public: the demo API has no secrets
 
-app.UseHttpsRedirection();
+app.UseSwaggerUI(o => o.SwaggerEndpoint("/openapi/v1.json", "LunarNav API"));
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 
-app.MapGet("/weatherforecast", () =>
+app.UseCors();
+
+var api = app.MapGroup("/api");
+
+api.MapGet("/health", (AppData data) => Results.Ok(new { status = "ok", sites = data.Sites.Count })).WithName("Health");
+
+api.MapGet("/sites", (AppData data) => Results.Ok(data.Sites)).WithName("GetSites");
+
+api.MapGet("/sites/{id}/mask", (string id, AppData data, int mast = 2) =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    if (mast is not (2 or 10))
+        return Results.BadRequest("mast must be 2 or 10");
+
+    var site = data.FindSite(id);
+    if (site is null)
+        return Results.NotFound($"unknown site '{id}'");
+
+    var mask = data.Mask(site.Id, mast);
+    if (mask is null)
+        return Results.NotFound($"no horizon mask computed yet for '{id}' at {mast} m");
+
+    return Results.Ok(mask);
+}).WithName("GetSiteMask");
 
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+
+public partial class Program;   // lets the test project's WebApplicationFactory<Program> see the top-level Program class
