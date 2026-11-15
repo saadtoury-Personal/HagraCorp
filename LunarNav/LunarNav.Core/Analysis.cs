@@ -3,7 +3,7 @@ namespace LunarNav.Core;
 /// <summary>
 /// Turns sky positions into answers: timelines, countdowns, mission windows, the slip heatmap and the fallback ranking.
 /// Two definitions used everywhere in this file:
-///   "Sun up"        = sunFrac   >= 0.5   (at least half of the Sun's disk above the terrain)
+///   "Sun up"        = sunFrac   >  0     (upper edge of the Sun above the terrain, as in the design document)
 ///   "Earth in view" = earthFrac >  0     (any part of the Earth above the terrain)
 /// </summary>
 public static class Analysis
@@ -14,6 +14,10 @@ public static class Analysis
     /// <summary>Dark gaps this short are bridged (batteries) when measuring continuous windows.
     /// Without it, near-pole windows flip between hours and weeks for a 0.05 deg horizon change.</summary>
     public const int MaxGapHours = 6;
+
+    /// <summary>"Sun up" = any part of the Sun's disk above the terrain (its upper edge is visible).
+    /// No atmosphere, so no refraction: the edge test is purely geometric.</summary>
+    public static bool SunUp(double sunFrac) => sunFrac > 0;
 
     /// <summary>Sky state at every step from start to end (both included).</summary>
     public static TimelinePoint[] Timeline(Ephemeris eph, Site site, float[] mask, DateTime start, DateTime end, TimeSpan step)
@@ -46,10 +50,19 @@ public static class Analysis
         for (int k = 0; k < n; k++)
         {
             var p = Point(eph, site, mask, start.AddHours(k));
-            sunUp[k] = p.SunFrac >= 0.5;
+            sunUp[k] = SunUp(p.SunFrac);
             earthUp[k] = p.EarthFrac > 0;
         }
         return (sunUp, earthUp);
+    }
+
+    /// <summary>Illuminated fraction of the Moon's disk seen from Earth, in percent (0 = new, 100 = full).
+    /// Same value as NASA Dial-A-Moon's "phase": (1 + cos of the angle between sub-solar and sub-Earth points) / 2.</summary>
+    public static double MoonPhasePercent(EphemSample e)
+    {
+        var s = Geometry.UnitVector(e.SubSunLatDeg, e.SubSunLonDeg);
+        var t = Geometry.UnitVector(e.SubEarthLatDeg, e.SubEarthLonDeg);
+        return 50 * (1 + s.X * t.X + s.Y * t.Y + s.Z * t.Z);
     }
 
     /// <summary>Unitless solar power index, 0..1. Watts = index * SolarConstantWm2 * panel area * efficiency.</summary>
@@ -68,7 +81,7 @@ public static class Analysis
         bool Up(DateTime t)
         {
             var p = Point(eph, site, mask, t);
-            return sun ? p.SunFrac >= 0.5 : p.EarthFrac > 0;
+            return sun ? SunUp(p.SunFrac) : p.EarthFrac > 0;
         }
 
         var stop = from.AddDays(maxDays) < eph.End ? from.AddDays(maxDays) : eph.End;
@@ -86,6 +99,13 @@ public static class Analysis
             prev = cur;
         }
         return null;
+    }
+
+    /// <summary>Longest continuous Sun-down period (hours) during a stay starting at 'at'. Used to break ties between fallback sites.</summary>
+    public static int LongestDarkHours(Ephemeris eph, Site site, float[] mask, DateTime at, double stayDays)
+    {
+        var (sunUp, _) = UpSeries(eph, site, mask, at, Math.Max(1, (int)Math.Round(stayDays * 24)));
+        return LongestRun(sunUp.Select(x => !x).ToArray());
     }
 
     /// <summary>Everything the detail view shows for "arrive at 'at', stay stayDays".</summary>
@@ -165,30 +185,57 @@ public static class Analysis
     }
 
     /// <summary>
-    /// The slip heatmap: for every site and every day from 'from' to 'to', how long the Sun
-    /// (and Sun + Earth) stays continuously available if you arrive that day at 06:00 UTC.
+    /// The slip heatmap: for every site and every day from 'from' to 'to', the longest continuous Sun
+    /// (and Sun + Earth) window you get by landing at the best hour of that day (UTC). The best hour is returned too.
     /// masks[i] is the skyline of sites[i].
     /// </summary>
     public static HeatmapDto Heatmap(Ephemeris eph, IReadOnlyList<Site> sites, IReadOnlyList<float[]> masks, DateTime from, DateTime to)
     {
         if (sites.Count != masks.Count)
             throw new ArgumentException("one mask per site", nameof(masks));
-        var start = DateTime.SpecifyKind(from.Date, DateTimeKind.Utc).AddHours(6);
+        var start = DateTime.SpecifyKind(from.Date, DateTimeKind.Utc);
         int nDays = (int)(to.Date - from.Date).TotalDays + 1;
         var days = Enumerable.Range(0, nDays).Select(d => start.AddDays(d)).ToArray();
-        int hours = (int)(start.AddDays(nDays - 1 + 60) - start).TotalHours;   // 60 extra days to finish runs still going
+        int hours = (nDays + 60) * 24;   // 60 extra days to finish runs still going
 
         var sunH = new float[sites.Count][];
         var bothH = new float[sites.Count][];
+        var sunHour = new int[sites.Count][];
+        var bothHour = new int[sites.Count][];
         Parallel.For(0, sites.Count, s =>
         {
             var (sunUp, earthUp) = UpSeries(eph, sites[s], masks[s], start, hours);
             var runSun = RunLengths(BridgeGaps(sunUp, MaxGapHours));
             var runBoth = RunLengths(BridgeGaps(sunUp.Zip(earthUp, (a, b) => a && b).ToArray(), MaxGapHours));
-            sunH[s] = days.Select((_, d) => d * 24 < runSun.Length ? (float)runSun[d * 24] : 0f).ToArray();
-            bothH[s] = days.Select((_, d) => d * 24 < runBoth.Length ? (float)runBoth[d * 24] : 0f).ToArray();
+            (sunH[s], sunHour[s]) = PerDay(runSun, nDays);
+            (bothH[s], bothHour[s]) = PerDay(runBoth, nDays);
         });
-        return new HeatmapDto(sites.Select(x => x.Id).ToArray(), days, sunH, bothH);
+        return new HeatmapDto(sites.Select(x => x.Id).ToArray(), days, sunH, bothH, sunHour, bothHour);
+    }
+
+    private static (float[] Hours, int[] StartHour) PerDay(int[] run, int nDays)
+    {
+        var hours = new float[nDays];
+        var startHour = new int[nDays];
+        for (int d = 0; d < nDays; d++)
+            (hours[d], startHour[d]) = BestStart(run, d);
+        return (hours, startHour);
+    }
+
+    /// <summary>Longest run starting during day 'day' (24 hourly starts) and the hour (0..23 UTC) it starts at.
+    /// Ties keep the earliest hour.</summary>
+    public static (int Hours, int Hour) BestStart(int[] run, int day)
+    {
+        int best = 0, bestHour = 0;
+        for (int h = 0; h < 24 && day * 24 + h < run.Length; h++)
+        {
+            if (run[day * 24 + h] > best)
+            {
+                best = run[day * 24 + h];
+                bestHour = h;
+            }
+        }
+        return (best, bestHour);
     }
 
     /// <summary>NASA prefers sites "less sensitive to timing": fraction (0..1) of the days within
@@ -206,15 +253,21 @@ public static class Analysis
 
     /// <summary>
     /// THE feature of the product: "the launch slipped by slipWeeks, which site is best now?"
+    /// Ranked by window length, then by the shortest longest-dark period (when 'longestDark' is given), then by robustness.
+    /// longestDark(siteIndex, landingTime) is computed on demand by the caller (it needs the ephemeris and masks).
+    /// Each entry also carries its window and verdict on the original date, so the UI can mark sites whose verdict changed.
     /// </summary>
-    public static FallbackDto BestFallback(HeatmapDto heatmap, DateTime date, int slipWeeks, double stayDays, bool requireEarth, int robustnessWeeks = 2)
+    public static FallbackDto BestFallback(HeatmapDto heatmap, DateTime date, int slipWeeks, double stayDays, bool requireEarth,
+        int robustnessWeeks = 2, Func<int, DateTime, double>? longestDark = null)
     {
         var slipped = date.AddDays(7 * slipWeeks);
         int d = Array.FindIndex(heatmap.Days, x => x.Date == slipped.Date);
-        if (d < 0)
-            throw new ArgumentOutOfRangeException(nameof(date), "slipped date is outside the heatmap");
+        int d0 = Array.FindIndex(heatmap.Days, x => x.Date == date.Date);
+        if (d < 0 || d0 < 0)
+            throw new ArgumentOutOfRangeException(nameof(date), "date or slipped date is outside the heatmap");
 
         var rows = requireEarth ? heatmap.BothH : heatmap.SunH;
+        var startHours = requireEarth ? heatmap.BothStartHour : heatmap.SunStartHour;
         double need = stayDays * 24;
         var entries = new FallbackEntry[heatmap.Sites.Length];
         for (int s = 0; s < entries.Length; s++)
@@ -228,10 +281,13 @@ public static class Analysis
                 else if (d + k < row.Length && row[d + k] >= need)
                     nearest = heatmap.Days[d + k];
             }
+            var landing = heatmap.Days[d].AddHours(startHours?[s][d] ?? 0);
             entries[s] = new FallbackEntry(heatmap.Sites[s], row[d], row[d] >= need, nearest,
-                Robustness(row, d, robustnessWeeks, stayDays));
+                Robustness(row, d, robustnessWeeks, stayDays),
+                longestDark?.Invoke(s, landing) ?? 0, row[d0], row[d0] >= need);
         }
-        var ranked = entries.OrderByDescending(e => e.WindowHours).ThenByDescending(e => e.Robustness).ToArray();
+        var ranked = entries.OrderByDescending(e => e.WindowHours).ThenBy(e => e.LongestDarkHours)
+            .ThenByDescending(e => e.Robustness).ToArray();
         return new FallbackDto(date, slipped, ranked);
     }
 }

@@ -80,8 +80,8 @@ public class AnalysisTests
         var start = new DateTime(2027, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         var pts = Analysis.Timeline(eph, site, HorizonMask.Flat(), start, start.AddDays(59), TimeSpan.FromHours(1));
 
-        double sunPct = 100.0 * pts.Count(p => p.SunFrac >= 0.5) / pts.Length;
-        Assert.InRange(sunPct, 45, 55);                       // equator: day and night about equal over 2 lunations
+        double sunPct = 100.0 * pts.Count(p => Analysis.SunUp(p.SunFrac)) / pts.Length;
+        Assert.InRange(sunPct, 45, 55);                       // equator: day and night about equal over 2 lunations (edge rule adds a few minutes per sunrise and sunset)
         Assert.All(pts, p => Assert.True(p.EarthFrac == 1));  // near-side site: Earth always overhead-ish
     }
 

@@ -19,7 +19,10 @@ var demPath = builder.Configuration["DemPath"] ?? Path.Combine(builder.Environme
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddSingleton(new AppData(dataDir, demPath));
+var appData = new AppData(dataDir, demPath);
+builder.Services.AddSingleton(appData);
+
+builder.Services.AddSingleton(new MoonService(new HttpClient { Timeout = TimeSpan.FromSeconds(3) }, appData));
 
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
@@ -41,6 +44,7 @@ api.MapGet("/about", () => Results.Ok(new
 {
     precision = new[]
     {
+        "Sun up = the Sun's upper edge is above the terrain (no atmosphere, so no refraction). Earth in view = any part of the Earth is visible.",
         "Sun and Earth directions match JPL Horizons within 0.006 deg.",
         "Results are for an observer 2 m (or 10 m) above one 80 m terrain pixel, not a whole region: moving a few hundred metres can change Sun % by tens of points.",
         "Percentages are good to about +-5 points; rise and set times to about +-2 h (up to +-4 h when the Sun grazes the horizon).",
@@ -105,7 +109,7 @@ api.MapGet("/heatmap", (AppData data, int mast = 2) =>
     return data.Heatmap(mast) is { } heat ? Results.Ok(heat) : Results.NotFound("heatmap not computed yet");
 }).WithName("GetHeatmap");
 
-api.MapGet("/fallback", (AppData data, DateTime date, int slipWeeks = 0, double stayDays = 14, bool requireEarth = false, int mast = 2) =>
+api.MapGet("/fallback", (AppData data, DateTime date, int slipWeeks = 0, double stayDays = 14, bool requireEarth = true, int mast = 2) =>
 {
     if (BadMast(mast) is { } bad)
         return bad;
@@ -114,7 +118,9 @@ api.MapGet("/fallback", (AppData data, DateTime date, int slipWeeks = 0, double 
     if (data.Heatmap(mast) is not { } heat)
         return Results.NotFound("heatmap not computed yet");
 
-    return Guard(() => Results.Ok(Analysis.BestFallback(heat, Utc(date), slipWeeks, stayDays, requireEarth)));
+    var sites = heat.Sites.Select(id => data.FindSite(id)!).ToArray();
+    return Guard(() => Results.Ok(Analysis.BestFallback(heat, Utc(date), slipWeeks, stayDays, requireEarth,
+        longestDark: (s, at) => Analysis.LongestDarkHours(data.Ephemeris, sites[s], data.MaskOrFlat(sites[s], mast), at, stayDays))));
 }).WithName("GetFallback");
 
 api.MapPost("/custom", (CustomRequest req, AppData data) =>
@@ -131,6 +137,18 @@ api.MapPost("/custom", (CustomRequest req, AppData data) =>
         return Results.Ok(new CustomResponse(mask, Analysis.Metrics(data.Ephemeris, site, mask, Utc(req.At), 14)));
     });
 }).WithName("PostCustom");
+
+api.MapGet("/moon", async (MoonService moon, DateTime? at, CancellationToken ct) =>
+{
+    try
+    {
+        return Results.Ok(await moon.GetAsync(Utc(at), ct));
+    }
+    catch (ArgumentOutOfRangeException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+}).WithName("GetMoon");
 
 app.Run();
 return 0;
