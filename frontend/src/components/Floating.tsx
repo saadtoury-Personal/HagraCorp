@@ -5,6 +5,7 @@ type Props = { open: boolean; onClose: () => void; anchor: RefObject<HTMLElement
 
 const W = 352 // wide enough to read, never wider than the screen
 const GAP = 8
+const MENU = 64 // height of the fixed menu bar: a button scrolled under it is out of sight
 
 /**
  * A small note shown next to its button. It is drawn on top of the whole page (in document.body), so no sticky bar, tab row or
@@ -40,15 +41,21 @@ export default function Floating({ open, onClose, anchor, id, children }: Props)
       if (!box.current?.contains(t) && !anchor.current?.contains(t)) onClose()
     }
     const onMove = () => place()
+    // Scrolling away from the button closes the note: it never hangs over content that has nothing to do with it.
+    const onScroll = () => {
+      const a = anchor.current?.getBoundingClientRect()
+      if (!a || a.bottom < MENU || a.top > innerHeight - GAP) onClose()
+      else place()
+    }
     addEventListener('keydown', onKey)
     addEventListener('pointerdown', onPointer)
     addEventListener('resize', onMove)
-    addEventListener('scroll', onMove, true)
+    addEventListener('scroll', onScroll, true)
     return () => {
       removeEventListener('keydown', onKey)
       removeEventListener('pointerdown', onPointer)
       removeEventListener('resize', onMove)
-      removeEventListener('scroll', onMove, true)
+      removeEventListener('scroll', onScroll, true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, onClose, anchor])

@@ -1,7 +1,7 @@
 import { Html, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { AdditiveBlending, BufferGeometry, CanvasTexture, DoubleSide, Float32BufferAttribute, Mesh, PerspectiveCamera, Vector2, Vector3, type DirectionalLight, type Group, type Material } from 'three'
+import { AdditiveBlending, BufferGeometry, CanvasTexture, DoubleSide, Float32BufferAttribute, Mesh, PerspectiveCamera, Quaternion, Vector2, Vector3, type DirectionalLight, type Group, type Material } from 'three'
 import bodies from '../../data/bodies.json'
 import { sunAxis } from '../../lib/earthOrientation'
 import { earthDistKm, earthVec, sunVec } from '../../lib/ephemeris'
@@ -236,12 +236,24 @@ function Moon() {
   return <primitive object={mesh} />
 }
 
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
+const TRANSITION_S = 1.5
+
+/**
+ * The camera. Changing level (Moon, Pole, Region) is one smooth move of fixed length: the camera swings around the Moon along an arc
+ * (never cutting through it), the target, the roll and the framing offset all ease together, and nothing jumps. Once there, the camera
+ * follows the user's drag and zoom with a light damping.
+ */
 function Rig({ level, view }: { level: Level; view: RefObject<View> }) {
   const { camera, size } = useThree()
   const pos = useRef(toVec(-38, LON0, 7))
   const look = useRef(new Vector3())
-  const cur = useRef({ yaw: 0, zoom: 1 })
+  const cur = useRef({ yaw: 0, zoom: 1, ox: 0, oy: 0 })
   const goal = useRef({ pos: new Vector3(), look: new Vector3(), up: new Vector3(0, 1, 0), side: new Vector3(), negSide: new Vector3(), want: new Vector3() })
+  const last = useRef<Level>(level)
+  const tween = useRef<{ t: number; from: { pos: Vector3; look: Vector3; up: Vector3; ox: number; oy: number } } | null>(null)
+  const tmp = useMemo(() => ({ q: new Quaternion(), id: new Quaternion(), da: new Vector3(), db: new Vector3(), pos: new Vector3() }), [])
+
   useFrame((_, dt) => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
     const { pos: goalPos, look: goalLook, up, side, negSide, want } = goal.current
@@ -265,17 +277,44 @@ function Rig({ level, view }: { level: Level; view: RefObject<View> }) {
       // Above the site, tilted a little toward the camera side, looking down at it.
       goalPos.copy(goalLook).multiplyScalar(1.7 * z).addScaledVector(side, 0.55 * Math.max(1, fit * 0.7) * z)
     }
-    pos.current.lerp(goalPos, k)
-    look.current.lerp(goalLook, k)
-    camera.position.copy(pos.current)
-    // Looking straight up the axis from below the pole, +y is degenerate, so tilt the up vector.
     want.copy(level === 2 ? negSide : Y)
-    up.lerp(want, k).normalize()
-    camera.up.copy(up)
-    camera.lookAt(look.current)
     // Push the Moon right of the headline on wide screens, and a little low on narrow ones.
     const wide = size.width >= 1024
-    ;(camera as PerspectiveCamera).setViewOffset(size.width, size.height, wide && level === 0 ? -size.width * 0.15 : 0, wide ? 0 : size.height * 0.04, size.width, size.height)
+    const goalOx = wide && level === 0 ? -size.width * 0.15 : 0
+    const goalOy = wide ? 0 : size.height * 0.04
+
+    // A level change starts one move from wherever the camera is right now.
+    if (last.current !== level) {
+      last.current = level
+      tween.current = { t: 0, from: { pos: pos.current.clone(), look: look.current.clone(), up: up.clone(), ox: cur.current.ox, oy: cur.current.oy } }
+    }
+    const tw = tween.current
+    if (tw) {
+      tw.t += reduce ? 1 : dt / TRANSITION_S
+      const e = easeInOut(Math.min(1, tw.t))
+      // Position: swing around the Moon (spherical interpolation of the direction), radius eased on its own.
+      tmp.da.copy(tw.from.pos).normalize()
+      tmp.db.copy(goalPos).normalize()
+      tmp.q.setFromUnitVectors(tmp.da, tmp.db)
+      tmp.id.identity().slerp(tmp.q, e)
+      const r = tw.from.pos.length() + (goalPos.length() - tw.from.pos.length()) * e
+      pos.current.copy(tmp.da.applyQuaternion(tmp.id)).multiplyScalar(r)
+      look.current.lerpVectors(tw.from.look, goalLook, e)
+      up.copy(tw.from.up).lerp(want, e).normalize()
+      cur.current.ox = tw.from.ox + (goalOx - tw.from.ox) * e
+      cur.current.oy = tw.from.oy + (goalOy - tw.from.oy) * e
+      if (tw.t >= 1) tween.current = null
+    } else {
+      pos.current.lerp(goalPos, k)
+      look.current.lerp(goalLook, k)
+      up.lerp(want, k).normalize()
+      cur.current.ox += (goalOx - cur.current.ox) * k
+      cur.current.oy += (goalOy - cur.current.oy) * k
+    }
+    camera.position.copy(pos.current)
+    camera.up.copy(up)
+    camera.lookAt(look.current)
+    ;(camera as PerspectiveCamera).setViewOffset(size.width, size.height, cur.current.ox, cur.current.oy, size.width, size.height)
   })
   return null
 }
