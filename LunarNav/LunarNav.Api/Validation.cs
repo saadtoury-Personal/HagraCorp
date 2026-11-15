@@ -95,6 +95,9 @@ public static class Validation
             .ToDictionary(n => n!["siteId"]!.GetValue<string>(), n => n!);
         var python = JsonNode.Parse(File.ReadAllText(Path.Combine(validationDir, "ours.json")))!.AsArray()
             .ToDictionary(n => (n!["siteId"]!.GetValue<string>(), n!["mastM"]!.GetValue<int>()), n => n!);
+        // added after the first run: the Python with the C#'s strips, Sun size and eclipses ported (ours_ported.py)
+        var ported = JsonNode.Parse(File.ReadAllText(Path.Combine(validationDir, "ours_ported.json")))!.AsArray()
+            .ToDictionary(n => (n!["siteId"]!.GetValue<string>(), n!["mastM"]!.GetValue<int>()), n => n!);
         var sunRot = SunRotated(eph);
         var shifted = Shifted(eph, DateShiftDays);
         Console.WriteLine($"validate: {sites.Count} sites, ephemeris {eph.Start:u} .. {eph.End:u} ({eph.Samples.Count} h)");
@@ -118,11 +121,15 @@ public static class Validation
                 var (sunEdge, sunCentre, earth) = SkyPercent(eph, s, mask);
                 var py = mast == 0 ? g["ours0m"]! : python[(s.Id, mast)];
                 double pySun = py["sunEdge"]!.GetValue<double>(), pyEarth = py["earthEdge"]!.GetValue<double>();
+                var pp = ported[(s.Id, mast)];
+                double ppSun = pp["sunEdge"]!.GetValue<double>(), ppEarth = pp["earthEdge"]!.GetValue<double>();
                 rows.Add(new JsonObject
                 {
                     ["mastM"] = mast, ["sunPct"] = sunEdge, ["sunPctCentre"] = sunCentre, ["earthPct"] = earth,
                     ["pythonSunPct"] = pySun, ["pythonEarthPct"] = pyEarth,
                     ["diffPythonSun"] = R2(sunEdge - pySun), ["diffPythonEarth"] = R2(earth - pyEarth),
+                    ["portedSunPct"] = ppSun, ["portedEarthPct"] = ppEarth,
+                    ["diffPortedSun"] = R2(sunEdge - ppSun), ["diffPortedEarth"] = R2(earth - ppEarth),
                 });
                 if (mast == 0)
                 {
@@ -176,6 +183,9 @@ public static class Validation
             Earth = Math.Abs(m["diffPythonEarth"]!.GetValue<double>()),
         }).ToList();
         double maxPy = thresholds["csharpVsPython"]!["maxAbsDiffPoints"]!.GetValue<double>();
+        var portedDiffs = results.SelectMany(r => r["masts"]!.AsArray()).Select(m => (
+            Sun: Math.Abs(m!["diffPortedSun"]!.GetValue<double>()), Earth: Math.Abs(m["diffPortedEarth"]!.GetValue<double>()))).ToList();
+        double maxPorted = thresholds["csharpVsPortedPython"]!["maxAbsDiffPoints"]!.GetValue<double>();
 
         JsonObject Control(string id, Func<int, double> sun)
         {
@@ -225,6 +235,11 @@ public static class Validation
                     }).ToArray()),
                     ["rowsWithinThreshold"] = pyDiffs.Count(x => x.Sun <= maxPy && x.Earth <= maxPy), ["rows"] = pyDiffs.Count,
                 },
+                ["csharpVsPortedPython"] = new JsonObject
+                {
+                    ["maxAbsDiffSun"] = R2(portedDiffs.Max(x => x.Sun)), ["maxAbsDiffEarth"] = R2(portedDiffs.Max(x => x.Earth)),
+                    ["rowsWithinThreshold"] = portedDiffs.Count(x => x.Sun <= maxPorted && x.Earth <= maxPorted), ["rows"] = portedDiffs.Count,
+                },
                 ["negativeControls"] = new JsonArray(
                     Control("mirroredAzimuth", i => zero[i].MirSun), Control("sunRotated180", i => zero[i].RotSun), Control("dateShifted", i => zero[i].ShiftSun)),
             },
@@ -234,6 +249,7 @@ public static class Validation
                 ["earth"] = earthStat.Within >= needEarth,
                 ["noProblemSites"] = problems <= pass["maxProblemSites"]!.GetValue<int>(),
                 ["csharpVsPython"] = pyDiffs.All(x => x.Sun <= maxPy && x.Earth <= maxPy),
+                ["csharpVsPortedPython"] = portedDiffs.All(x => x.Sun <= maxPorted && x.Earth <= maxPorted),
             },
             ["sites"] = new JsonArray(results.Select(r => (JsonNode)r).ToArray()),
         };

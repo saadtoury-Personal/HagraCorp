@@ -9,7 +9,7 @@ Seuils fixés avant la comparaison : `tools/validation/thresholds.json` (commit 
 - Soleil : **26 sites sur 31** à moins de 5 points, écart médian **0,78 point**. Terre : **28 sur 31**, écart médian **0,74 point**.
 - Les 8 écarts plus grands (5 Soleil, 3 Terre) sont tous sur des crêtes ou des bords de plateau, là où la valeur NASA elle-même change de 20 à 60 points d'un pixel à son voisin. Aucun site n'est classé « problème ».
 - Directions du Soleil et de la Terre : JPL Horizons à moins de 0,01° (test unitaire), et un repère décalé de 0,1° est détecté.
-- **Deux résultats négatifs sont laissés visibles** (section 4) : deux contrôles négatifs sur trois ne font pas échouer la comparaison, et l'écart C# / Python sur la Terre dépasse le seuil fixé.
+- **Deux résultats négatifs sont laissés visibles** (section 4) : deux contrôles négatifs sur trois ne font pas échouer la comparaison, et l'écart C# / Python sur la Terre dépasse le seuil fixé. Cet échec reste affiché ; sa cause est vérifiée depuis (section 4).
 
 ## 2. Méthode
 
@@ -29,6 +29,7 @@ Seuils fixés avant la comparaison : `tools/validation/thresholds.json` (commit 
 | Sites Terre à ±5 points | au moins 27 / 31 | 28 / 31 | oui |
 | Sites « problème » | 0 | 0 | oui |
 | Écart C# / Python | au plus 0,05 point | 0,08 (Soleil), 0,42 (Terre) | **non** |
+| Écart C# / Python avec les 3 changements portés (**ajouté après le premier calcul**, pas fixé à l'avance) | au plus 0,05 point | 0,00 (Soleil), 0,00 (Terre), 93 lignes sur 93 | oui |
 | Contrôle « azimut en miroir » | doit échouer | 24 / 31 | oui (il échoue) |
 | Contrôle « Soleil tourné de 180° » | doit échouer | 25 / 31 | **non** (il passe) |
 | Contrôle « date + 14,77 jours » | doit échouer | 26 / 31 | **non** (il passe) |
@@ -58,7 +59,8 @@ Les sites les plus éclairés sont des crêtes : c'est là que l'écart grandit,
 
 - Soleil : écart maximal **0,08 point** sur 93 lignes (31 sites × 0, 2 et 10 m), médiane 0,02. Le seuil de 0,05 est dépassé de peu.
 - Terre : écart maximal **0,42 point** (shackleton-rim à 0 m), puis 0,16 et 0,13. 48 lignes sur 93 respectent le seuil de 0,05.
-- **Cause probable, non vérifiée :** depuis la PR 26, le C# compare 16 bandes du disque à l'horizon réel, alors que le Python compare tout le disque à l'horizon pris en son centre. Le disque de la Terre (environ 1° de rayon) est près de 4 fois plus large que celui du Soleil, d'où un effet plus fort sur la Terre. Ce changement était connu et écrit dans les seuils avant le calcul. Le seuil n'a pas été modifié.
+- **Cause (vérifiée ensuite, voir plus bas) :** depuis la PR 26, le C# compare 16 bandes du disque à l'horizon réel, alors que le Python compare tout le disque à l'horizon pris en son centre. Le disque de la Terre (environ 1° de rayon) est près de 4 fois plus large que celui du Soleil, d'où un effet plus fort sur la Terre. Ce changement était connu et écrit dans les seuils avant le calcul. Le seuil n'a pas été modifié.
+- **Vérification de la cause (ajoutée le 2026-11-15, après le premier calcul).** `tools/validation/ours_ported.py` reprend `ours.py` avec les trois changements du C# : 16 bandes, taille du Soleil selon la distance, éclipses. `ours.py` et `ours.json` ne sont pas modifiés, donc la règle d'origine échoue toujours. Avec les trois changements, l'écart tombe à **0,00 point sur les 93 lignes**, Soleil et Terre. Ces trois changements expliquent donc tout l'écart. Cette seconde règle (`csharpVsPortedPython`) est marquée dans les seuils comme ajoutée après coup.
 
 ### Contrôles négatifs
 
@@ -144,7 +146,7 @@ dotnet run -c Release --project LunarNav.Api -- validate data/LDEM_80S_80M.IMG L
 dotnet run -c Release --project LunarNav.Api -- manifest <chemin complet de LunarNav.Web/wwwroot/data>
 ```
 
-Environ 1 minute en Release. Les valeurs NASA (`pgda.json`) et Python (`ours.json`) ont été produites par `tools/validation/pgda.py` et `ours.py` (voir leur en-tête).
+Environ 1 minute en Release. Les valeurs NASA (`pgda.json`) et Python (`ours.json`) ont été produites par `tools/validation/pgda.py` et `ours.py` (voir leur en-tête). Les valeurs Python portées (`ours_ported.json`) viennent de `python3 -I tools/validation/ours_ported.py` (environ 20 s, carte LDEM seulement).
 
 ## 8. Pour la diapositive
 
