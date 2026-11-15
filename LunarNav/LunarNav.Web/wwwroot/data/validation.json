@@ -1,0 +1,2384 @@
+{
+  "generated": "2026-11-15 17:30:47Z",
+  "command": "dotnet run -c Release --project LunarNav.Api -- validate <LDEM_80S_80M.IMG> <dataDir> <tools/validation> <out.json>",
+  "code": "C# product code: HorizonMask.Compute (720 azimuths, 80 m steps, 250 km) + Analysis.Timeline (16-strip disk vs skyline, Sun size from distance, eclipses), hourly",
+  "ephemeris": {
+    "file": "ephem.csv",
+    "start": "2026-01-01 00:00:00Z",
+    "end": "2031-01-01 00:00:00Z",
+    "hours": 43825
+  },
+  "reference": "NASA PGDA product 69 (Mazarico), AVGVISIB_85S_060M_201608 (+_EARTH) when the site is inside it, else AVGVISIB_75S_120M_201608; values in tools/validation/pgda.json.",
+  "thresholds": {
+    "note": "Pass/fail rules for the C# validation (N1/N8). Written and committed BEFORE the first C# run, so they cannot be tuned to the results. Failures are reported, not hidden.",
+    "reference": "NASA PGDA product 69 (Mazarico), AVGVISIB_85S_060M_201608 (+_EARTH) when the site is inside it, else AVGVISIB_75S_120M_201608; values in tools/validation/pgda.json.",
+    "comparison": "C# product code (HorizonMask.Compute + Analysis.Timeline, hourly over the whole ephem.csv), observer at 0 m, Sun up = any part of the disk (sunFrac > 0), Earth in view = earthFrac > 0. PGDA is a surface map with the same 'any part of the disc' definition.",
+    "perSite": {
+      "okWithinPoints": 5,
+      "explainedRule": "|diff| > 5 but our value is inside the PGDA 3x3 range +-5, or PGDA is inside our +-80 m (8 neighbours) range +-5",
+      "problem": "anything else"
+    },
+    "pass": {
+      "sunSitesWithin5": 25,
+      "earthSitesWithin5": 27,
+      "maxProblemSites": 0,
+      "why": "the Python reimplementation gave 26/31 and 28/31; the C# must reproduce it within one site"
+    },
+    "csharpVsPython": {
+      "maxAbsDiffPoints": 0.05,
+      "rows": "0 m vs pgda.json ours0m, 2 m and 10 m vs ours.json (sunEdge, earthEdge)",
+      "caveat": "known before running: since PR 26 the C# compares 16 strips of the disk with the real skyline, scales the Sun with distance and removes eclipses; the Python does not. A difference above 0.05 is reported as is, never tuned away."
+    },
+    "negativeControls": {
+      "rule": "each control is run like the real comparison; it must FAIL, i.e. give fewer than pass.sunSitesWithin5 Sun sites within 5 points. A control that passes means the comparison cannot tell right from wrong.",
+      "controls": [
+        {
+          "id": "mirroredAzimuth",
+          "what": "skyline mirrored east-west: mask[i] -> mask[(720 - i) % 720]"
+        },
+        {
+          "id": "sunRotated180",
+          "what": "sub-solar longitude + 180 deg"
+        },
+        {
+          "id": "dateShifted",
+          "what": "ephemeris read 14.77 days late (half a synodic month)"
+        }
+      ]
+    },
+    "illuminationBins": [
+      0,
+      10,
+      25,
+      50,
+      70,
+      100
+    ]
+  },
+  "summary": {
+    "sun": {
+      "n": 31,
+      "within": 26,
+      "bias": 1.37,
+      "medianAbs": 0.78,
+      "meanAbs": 2.72,
+      "rmse": 4.85,
+      "r": 0.9695,
+      "slope": 1.0182,
+      "maxAbs": 17.45,
+      "maxAbsSite": "de-gerlache-rim-2"
+    },
+    "earth": {
+      "n": 31,
+      "within": 28,
+      "bias": 0.68,
+      "medianAbs": 0.74,
+      "meanAbs": 1.36,
+      "rmse": 2.25,
+      "r": 0.9957,
+      "slope": 1.0321,
+      "maxAbs": 7.27,
+      "maxAbsSite": "mons-mouton"
+    },
+    "sunVerdicts": {
+      "OK": 26,
+      "explained": 5,
+      "problem": 0
+    },
+    "earthVerdicts": {
+      "OK": 28,
+      "explained": 3,
+      "problem": 0
+    },
+    "sunByIllumination": [
+      {
+        "pgdaSunPct": "0-10",
+        "sites": 1,
+        "within5": 1,
+        "meanAbsDiff": 0.18
+      },
+      {
+        "pgdaSunPct": "10-25",
+        "sites": 8,
+        "within5": 8,
+        "meanAbsDiff": 0.87
+      },
+      {
+        "pgdaSunPct": "25-50",
+        "sites": 12,
+        "within5": 11,
+        "meanAbsDiff": 3.01
+      },
+      {
+        "pgdaSunPct": "50-70",
+        "sites": 9,
+        "within5": 6,
+        "meanAbsDiff": 3.43
+      },
+      {
+        "pgdaSunPct": "70-100",
+        "sites": 1,
+        "within5": 0,
+        "meanAbsDiff": 10.14
+      }
+    ],
+    "csharpVsPython": {
+      "maxAbsDiffSun": 0.08,
+      "maxAbsDiffEarth": 0.42,
+      "byMast": [
+        {
+          "mastM": 0,
+          "maxAbsDiffSun": 0.05,
+          "medianAbsDiffSun": 0.02,
+          "maxAbsDiffEarth": 0.42
+        },
+        {
+          "mastM": 2,
+          "maxAbsDiffSun": 0.07,
+          "medianAbsDiffSun": 0.02,
+          "maxAbsDiffEarth": 0.41
+        },
+        {
+          "mastM": 10,
+          "maxAbsDiffSun": 0.08,
+          "medianAbsDiffSun": 0.02,
+          "maxAbsDiffEarth": 0.33
+        }
+      ],
+      "rowsWithinThreshold": 48,
+      "rows": 93
+    },
+    "negativeControls": [
+      {
+        "id": "mirroredAzimuth",
+        "sunSitesWithin5": 24,
+        "sunMedianAbsDiff": 0.79,
+        "sunR": 0.9689,
+        "failsAsExpected": true
+      },
+      {
+        "id": "sunRotated180",
+        "sunSitesWithin5": 25,
+        "sunMedianAbsDiff": 0.84,
+        "sunR": 0.9693,
+        "failsAsExpected": false
+      },
+      {
+        "id": "dateShifted",
+        "sunSitesWithin5": 26,
+        "sunMedianAbsDiff": 0.9,
+        "sunR": 0.9701,
+        "failsAsExpected": false
+      }
+    ]
+  },
+  "pass": {
+    "sun": true,
+    "earth": true,
+    "noProblemSites": true,
+    "csharpVsPython": false
+  },
+  "sites": [
+    {
+      "siteId": "peak-near-cabeus-b",
+      "latDeg": -83.5925,
+      "lonDeg": -68.454,
+      "pgdaMap": "75S_120M",
+      "sun": {
+        "ours0m": 56.08,
+        "ours0mNeighbours80m": [
+          30.89,
+          57.81
+        ],
+        "pgda": 56.06,
+        "pgda3x3": [
+          32.54,
+          61.52
+        ],
+        "diff": 0.02,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 70.83,
+        "ours0mNeighbours80m": [
+          23.7,
+          87.28
+        ],
+        "pgda": 67.32,
+        "pgda3x3": [
+          31.53,
+          99.51
+        ],
+        "diff": 3.51,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 56.07,
+        "sunRotated180": 55.8,
+        "dateShifted": 55.72
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 56.08,
+          "sunPctCentre": 55.09,
+          "earthPct": 70.83,
+          "pythonSunPct": 56.11,
+          "pythonEarthPct": 70.82,
+          "diffPythonSun": -0.03,
+          "diffPythonEarth": 0.01
+        },
+        {
+          "mastM": 2,
+          "sunPct": 58.88,
+          "sunPctCentre": 57.92,
+          "earthPct": 77.15,
+          "pythonSunPct": 58.9,
+          "pythonEarthPct": 77.11,
+          "diffPythonSun": -0.02,
+          "diffPythonEarth": 0.04
+        },
+        {
+          "mastM": 10,
+          "sunPct": 63.27,
+          "sunPctCentre": 62.08,
+          "earthPct": 99.11,
+          "pythonSunPct": 63.28,
+          "pythonEarthPct": 99.07,
+          "diffPythonSun": -0.01,
+          "diffPythonEarth": 0.04
+        }
+      ]
+    },
+    {
+      "siteId": "haworth",
+      "latDeg": -86.3354,
+      "lonDeg": -23.3339,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 53.31,
+        "ours0mNeighbours80m": [
+          49.17,
+          56.16
+        ],
+        "pgda": 53.3,
+        "pgda3x3": [
+          45.71,
+          55.2
+        ],
+        "diff": 0.01,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 78.39,
+        "ours0mNeighbours80m": [
+          72.08,
+          80.8
+        ],
+        "pgda": 79.58,
+        "pgda3x3": [
+          73.48,
+          80.16
+        ],
+        "diff": -1.19,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 53.06,
+        "sunRotated180": 53.04,
+        "dateShifted": 52.95
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 53.31,
+          "sunPctCentre": 52.46,
+          "earthPct": 78.39,
+          "pythonSunPct": 53.32,
+          "pythonEarthPct": 78.3,
+          "diffPythonSun": -0.01,
+          "diffPythonEarth": 0.09
+        },
+        {
+          "mastM": 2,
+          "sunPct": 56.13,
+          "sunPctCentre": 55.22,
+          "earthPct": 80.58,
+          "pythonSunPct": 56.15,
+          "pythonEarthPct": 80.46,
+          "diffPythonSun": -0.02,
+          "diffPythonEarth": 0.12
+        },
+        {
+          "mastM": 10,
+          "sunPct": 60.91,
+          "sunPctCentre": 59.74,
+          "earthPct": 80.76,
+          "pythonSunPct": 60.9,
+          "pythonEarthPct": 80.59,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.17
+        }
+      ]
+    },
+    {
+      "siteId": "malapert-massif",
+      "latDeg": -85.9119,
+      "lonDeg": -4.157,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 59.77,
+        "ours0mNeighbours80m": [
+          50.88,
+          59.77
+        ],
+        "pgda": 55.84,
+        "pgda3x3": [
+          51.04,
+          59.75
+        ],
+        "diff": 3.93,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 100,
+        "ours0mNeighbours80m": [
+          80.07,
+          100
+        ],
+        "pgda": 100,
+        "pgda3x3": [
+          76.19,
+          100
+        ],
+        "diff": 0,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 59.7,
+        "sunRotated180": 59.66,
+        "dateShifted": 59.45
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 59.77,
+          "sunPctCentre": 58.71,
+          "earthPct": 100,
+          "pythonSunPct": 59.79,
+          "pythonEarthPct": 100,
+          "diffPythonSun": -0.02,
+          "diffPythonEarth": 0
+        },
+        {
+          "mastM": 2,
+          "sunPct": 64.63,
+          "sunPctCentre": 63.57,
+          "earthPct": 100,
+          "pythonSunPct": 64.63,
+          "pythonEarthPct": 100,
+          "diffPythonSun": 0,
+          "diffPythonEarth": 0
+        },
+        {
+          "mastM": 10,
+          "sunPct": 66.57,
+          "sunPctCentre": 65.57,
+          "earthPct": 100,
+          "pythonSunPct": 66.59,
+          "pythonEarthPct": 100,
+          "diffPythonSun": -0.02,
+          "diffPythonEarth": 0
+        }
+      ]
+    },
+    {
+      "siteId": "mons-mouton-plateau",
+      "latDeg": -84.5635,
+      "lonDeg": 37.9959,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 53.4,
+        "ours0mNeighbours80m": [
+          50.77,
+          56.25
+        ],
+        "pgda": 54.18,
+        "pgda3x3": [
+          49.7,
+          56.57
+        ],
+        "diff": -0.78,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 100,
+        "ours0mNeighbours80m": [
+          82.28,
+          100
+        ],
+        "pgda": 94.5,
+        "pgda3x3": [
+          84.82,
+          100
+        ],
+        "diff": 5.5,
+        "verdict": "explained"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 53.39,
+        "sunRotated180": 53.56,
+        "dateShifted": 53.28
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 53.4,
+          "sunPctCentre": 52,
+          "earthPct": 100,
+          "pythonSunPct": 53.42,
+          "pythonEarthPct": 100,
+          "diffPythonSun": -0.02,
+          "diffPythonEarth": 0
+        },
+        {
+          "mastM": 2,
+          "sunPct": 58.38,
+          "sunPctCentre": 56.98,
+          "earthPct": 100,
+          "pythonSunPct": 58.4,
+          "pythonEarthPct": 100,
+          "diffPythonSun": -0.02,
+          "diffPythonEarth": 0
+        },
+        {
+          "mastM": 10,
+          "sunPct": 59.01,
+          "sunPctCentre": 57.71,
+          "earthPct": 100,
+          "pythonSunPct": 59.02,
+          "pythonEarthPct": 100,
+          "diffPythonSun": -0.01,
+          "diffPythonEarth": 0
+        }
+      ]
+    },
+    {
+      "siteId": "mons-mouton",
+      "latDeg": -85.4781,
+      "lonDeg": 31.0203,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 60.41,
+        "ours0mNeighbours80m": [
+          46.31,
+          62.32
+        ],
+        "pgda": 51.96,
+        "pgda3x3": [
+          29.09,
+          63
+        ],
+        "diff": 8.45,
+        "verdict": "explained"
+      },
+      "earth": {
+        "ours0m": 62.9,
+        "ours0mNeighbours80m": [
+          50.69,
+          73.69
+        ],
+        "pgda": 55.63,
+        "pgda3x3": [
+          46.26,
+          74.1
+        ],
+        "diff": 7.27,
+        "verdict": "explained"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 60.43,
+        "sunRotated180": 60.51,
+        "dateShifted": 60.12
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 60.41,
+          "sunPctCentre": 55.69,
+          "earthPct": 62.9,
+          "pythonSunPct": 60.4,
+          "pythonEarthPct": 62.87,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.03
+        },
+        {
+          "mastM": 2,
+          "sunPct": 70.85,
+          "sunPctCentre": 65.44,
+          "earthPct": 70.61,
+          "pythonSunPct": 70.83,
+          "pythonEarthPct": 70.57,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.04
+        },
+        {
+          "mastM": 10,
+          "sunPct": 79.32,
+          "sunPctCentre": 74.82,
+          "earthPct": 82.73,
+          "pythonSunPct": 79.3,
+          "pythonEarthPct": 82.67,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.06
+        }
+      ]
+    },
+    {
+      "siteId": "nobile-rim-1",
+      "latDeg": -85.1394,
+      "lonDeg": 36.5272,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 63.41,
+        "ours0mNeighbours80m": [
+          36.77,
+          63.41
+        ],
+        "pgda": 58.1,
+        "pgda3x3": [
+          48.63,
+          61.68
+        ],
+        "diff": 5.31,
+        "verdict": "explained"
+      },
+      "earth": {
+        "ours0m": 70.23,
+        "ours0mNeighbours80m": [
+          50.82,
+          79.86
+        ],
+        "pgda": 69.46,
+        "pgda3x3": [
+          57.78,
+          79.85
+        ],
+        "diff": 0.77,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 63.45,
+        "sunRotated180": 63.64,
+        "dateShifted": 63.38
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 63.41,
+          "sunPctCentre": 61.41,
+          "earthPct": 70.23,
+          "pythonSunPct": 63.43,
+          "pythonEarthPct": 70.23,
+          "diffPythonSun": -0.02,
+          "diffPythonEarth": 0
+        },
+        {
+          "mastM": 2,
+          "sunPct": 66.51,
+          "sunPctCentre": 65.39,
+          "earthPct": 77.51,
+          "pythonSunPct": 66.53,
+          "pythonEarthPct": 77.45,
+          "diffPythonSun": -0.02,
+          "diffPythonEarth": 0.06
+        },
+        {
+          "mastM": 10,
+          "sunPct": 66.97,
+          "sunPctCentre": 65.85,
+          "earthPct": 80.32,
+          "pythonSunPct": 67,
+          "pythonEarthPct": 80.22,
+          "diffPythonSun": -0.03,
+          "diffPythonEarth": 0.1
+        }
+      ]
+    },
+    {
+      "siteId": "nobile-rim-2",
+      "latDeg": -83.8179,
+      "lonDeg": 59.076,
+      "pgdaMap": "75S_120M",
+      "sun": {
+        "ours0m": 51.06,
+        "ours0mNeighbours80m": [
+          35.63,
+          51.06
+        ],
+        "pgda": 51.24,
+        "pgda3x3": [
+          37.38,
+          52.66
+        ],
+        "diff": -0.18,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 60.05,
+        "ours0mNeighbours80m": [
+          46.96,
+          62.95
+        ],
+        "pgda": 62.12,
+        "pgda3x3": [
+          40.66,
+          71.7
+        ],
+        "diff": -2.07,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 51.13,
+        "sunRotated180": 51.36,
+        "dateShifted": 51.17
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 51.06,
+          "sunPctCentre": 48.89,
+          "earthPct": 60.05,
+          "pythonSunPct": 51.07,
+          "pythonEarthPct": 60.02,
+          "diffPythonSun": -0.01,
+          "diffPythonEarth": 0.03
+        },
+        {
+          "mastM": 2,
+          "sunPct": 52.36,
+          "sunPctCentre": 50.93,
+          "earthPct": 63.64,
+          "pythonSunPct": 52.36,
+          "pythonEarthPct": 63.61,
+          "diffPythonSun": 0,
+          "diffPythonEarth": 0.03
+        },
+        {
+          "mastM": 10,
+          "sunPct": 52.48,
+          "sunPctCentre": 51.16,
+          "earthPct": 72.89,
+          "pythonSunPct": 52.48,
+          "pythonEarthPct": 72.87,
+          "diffPythonSun": 0,
+          "diffPythonEarth": 0.02
+        }
+      ]
+    },
+    {
+      "siteId": "de-gerlache-rim-2",
+      "latDeg": -88.632,
+      "lonDeg": -68.0601,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 53.15,
+        "ours0mNeighbours80m": [
+          40.68,
+          62.84
+        ],
+        "pgda": 35.7,
+        "pgda3x3": [
+          35.7,
+          62.22
+        ],
+        "diff": 17.45,
+        "verdict": "explained"
+      },
+      "earth": {
+        "ours0m": 61.96,
+        "ours0mNeighbours80m": [
+          61.33,
+          61.98
+        ],
+        "pgda": 61.3,
+        "pgda3x3": [
+          61.28,
+          61.32
+        ],
+        "diff": 0.66,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 53.3,
+        "sunRotated180": 53.1,
+        "dateShifted": 52.77
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 53.15,
+          "sunPctCentre": 49.19,
+          "earthPct": 61.96,
+          "pythonSunPct": 53.14,
+          "pythonEarthPct": 61.85,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.11
+        },
+        {
+          "mastM": 2,
+          "sunPct": 61.63,
+          "sunPctCentre": 58.07,
+          "earthPct": 61.97,
+          "pythonSunPct": 61.62,
+          "pythonEarthPct": 61.86,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.11
+        },
+        {
+          "mastM": 10,
+          "sunPct": 70.01,
+          "sunPctCentre": 67.31,
+          "earthPct": 61.99,
+          "pythonSunPct": 69.99,
+          "pythonEarthPct": 61.88,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.11
+        }
+      ]
+    },
+    {
+      "siteId": "slater-plain",
+      "latDeg": -87.2638,
+      "lonDeg": 127.5189,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 57.61,
+        "ours0mNeighbours80m": [
+          48.21,
+          59.39
+        ],
+        "pgda": 58.83,
+        "pgda3x3": [
+          36.43,
+          58.83
+        ],
+        "diff": -1.22,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 50.15,
+        "ours0mNeighbours80m": [
+          43.3,
+          50.43
+        ],
+        "pgda": 49.71,
+        "pgda3x3": [
+          33.7,
+          49.74
+        ],
+        "diff": 0.44,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 57.53,
+        "sunRotated180": 57.72,
+        "dateShifted": 57.75
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 57.61,
+          "sunPctCentre": 54.29,
+          "earthPct": 50.15,
+          "pythonSunPct": 57.61,
+          "pythonEarthPct": 50.12,
+          "diffPythonSun": 0,
+          "diffPythonEarth": 0.03
+        },
+        {
+          "mastM": 2,
+          "sunPct": 64.56,
+          "sunPctCentre": 61.58,
+          "earthPct": 50.42,
+          "pythonSunPct": 64.55,
+          "pythonEarthPct": 50.38,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.04
+        },
+        {
+          "mastM": 10,
+          "sunPct": 68.8,
+          "sunPctCentre": 65.83,
+          "earthPct": 50.46,
+          "pythonSunPct": 68.78,
+          "pythonEarthPct": 50.41,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.05
+        }
+      ]
+    },
+    {
+      "siteId": "shackleton-rim",
+      "latDeg": -89.7668,
+      "lonDeg": -171.87,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 10.91,
+        "ours0mNeighbours80m": [
+          9.3,
+          12.47
+        ],
+        "pgda": 10.96,
+        "pgda3x3": [
+          9.88,
+          12.03
+        ],
+        "diff": -0.05,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 10.22,
+        "ours0mNeighbours80m": [
+          7.77,
+          11.99
+        ],
+        "pgda": 11.07,
+        "pgda3x3": [
+          9.7,
+          12.36
+        ],
+        "diff": -0.85,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 11.15,
+        "sunRotated180": 11.14,
+        "dateShifted": 11.01
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 10.91,
+          "sunPctCentre": 8.83,
+          "earthPct": 10.22,
+          "pythonSunPct": 10.88,
+          "pythonEarthPct": 9.8,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0.42
+        },
+        {
+          "mastM": 2,
+          "sunPct": 10.94,
+          "sunPctCentre": 8.89,
+          "earthPct": 10.35,
+          "pythonSunPct": 10.93,
+          "pythonEarthPct": 9.94,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.41
+        },
+        {
+          "mastM": 10,
+          "sunPct": 11.15,
+          "sunPctCentre": 9.09,
+          "earthPct": 10.78,
+          "pythonSunPct": 11.13,
+          "pythonEarthPct": 10.45,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.33
+        }
+      ]
+    },
+    {
+      "siteId": "connecting-ridge",
+      "latDeg": -89.4632,
+      "lonDeg": -137.49,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 41.55,
+        "ours0mNeighbours80m": [
+          34.11,
+          78.24
+        ],
+        "pgda": 43.87,
+        "pgda3x3": [
+          36.67,
+          76.95
+        ],
+        "diff": -2.32,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 39.43,
+        "ours0mNeighbours80m": [
+          31.16,
+          56.61
+        ],
+        "pgda": 39.05,
+        "pgda3x3": [
+          33.85,
+          57.25
+        ],
+        "diff": 0.38,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 41.69,
+        "sunRotated180": 41.7,
+        "dateShifted": 41.79
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 41.55,
+          "sunPctCentre": 38.01,
+          "earthPct": 39.43,
+          "pythonSunPct": 41.52,
+          "pythonEarthPct": 39.42,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0.01
+        },
+        {
+          "mastM": 2,
+          "sunPct": 50.31,
+          "sunPctCentre": 45.45,
+          "earthPct": 46.51,
+          "pythonSunPct": 50.29,
+          "pythonEarthPct": 46.5,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.01
+        },
+        {
+          "mastM": 10,
+          "sunPct": 90.05,
+          "sunPctCentre": 85.07,
+          "earthPct": 58.7,
+          "pythonSunPct": 90.05,
+          "pythonEarthPct": 58.65,
+          "diffPythonSun": 0,
+          "diffPythonEarth": 0.05
+        }
+      ]
+    },
+    {
+      "siteId": "im2-athena",
+      "latDeg": -84.7906,
+      "lonDeg": 29.1957,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 46.3,
+        "ours0mNeighbours80m": [
+          41.83,
+          46.53
+        ],
+        "pgda": 45.1,
+        "pgda3x3": [
+          40.26,
+          46.89
+        ],
+        "diff": 1.2,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 93.2,
+        "ours0mNeighbours80m": [
+          82.98,
+          93.93
+        ],
+        "pgda": 92.08,
+        "pgda3x3": [
+          79.51,
+          93.12
+        ],
+        "diff": 1.12,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 46.28,
+        "sunRotated180": 46.44,
+        "dateShifted": 46.21
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 46.3,
+          "sunPctCentre": 44.61,
+          "earthPct": 93.2,
+          "pythonSunPct": 46.33,
+          "pythonEarthPct": 93.12,
+          "diffPythonSun": -0.03,
+          "diffPythonEarth": 0.08
+        },
+        {
+          "mastM": 2,
+          "sunPct": 46.75,
+          "sunPctCentre": 45.01,
+          "earthPct": 93.73,
+          "pythonSunPct": 46.77,
+          "pythonEarthPct": 93.59,
+          "diffPythonSun": -0.02,
+          "diffPythonEarth": 0.14
+        },
+        {
+          "mastM": 10,
+          "sunPct": 47.71,
+          "sunPctCentre": 45.82,
+          "earthPct": 94.38,
+          "pythonSunPct": 47.73,
+          "pythonEarthPct": 94.27,
+          "diffPythonSun": -0.02,
+          "diffPythonEarth": 0.11
+        }
+      ]
+    },
+    {
+      "siteId": "amundsen-rim",
+      "latDeg": -84.2287,
+      "lonDeg": 69.44396,
+      "pgdaMap": "75S_120M",
+      "sun": {
+        "ours0m": 35.63,
+        "ours0mNeighbours80m": [
+          34.25,
+          39.26
+        ],
+        "pgda": 38.2,
+        "pgda3x3": [
+          34.8,
+          41.66
+        ],
+        "diff": -2.57,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 54.22,
+        "ours0mNeighbours80m": [
+          49.93,
+          60.05
+        ],
+        "pgda": 54.17,
+        "pgda3x3": [
+          49.44,
+          60.41
+        ],
+        "diff": 0.05,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 35.66,
+        "sunRotated180": 35.84,
+        "dateShifted": 35.76
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 35.63,
+          "sunPctCentre": 34.23,
+          "earthPct": 54.22,
+          "pythonSunPct": 35.65,
+          "pythonEarthPct": 54.22,
+          "diffPythonSun": -0.02,
+          "diffPythonEarth": 0
+        },
+        {
+          "mastM": 2,
+          "sunPct": 37.57,
+          "sunPctCentre": 36.17,
+          "earthPct": 55.35,
+          "pythonSunPct": 37.6,
+          "pythonEarthPct": 55.34,
+          "diffPythonSun": -0.03,
+          "diffPythonEarth": 0.01
+        },
+        {
+          "mastM": 10,
+          "sunPct": 41.06,
+          "sunPctCentre": 39.67,
+          "earthPct": 59.66,
+          "pythonSunPct": 41.08,
+          "pythonEarthPct": 59.66,
+          "diffPythonSun": -0.02,
+          "diffPythonEarth": 0
+        }
+      ]
+    },
+    {
+      "siteId": "shackleton-rim-b",
+      "latDeg": -89.5244,
+      "lonDeg": 56.30993,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 39.84,
+        "ours0mNeighbours80m": [
+          38.83,
+          41.34
+        ],
+        "pgda": 35.54,
+        "pgda3x3": [
+          34.03,
+          39.97
+        ],
+        "diff": 4.3,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 54.56,
+        "ours0mNeighbours80m": [
+          54.47,
+          54.65
+        ],
+        "pgda": 53.82,
+        "pgda3x3": [
+          53.74,
+          53.88
+        ],
+        "diff": 0.74,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 39.7,
+        "sunRotated180": 39.84,
+        "dateShifted": 39.72
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 39.84,
+          "sunPctCentre": 35.23,
+          "earthPct": 54.56,
+          "pythonSunPct": 39.79,
+          "pythonEarthPct": 54.5,
+          "diffPythonSun": 0.05,
+          "diffPythonEarth": 0.06
+        },
+        {
+          "mastM": 2,
+          "sunPct": 42.03,
+          "sunPctCentre": 37.13,
+          "earthPct": 54.58,
+          "pythonSunPct": 41.99,
+          "pythonEarthPct": 54.5,
+          "diffPythonSun": 0.04,
+          "diffPythonEarth": 0.08
+        },
+        {
+          "mastM": 10,
+          "sunPct": 43.14,
+          "sunPctCentre": 38.16,
+          "earthPct": 54.62,
+          "pythonSunPct": 43.09,
+          "pythonEarthPct": 54.56,
+          "diffPythonSun": 0.05,
+          "diffPythonEarth": 0.06
+        }
+      ]
+    },
+    {
+      "siteId": "shoemaker-rim-a",
+      "latDeg": -88.0792,
+      "lonDeg": 11.88866,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 22.91,
+        "ours0mNeighbours80m": [
+          21.61,
+          24.18
+        ],
+        "pgda": 22.78,
+        "pgda3x3": [
+          21.63,
+          23.66
+        ],
+        "diff": 0.13,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 48.36,
+        "ours0mNeighbours80m": [
+          48.2,
+          48.48
+        ],
+        "pgda": 47.61,
+        "pgda3x3": [
+          47.52,
+          47.71
+        ],
+        "diff": 0.75,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 23,
+        "sunRotated180": 22.78,
+        "dateShifted": 22.48
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 22.91,
+          "sunPctCentre": 19.22,
+          "earthPct": 48.36,
+          "pythonSunPct": 22.88,
+          "pythonEarthPct": 48.2,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0.16
+        },
+        {
+          "mastM": 2,
+          "sunPct": 23.92,
+          "sunPctCentre": 20.05,
+          "earthPct": 48.38,
+          "pythonSunPct": 23.89,
+          "pythonEarthPct": 48.22,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0.16
+        },
+        {
+          "mastM": 10,
+          "sunPct": 26.18,
+          "sunPctCentre": 22.03,
+          "earthPct": 48.39,
+          "pythonSunPct": 26.15,
+          "pythonEarthPct": 48.24,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0.15
+        }
+      ]
+    },
+    {
+      "siteId": "shoemaker-rim-b",
+      "latDeg": -88.3828,
+      "lonDeg": 16.58734,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 18.24,
+        "ours0mNeighbours80m": [
+          15.97,
+          18.81
+        ],
+        "pgda": 18.76,
+        "pgda3x3": [
+          16.35,
+          18.86
+        ],
+        "diff": -0.52,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 51.62,
+        "ours0mNeighbours80m": [
+          46.82,
+          52.52
+        ],
+        "pgda": 51.07,
+        "pgda3x3": [
+          48.43,
+          51.72
+        ],
+        "diff": 0.55,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 18.54,
+        "sunRotated180": 18.34,
+        "dateShifted": 18.22
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 18.24,
+          "sunPctCentre": 15.79,
+          "earthPct": 51.62,
+          "pythonSunPct": 18.22,
+          "pythonEarthPct": 51.54,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.08
+        },
+        {
+          "mastM": 2,
+          "sunPct": 18.83,
+          "sunPctCentre": 16.26,
+          "earthPct": 52.29,
+          "pythonSunPct": 18.81,
+          "pythonEarthPct": 52.17,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.12
+        },
+        {
+          "mastM": 10,
+          "sunPct": 21.59,
+          "sunPctCentre": 18.5,
+          "earthPct": 52.52,
+          "pythonSunPct": 21.55,
+          "pythonEarthPct": 52.39,
+          "diffPythonSun": 0.04,
+          "diffPythonEarth": 0.13
+        }
+      ]
+    },
+    {
+      "siteId": "shoemaker-rim-c",
+      "latDeg": -88.9645,
+      "lonDeg": 37.23483,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 13.34,
+        "ours0mNeighbours80m": [
+          10.89,
+          21.12
+        ],
+        "pgda": 12.7,
+        "pgda3x3": [
+          12.7,
+          19.44
+        ],
+        "diff": 0.64,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 24.45,
+        "ours0mNeighbours80m": [
+          24.45,
+          38.14
+        ],
+        "pgda": 30.9,
+        "pgda3x3": [
+          30.9,
+          35.49
+        ],
+        "diff": -6.45,
+        "verdict": "explained"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 13.62,
+        "sunRotated180": 13.66,
+        "dateShifted": 13.42
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 13.34,
+          "sunPctCentre": 10.77,
+          "earthPct": 24.45,
+          "pythonSunPct": 13.3,
+          "pythonEarthPct": 24.44,
+          "diffPythonSun": 0.04,
+          "diffPythonEarth": 0.01
+        },
+        {
+          "mastM": 2,
+          "sunPct": 17.39,
+          "sunPctCentre": 14.23,
+          "earthPct": 33.23,
+          "pythonSunPct": 17.34,
+          "pythonEarthPct": 33.23,
+          "diffPythonSun": 0.05,
+          "diffPythonEarth": 0
+        },
+        {
+          "mastM": 10,
+          "sunPct": 28.22,
+          "sunPctCentre": 24.13,
+          "earthPct": 39.65,
+          "pythonSunPct": 28.17,
+          "pythonEarthPct": 39.63,
+          "diffPythonSun": 0.05,
+          "diffPythonEarth": 0.02
+        }
+      ]
+    },
+    {
+      "siteId": "shoemaker-rim-d",
+      "latDeg": -88.632,
+      "lonDeg": 74.62375,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 33.11,
+        "ours0mNeighbours80m": [
+          23.08,
+          33.11
+        ],
+        "pgda": 33.31,
+        "pgda3x3": [
+          28.18,
+          33.31
+        ],
+        "diff": -0.2,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 52.38,
+        "ours0mNeighbours80m": [
+          45.45,
+          52.38
+        ],
+        "pgda": 51.46,
+        "pgda3x3": [
+          46.48,
+          51.46
+        ],
+        "diff": 0.92,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 33.03,
+        "sunRotated180": 33.31,
+        "dateShifted": 32.83
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 33.11,
+          "sunPctCentre": 28.15,
+          "earthPct": 52.38,
+          "pythonSunPct": 33.09,
+          "pythonEarthPct": 52.37,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.01
+        },
+        {
+          "mastM": 2,
+          "sunPct": 34.45,
+          "sunPctCentre": 29.21,
+          "earthPct": 53.02,
+          "pythonSunPct": 34.42,
+          "pythonEarthPct": 53.02,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0
+        },
+        {
+          "mastM": 10,
+          "sunPct": 36.99,
+          "sunPctCentre": 31.93,
+          "earthPct": 55.39,
+          "pythonSunPct": 36.98,
+          "pythonEarthPct": 55.36,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.03
+        }
+      ]
+    },
+    {
+      "siteId": "shoemaker-rim-e",
+      "latDeg": -87.9458,
+      "lonDeg": 71.27421,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 18.09,
+        "ours0mNeighbours80m": [
+          16.99,
+          18.55
+        ],
+        "pgda": 18.12,
+        "pgda3x3": [
+          16.32,
+          18.51
+        ],
+        "diff": -0.03,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 49.87,
+        "ours0mNeighbours80m": [
+          49.79,
+          49.95
+        ],
+        "pgda": 49.02,
+        "pgda3x3": [
+          48.97,
+          49.07
+        ],
+        "diff": 0.85,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 17.72,
+        "sunRotated180": 17.75,
+        "dateShifted": 17.84
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 18.09,
+          "sunPctCentre": 13.92,
+          "earthPct": 49.87,
+          "pythonSunPct": 18.07,
+          "pythonEarthPct": 49.75,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.12
+        },
+        {
+          "mastM": 2,
+          "sunPct": 18.21,
+          "sunPctCentre": 14,
+          "earthPct": 49.88,
+          "pythonSunPct": 18.17,
+          "pythonEarthPct": 49.76,
+          "diffPythonSun": 0.04,
+          "diffPythonEarth": 0.12
+        },
+        {
+          "mastM": 10,
+          "sunPct": 18.72,
+          "sunPctCentre": 14.35,
+          "earthPct": 49.9,
+          "pythonSunPct": 18.68,
+          "pythonEarthPct": 49.78,
+          "diffPythonSun": 0.04,
+          "diffPythonEarth": 0.12
+        }
+      ]
+    },
+    {
+      "siteId": "faustini-rim-a",
+      "latDeg": -87.8897,
+      "lonDeg": 90,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 29.74,
+        "ours0mNeighbours80m": [
+          22.96,
+          29.74
+        ],
+        "pgda": 30.42,
+        "pgda3x3": [
+          21.16,
+          30.42
+        ],
+        "diff": -0.68,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 51.53,
+        "ours0mNeighbours80m": [
+          51.5,
+          51.54
+        ],
+        "pgda": 50.79,
+        "pgda3x3": [
+          50.77,
+          50.81
+        ],
+        "diff": 0.74,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 29.65,
+        "sunRotated180": 29.56,
+        "dateShifted": 29.47
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 29.74,
+          "sunPctCentre": 26.04,
+          "earthPct": 51.53,
+          "pythonSunPct": 29.73,
+          "pythonEarthPct": 51.45,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.08
+        },
+        {
+          "mastM": 2,
+          "sunPct": 31.53,
+          "sunPctCentre": 27.96,
+          "earthPct": 51.53,
+          "pythonSunPct": 31.52,
+          "pythonEarthPct": 51.45,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.08
+        },
+        {
+          "mastM": 10,
+          "sunPct": 39.63,
+          "sunPctCentre": 35.56,
+          "earthPct": 51.54,
+          "pythonSunPct": 39.6,
+          "pythonEarthPct": 51.47,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0.07
+        }
+      ]
+    },
+    {
+      "siteId": "shoemaker-rim-f",
+      "latDeg": -87.3417,
+      "lonDeg": 60.25512,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 25.46,
+        "ours0mNeighbours80m": [
+          23.46,
+          26.62
+        ],
+        "pgda": 25.08,
+        "pgda3x3": [
+          22.6,
+          26.48
+        ],
+        "diff": 0.38,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 47.38,
+        "ours0mNeighbours80m": [
+          47.34,
+          47.42
+        ],
+        "pgda": 46.67,
+        "pgda3x3": [
+          46.63,
+          46.7
+        ],
+        "diff": 0.71,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 25.12,
+        "sunRotated180": 25.17,
+        "dateShifted": 25.11
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 25.46,
+          "sunPctCentre": 21.18,
+          "earthPct": 47.38,
+          "pythonSunPct": 25.41,
+          "pythonEarthPct": 47.31,
+          "diffPythonSun": 0.05,
+          "diffPythonEarth": 0.07
+        },
+        {
+          "mastM": 2,
+          "sunPct": 26.87,
+          "sunPctCentre": 22.12,
+          "earthPct": 47.39,
+          "pythonSunPct": 26.8,
+          "pythonEarthPct": 47.32,
+          "diffPythonSun": 0.07,
+          "diffPythonEarth": 0.07
+        },
+        {
+          "mastM": 10,
+          "sunPct": 35.78,
+          "sunPctCentre": 29.97,
+          "earthPct": 47.42,
+          "pythonSunPct": 35.7,
+          "pythonEarthPct": 47.35,
+          "diffPythonSun": 0.08,
+          "diffPythonEarth": 0.07
+        }
+      ]
+    },
+    {
+      "siteId": "cabeus-exterior-wall-1",
+      "latDeg": -86.9243,
+      "lonDeg": -71.5651,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 18.81,
+        "ours0mNeighbours80m": [
+          0,
+          22.56
+        ],
+        "pgda": 14.03,
+        "pgda3x3": [
+          0,
+          22
+        ],
+        "diff": 4.78,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 38.14,
+        "ours0mNeighbours80m": [
+          2.38,
+          38.33
+        ],
+        "pgda": 37.42,
+        "pgda3x3": [
+          0,
+          37.58
+        ],
+        "diff": 0.72,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 19.16,
+        "sunRotated180": 18.59,
+        "dateShifted": 18.43
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 18.81,
+          "sunPctCentre": 15.63,
+          "earthPct": 38.14,
+          "pythonSunPct": 18.79,
+          "pythonEarthPct": 38.11,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.03
+        },
+        {
+          "mastM": 2,
+          "sunPct": 20.83,
+          "sunPctCentre": 17.47,
+          "earthPct": 38.22,
+          "pythonSunPct": 20.81,
+          "pythonEarthPct": 38.16,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.06
+        },
+        {
+          "mastM": 10,
+          "sunPct": 24.56,
+          "sunPctCentre": 21.06,
+          "earthPct": 38.43,
+          "pythonSunPct": 24.53,
+          "pythonEarthPct": 38.39,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0.04
+        }
+      ]
+    },
+    {
+      "siteId": "amundsen-1",
+      "latDeg": -83.9046,
+      "lonDeg": 89.53545,
+      "pgdaMap": "75S_120M",
+      "sun": {
+        "ours0m": 3.54,
+        "ours0mNeighbours80m": [
+          3.33,
+          3.71
+        ],
+        "pgda": 3.72,
+        "pgda3x3": [
+          3.43,
+          3.97
+        ],
+        "diff": -0.18,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 38.1,
+        "ours0mNeighbours80m": [
+          38.07,
+          38.15
+        ],
+        "pgda": 37.58,
+        "pgda3x3": [
+          37.51,
+          37.61
+        ],
+        "diff": 0.52,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 3.56,
+        "sunRotated180": 3.64,
+        "dateShifted": 3.58
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 3.54,
+          "sunPctCentre": 1.51,
+          "earthPct": 38.1,
+          "pythonSunPct": 3.5,
+          "pythonEarthPct": 38.08,
+          "diffPythonSun": 0.04,
+          "diffPythonEarth": 0.02
+        },
+        {
+          "mastM": 2,
+          "sunPct": 3.57,
+          "sunPctCentre": 1.55,
+          "earthPct": 38.12,
+          "pythonSunPct": 3.53,
+          "pythonEarthPct": 38.09,
+          "diffPythonSun": 0.04,
+          "diffPythonEarth": 0.03
+        },
+        {
+          "mastM": 10,
+          "sunPct": 3.69,
+          "sunPctCentre": 1.66,
+          "earthPct": 38.17,
+          "pythonSunPct": 3.67,
+          "pythonEarthPct": 38.14,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.03
+        }
+      ]
+    },
+    {
+      "siteId": "idelson-l-crater-1",
+      "latDeg": -84.5397,
+      "lonDeg": 126.9045,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 25.15,
+        "ours0mNeighbours80m": [
+          24.79,
+          25.45
+        ],
+        "pgda": 25.32,
+        "pgda3x3": [
+          25.03,
+          25.48
+        ],
+        "diff": -0.17,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 24.84,
+        "ours0mNeighbours80m": [
+          21.3,
+          25.71
+        ],
+        "pgda": 24.72,
+        "pgda3x3": [
+          22.7,
+          25.28
+        ],
+        "diff": 0.12,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 25.23,
+        "sunRotated180": 25.56,
+        "dateShifted": 25.24
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 25.15,
+          "sunPctCentre": 22,
+          "earthPct": 24.84,
+          "pythonSunPct": 25.12,
+          "pythonEarthPct": 24.83,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0.01
+        },
+        {
+          "mastM": 2,
+          "sunPct": 25.29,
+          "sunPctCentre": 22.15,
+          "earthPct": 25.46,
+          "pythonSunPct": 25.26,
+          "pythonEarthPct": 25.45,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0.01
+        },
+        {
+          "mastM": 10,
+          "sunPct": 25.79,
+          "sunPctCentre": 22.75,
+          "earthPct": 27.35,
+          "pythonSunPct": 25.77,
+          "pythonEarthPct": 27.35,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0
+        }
+      ]
+    },
+    {
+      "siteId": "malapert-crater-1",
+      "latDeg": -84.8034,
+      "lonDeg": 8.387032,
+      "pgdaMap": "75S_120M",
+      "sun": {
+        "ours0m": 10.07,
+        "ours0mNeighbours80m": [
+          10.05,
+          10.14
+        ],
+        "pgda": 10.02,
+        "pgda3x3": [
+          9.97,
+          10.1
+        ],
+        "diff": 0.05,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 52.78,
+        "ours0mNeighbours80m": [
+          52.71,
+          52.89
+        ],
+        "pgda": 52.05,
+        "pgda3x3": [
+          51.97,
+          52.16
+        ],
+        "diff": 0.73,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 9.96,
+        "sunRotated180": 9.91,
+        "dateShifted": 9.87
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 10.07,
+          "sunPctCentre": 8.81,
+          "earthPct": 52.78,
+          "pythonSunPct": 10.07,
+          "pythonEarthPct": 52.76,
+          "diffPythonSun": 0,
+          "diffPythonEarth": 0.02
+        },
+        {
+          "mastM": 2,
+          "sunPct": 10.11,
+          "sunPctCentre": 8.83,
+          "earthPct": 52.8,
+          "pythonSunPct": 10.09,
+          "pythonEarthPct": 52.78,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.02
+        },
+        {
+          "mastM": 10,
+          "sunPct": 10.18,
+          "sunPctCentre": 8.89,
+          "earthPct": 52.87,
+          "pythonSunPct": 10.17,
+          "pythonEarthPct": 52.86,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.01
+        }
+      ]
+    },
+    {
+      "siteId": "peak-near-shackleton",
+      "latDeg": -88.811,
+      "lonDeg": 123.6901,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 60.04,
+        "ours0mNeighbours80m": [
+          42.85,
+          73.72
+        ],
+        "pgda": 70.18,
+        "pgda3x3": [
+          17.02,
+          85.96
+        ],
+        "diff": -10.14,
+        "verdict": "explained"
+      },
+      "earth": {
+        "ours0m": 57.52,
+        "ours0mNeighbours80m": [
+          54.15,
+          61.42
+        ],
+        "pgda": 55.94,
+        "pgda3x3": [
+          44.24,
+          56.45
+        ],
+        "diff": 1.58,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 59.93,
+        "sunRotated180": 59.78,
+        "dateShifted": 59.72
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 60.04,
+          "sunPctCentre": 52.89,
+          "earthPct": 57.52,
+          "pythonSunPct": 60.03,
+          "pythonEarthPct": 57.49,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.03
+        },
+        {
+          "mastM": 2,
+          "sunPct": 80.78,
+          "sunPctCentre": 72.88,
+          "earthPct": 61.4,
+          "pythonSunPct": 80.77,
+          "pythonEarthPct": 61.29,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.11
+        },
+        {
+          "mastM": 10,
+          "sunPct": 88.53,
+          "sunPctCentre": 85.44,
+          "earthPct": 61.43,
+          "pythonSunPct": 88.52,
+          "pythonEarthPct": 61.31,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.12
+        }
+      ]
+    },
+    {
+      "siteId": "de-gerlache-rim-1",
+      "latDeg": -88.6834,
+      "lonDeg": -67.9321,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 54,
+        "ours0mNeighbours80m": [
+          48.15,
+          66.64
+        ],
+        "pgda": 49,
+        "pgda3x3": [
+          33.1,
+          61.27
+        ],
+        "diff": 5,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 61.96,
+        "ours0mNeighbours80m": [
+          58.1,
+          61.99
+        ],
+        "pgda": 61.26,
+        "pgda3x3": [
+          61.04,
+          61.29
+        ],
+        "diff": 0.7,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 54.35,
+        "sunRotated180": 54.54,
+        "dateShifted": 53.94
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 54,
+          "sunPctCentre": 48.68,
+          "earthPct": 61.96,
+          "pythonSunPct": 53.99,
+          "pythonEarthPct": 61.86,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.1
+        },
+        {
+          "mastM": 2,
+          "sunPct": 69.2,
+          "sunPctCentre": 63.73,
+          "earthPct": 61.96,
+          "pythonSunPct": 69.19,
+          "pythonEarthPct": 61.87,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.09
+        },
+        {
+          "mastM": 10,
+          "sunPct": 81.72,
+          "sunPctCentre": 76.78,
+          "earthPct": 61.99,
+          "pythonSunPct": 81.71,
+          "pythonEarthPct": 61.9,
+          "diffPythonSun": 0.01,
+          "diffPythonEarth": 0.09
+        }
+      ]
+    },
+    {
+      "siteId": "leibnitz-beta-plateau",
+      "latDeg": -85.4266,
+      "lonDeg": 31.74276,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 21.2,
+        "ours0mNeighbours80m": [
+          14.16,
+          27.16
+        ],
+        "pgda": 20.42,
+        "pgda3x3": [
+          14.7,
+          26.55
+        ],
+        "diff": 0.78,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 40.19,
+        "ours0mNeighbours80m": [
+          35.67,
+          42.87
+        ],
+        "pgda": 39.14,
+        "pgda3x3": [
+          35.2,
+          43
+        ],
+        "diff": 1.05,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 21.11,
+        "sunRotated180": 21.18,
+        "dateShifted": 20.87
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 21.2,
+          "sunPctCentre": 17.76,
+          "earthPct": 40.19,
+          "pythonSunPct": 21.16,
+          "pythonEarthPct": 40.16,
+          "diffPythonSun": 0.04,
+          "diffPythonEarth": 0.03
+        },
+        {
+          "mastM": 2,
+          "sunPct": 25.21,
+          "sunPctCentre": 21.25,
+          "earthPct": 42.8,
+          "pythonSunPct": 25.15,
+          "pythonEarthPct": 42.77,
+          "diffPythonSun": 0.06,
+          "diffPythonEarth": 0.03
+        },
+        {
+          "mastM": 10,
+          "sunPct": 46.38,
+          "sunPctCentre": 38.82,
+          "earthPct": 51.08,
+          "pythonSunPct": 46.31,
+          "pythonEarthPct": 51.03,
+          "diffPythonSun": 0.07,
+          "diffPythonEarth": 0.05
+        }
+      ]
+    },
+    {
+      "siteId": "de-gerlache-kocher-massif",
+      "latDeg": -85.8296,
+      "lonDeg": -116.322,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 78.55,
+        "ours0mNeighbours80m": [
+          31.12,
+          78.55
+        ],
+        "pgda": 67.6,
+        "pgda3x3": [
+          27.84,
+          78.55
+        ],
+        "diff": 10.95,
+        "verdict": "explained"
+      },
+      "earth": {
+        "ours0m": 61.15,
+        "ours0mNeighbours80m": [
+          35.39,
+          61.19
+        ],
+        "pgda": 60.56,
+        "pgda3x3": [
+          37.89,
+          60.57
+        ],
+        "diff": 0.59,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 78.62,
+        "sunRotated180": 78.57,
+        "dateShifted": 78.36
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 78.55,
+          "sunPctCentre": 73.53,
+          "earthPct": 61.15,
+          "pythonSunPct": 78.53,
+          "pythonEarthPct": 61.02,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.13
+        },
+        {
+          "mastM": 2,
+          "sunPct": 82.11,
+          "sunPctCentre": 78.76,
+          "earthPct": 61.16,
+          "pythonSunPct": 82.09,
+          "pythonEarthPct": 61.03,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.13
+        },
+        {
+          "mastM": 10,
+          "sunPct": 82.37,
+          "sunPctCentre": 79.04,
+          "earthPct": 61.19,
+          "pythonSunPct": 82.35,
+          "pythonEarthPct": 61.06,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.13
+        }
+      ]
+    },
+    {
+      "siteId": "shoemaker",
+      "latDeg": -87.1835,
+      "lonDeg": 62.83502,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 33.13,
+        "ours0mNeighbours80m": [
+          32.61,
+          36.54
+        ],
+        "pgda": 34.24,
+        "pgda3x3": [
+          32.05,
+          35.57
+        ],
+        "diff": -1.11,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 44.39,
+        "ours0mNeighbours80m": [
+          43.89,
+          44.64
+        ],
+        "pgda": 43.62,
+        "pgda3x3": [
+          43.13,
+          43.84
+        ],
+        "diff": 0.77,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 33.16,
+        "sunRotated180": 33.4,
+        "dateShifted": 33.3
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 33.13,
+          "sunPctCentre": 31.5,
+          "earthPct": 44.39,
+          "pythonSunPct": 33.11,
+          "pythonEarthPct": 44.36,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.03
+        },
+        {
+          "mastM": 2,
+          "sunPct": 35.18,
+          "sunPctCentre": 33.27,
+          "earthPct": 44.47,
+          "pythonSunPct": 35.16,
+          "pythonEarthPct": 44.45,
+          "diffPythonSun": 0.02,
+          "diffPythonEarth": 0.02
+        },
+        {
+          "mastM": 10,
+          "sunPct": 38.83,
+          "sunPctCentre": 36.47,
+          "earthPct": 44.7,
+          "pythonSunPct": 38.84,
+          "pythonEarthPct": 44.65,
+          "diffPythonSun": -0.01,
+          "diffPythonEarth": 0.05
+        }
+      ]
+    },
+    {
+      "siteId": "connecting-ridge-extension",
+      "latDeg": -89.0324,
+      "lonDeg": -101.999,
+      "pgdaMap": "85S_060M",
+      "sun": {
+        "ours0m": 34.49,
+        "ours0mNeighbours80m": [
+          32.3,
+          36.12
+        ],
+        "pgda": 35.19,
+        "pgda3x3": [
+          31.85,
+          35.28
+        ],
+        "diff": -0.7,
+        "verdict": "OK"
+      },
+      "earth": {
+        "ours0m": 0,
+        "ours0mNeighbours80m": [
+          0,
+          0
+        ],
+        "pgda": 0,
+        "pgda3x3": [
+          0,
+          0
+        ],
+        "diff": 0,
+        "verdict": "OK"
+      },
+      "controlsSun0m": {
+        "mirroredAzimuth": 34.59,
+        "sunRotated180": 34.48,
+        "dateShifted": 34.55
+      },
+      "masts": [
+        {
+          "mastM": 0,
+          "sunPct": 34.49,
+          "sunPctCentre": 32.33,
+          "earthPct": 0,
+          "pythonSunPct": 34.46,
+          "pythonEarthPct": 0,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0
+        },
+        {
+          "mastM": 2,
+          "sunPct": 35.8,
+          "sunPctCentre": 33.55,
+          "earthPct": 0,
+          "pythonSunPct": 35.77,
+          "pythonEarthPct": 0,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0
+        },
+        {
+          "mastM": 10,
+          "sunPct": 39.21,
+          "sunPctCentre": 36.65,
+          "earthPct": 7.78,
+          "pythonSunPct": 39.18,
+          "pythonEarthPct": 7.66,
+          "diffPythonSun": 0.03,
+          "diffPythonEarth": 0.12
+        }
+      ]
+    }
+  ]
+}

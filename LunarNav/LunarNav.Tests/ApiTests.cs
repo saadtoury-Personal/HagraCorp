@@ -121,10 +121,14 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task Validation_NotProducedYet_Returns404()
+    public async Task Validation_ServesTheCSharpRunAgainstPgda()
     {
-        var res = await _client.GetAsync("/api/validation");
-        Assert.Equal(HttpStatusCode.NotFound, res.StatusCode);
+        using var doc = System.Text.Json.JsonDocument.Parse(await _client.GetStringAsync("/api/validation"));
+        var root = doc.RootElement;
+        Assert.Equal(31, root.GetProperty("sites").GetArrayLength());
+        Assert.Equal(31, root.GetProperty("summary").GetProperty("sun").GetProperty("n").GetInt32());
+        Assert.True(root.GetProperty("pass").TryGetProperty("sun", out _));
+        Assert.Equal(3, root.GetProperty("summary").GetProperty("negativeControls").GetArrayLength());
     }
 
     [Fact]

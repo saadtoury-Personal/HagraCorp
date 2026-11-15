@@ -85,7 +85,9 @@ public static class Tools
                 var (source, command) = p switch
                 {
                     "sites.json" => ("NASA Lunar Surface Data Book ACD-50044 Table A2-2, NASA Artemis III candidate regions", "written by hand"),
-                    "rules.json" => ("LunarNav team: thresholds, each marked assumed or validated", "written by hand"),
+                    "validation.json" => ("C# product code vs NASA PGDA product 69 and the Python reimplementation (tools/validation)",
+                        "dotnet run -c Release --project LunarNav.Api -- validate ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data ../tools/validation LunarNav.Web/wwwroot/data/validation.json"),
+                    "rules.json" =>("LunarNav team: thresholds, each marked assumed or validated", "written by hand"),
                     "ephem.csv" =>("JPL Horizons (DE441), hourly sub-solar and sub-Earth points 2026-2030", "python fetch_ephem.py"),
                     _ when p.StartsWith("masks/") || p.StartsWith("heatmap_") || p.StartsWith("uncertainty_") => (lola, precompute),
                     _ => ("unknown", "unknown"),

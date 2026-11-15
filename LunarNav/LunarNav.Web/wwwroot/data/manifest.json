@@ -496,6 +496,13 @@
       "sha256": "97917c0fa926759798a6d337a7df0aac3a9aa1d65ba2853b28a0d89e57f96652",
       "source": "NASA LOLA LDEM_80S_80M (PDS) + ephem.csv",
       "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
+    },
+    {
+      "path": "validation.json",
+      "bytes": 57431,
+      "sha256": "b10b79c10894bfff639d4deced7eb0e77fb86c6e138e0bd4851392a798a3cae0",
+      "source": "C# product code vs NASA PGDA product 69 and the Python reimplementation (tools/validation)",
+      "command": "dotnet run -c Release --project LunarNav.Api -- validate ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data ../tools/validation LunarNav.Web/wwwroot/data/validation.json"
     }
   ]
 }
