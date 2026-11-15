@@ -1,16 +1,17 @@
 import { Html, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
-import { BufferGeometry, DoubleSide, Float32BufferAttribute, Mesh, PerspectiveCamera, Vector2, Vector3, type DirectionalLight, type Group, type Material } from 'three'
+import { AdditiveBlending, BufferGeometry, CanvasTexture, DoubleSide, Float32BufferAttribute, Mesh, PerspectiveCamera, Vector2, Vector3, type DirectionalLight, type Group, type Material } from 'three'
+import bodies from '../../data/bodies.json'
 import { sunAxis } from '../../lib/earthOrientation'
-import { earthVec, sunVec } from '../../lib/ephemeris'
+import { earthDistKm, earthVec, sunVec } from '../../lib/ephemeris'
 import { coords, toneClass } from '../../lib/format'
 import SourceTag from '../../components/SourceTag'
 import { SITES, verdict } from '../../lib/sites'
 import { useSiteMetrics } from '../../lib/useSiteMetrics'
 import { useScenario } from '../../store/scenario'
 import { earthQuaternion } from './earthPose'
-import { MODEL_URLS, normalise, SUN_ROTATION_DAYS } from './models'
+import { kmToUnits, MODEL_URLS, normalise, SUN_ROTATION_DAYS } from './models'
 
 /** 0 = whole Moon, 1 = south pole, 2 = one candidate region. */
 export type Level = 0 | 1 | 2
@@ -31,8 +32,16 @@ const ZOOM_MAX = 1.8
 export type Body = 'earth' | 'sun'
 type BadgeRefs = Record<Body, { box: HTMLDivElement | null }>
 
-/** Display size and distance from the Moon's centre, in Moon radii. For readability only: at true scale both would be far off screen. */
-const DISPLAY: Record<Body, { r: number; dist: number }> = { sun: { r: 0.34, dist: 2.1 }, earth: { r: 0.26, dist: 1.7 } }
+/**
+ * Sizes are true as seen from the Moon: Earth about 0.95 degrees wide in radius (it follows the Horizons distance), the Sun only 0.27.
+ * Both are drawn at that apparent size from wherever the camera is, so next to the Moon (8 degrees at the default zoom) they stay small, the Sun smaller than Earth.
+ * Directions are real too. Only the distance is shortened (they stay close to the Moon so they fit on screen).
+ */
+const DIST: Record<Body, number> = { sun: 2.6, earth: 1.9 }
+const D2R_ = Math.PI / 180
+const earthAngle = (t: number) => Math.asin(kmToUnits(bodies.earth.meanRadiusKm) / kmToUnits(earthDistKm(t)))
+const SUN_ANGLE = bodies.sunAngularRadiusDeg * D2R_
+const angleOf = (key: Body, t: number) => (key === 'earth' ? earthAngle(t) : SUN_ANGLE)
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x))
 
@@ -49,13 +58,17 @@ function Earth() {
   const clone = useMemo(() => scene.clone(true), [scene])
   const place = useRef<Group>(null)
   const spin = useRef<Group>(null)
+  const camera = useThree((st) => st.camera)
   useLayoutEffect(() => {
-    normalise(clone, DISPLAY.earth.r)
+    normalise(clone, 1)
   }, [clone])
   useFrame(() => {
     const t = useScenario.getState().day
     const e = earthVec(t)
-    place.current?.position.set(e[0], e[1], e[2]).multiplyScalar(DISPLAY.earth.dist)
+    const g = place.current
+    if (!g) return
+    g.position.set(e[0], e[1], e[2]).multiplyScalar(DIST.earth)
+    g.scale.setScalar(Math.tan(earthAngle(t)) * camera.position.distanceTo(g.position)) // true apparent size from the camera
     if (spin.current) earthQuaternion(t, spin.current.quaternion)
   })
   return (
@@ -67,22 +80,44 @@ function Earth() {
   )
 }
 
-/** The Sun, from the team's model: it glows by itself, turns once per 25.4 days on its real axis. */
+/** Soft halo so the Sun, which is truly tiny in the sky, can still be found. It is not part of the Sun's size. */
+function useGlow() {
+  return useMemo(() => {
+    const c = document.createElement('canvas')
+    c.width = c.height = 128
+    const g = c.getContext('2d')!
+    const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64)
+    grad.addColorStop(0, 'rgba(255,236,190,0.95)')
+    grad.addColorStop(0.18, 'rgba(255,205,120,0.55)')
+    grad.addColorStop(0.5, 'rgba(255,180,80,0.12)')
+    grad.addColorStop(1, 'rgba(255,170,70,0)')
+    g.fillStyle = grad
+    g.fillRect(0, 0, 128, 128)
+    return new CanvasTexture(c)
+  }, [])
+}
+
+/** The Sun, from the team's model: it glows by itself, turns once per 25.4 days on its real axis, and is as small as the real Sun looks. */
 function SunBody() {
   const { scene } = useGLTF(MODEL_URLS.sun)
   const clone = useMemo(() => scene.clone(true), [scene])
+  const glow = useGlow()
   const place = useRef<Group>(null)
   const spin = useRef<Group>(null)
   const axis = useMemo(() => new Vector3(), [])
+  const camera = useThree((st) => st.camera)
   useLayoutEffect(() => {
-    normalise(clone, DISPLAY.sun.r)
+    normalise(clone, 1)
   }, [clone])
   useFrame(() => {
     const t = useScenario.getState().day
     const s = sunVec(t)
-    place.current?.position.set(s[0], s[1], s[2]).multiplyScalar(DISPLAY.sun.dist)
+    const g = place.current
+    if (!g) return
+    g.position.set(s[0], s[1], s[2]).multiplyScalar(DIST.sun)
+    g.scale.setScalar(Math.tan(SUN_ANGLE) * camera.position.distanceTo(g.position))
     const a = sunAxis(t)
-    place.current?.quaternion.setFromUnitVectors(Y, axis.set(a[0], a[1], a[2]))
+    g.quaternion.setFromUnitVectors(Y, axis.set(a[0], a[1], a[2]))
     if (spin.current) spin.current.rotation.y = (2 * Math.PI * t) / SUN_ROTATION_DAYS
   })
   return (
@@ -90,6 +125,9 @@ function SunBody() {
       <group ref={spin}>
         <primitive object={clone} />
       </group>
+      <sprite scale={[20, 20, 1]}>
+        <spriteMaterial map={glow} blending={AdditiveBlending} transparent depthWrite={false} toneMapped={false} />
+      </sprite>
     </group>
   )
 }
@@ -109,7 +147,7 @@ function SkyBadges({ refs }: { refs: RefObject<BadgeRefs> }) {
       const box = refs.current[key].box
       if (!box) continue
       const d = dirs[key]
-      pos.set(d[0], d[1], d[2]).multiplyScalar(DISPLAY[key].dist)
+      pos.set(d[0], d[1], d[2]).multiplyScalar(DIST[key])
       // Moon in front of it: the line from the camera to the body passes through the Moon (radius 1) before reaching the body.
       ray.copy(pos).sub(cam)
       const len = ray.length()
@@ -118,7 +156,7 @@ function SkyBadges({ refs }: { refs: RefObject<BadgeRefs> }) {
       const closest = along > 0 && along < len ? hit.copy(cam).addScaledVector(ray, along).length() : 99
       const behindMoon = clamp01((closest - 1) / 0.25) // fades out as it slips behind the limb
       // Label under the body: its on-screen radius is its display radius over the view height at that distance.
-      const radiusPx = (DISPLAY[key].r / (len * Math.tan((camera as PerspectiveCamera).fov * Math.PI / 360))) * (size.height / 2)
+      const radiusPx = (Math.tan(angleOf(key, t)) / Math.tan(((camera as PerspectiveCamera).fov * Math.PI) / 360)) * (size.height / 2)
       pos.project(camera)
       const inView = pos.z < 1 ? clamp01((1 - Math.max(Math.abs(pos.x), Math.abs(pos.y))) / 0.1) : 0
       paint(box, (pos.x * 0.5 + 0.5) * size.width, (-pos.y * 0.5 + 0.5) * size.height + radiusPx + 14, behindMoon * inView)
