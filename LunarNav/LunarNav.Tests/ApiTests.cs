@@ -84,6 +84,29 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task ExportCsv_Haworth_HasHeaderAndOneRowPerHour()
+    {
+        var res = await _client.GetAsync("/api/sites/haworth/export.csv?from=2027-01-01T00:00:00Z&days=2&mast=2");
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+        Assert.Equal("text/csv", res.Content.Headers.ContentType?.MediaType);
+
+        var lines = (await res.Content.ReadAsStringAsync()).Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        Assert.Contains(lines, l => l.StartsWith("# ephemeris: JPL Horizons"));
+        var header = Array.IndexOf(lines, lines.First(l => l.StartsWith("utc,")));
+        var rows = lines[(header + 1)..];
+        Assert.InRange(rows.Length, 48, 49);   // 2 days hourly, end included or not
+        Assert.StartsWith("2027-01-01T00:00:00Z,", rows[0]);
+        Assert.All(rows, r => Assert.Equal(8, r.Split(',').Length));
+    }
+
+    [Fact]
+    public async Task ExportCsv_UnknownSite_Returns404()
+    {
+        var res = await _client.GetAsync("/api/sites/nope/export.csv");
+        Assert.Equal(HttpStatusCode.NotFound, res.StatusCode);
+    }
+
+    [Fact]
     public async Task Custom_WithoutTerrainMap_Returns503()
     {
         var res = await _client.PostAsJsonAsync("/api/custom", new CustomRequest(-86.3, -23.3, 2, null));
