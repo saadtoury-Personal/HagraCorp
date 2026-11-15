@@ -56,6 +56,17 @@ export const libration = (t: number) => {
   return { lat: r.eLat, lon: r.eLon }
 }
 export const earthDistKm = (t: number) => at(t).km
+
+// Same as LunarNav.Core Geometry.SunAngularRadiusAt: Sun-Earth distance from the mean anomaly (Meeus, low precision).
+const AU_KM = 149_597_870.7
+export const SUN_RADIUS_KM = 696_000
+const J2000 = Date.UTC(2000, 0, 1, 12)
+export const sunDistKm = (t: number) => {
+  const days = (EPOCH + t * 86400000 - J2000) / 86400000
+  return AU_KM * (1 - 0.0167 * Math.cos((357.529 + 0.98560028 * days) * D2R))
+}
+/** Apparent radius of the Sun's disc at day t, degrees (0.262 to 0.272 over the year). */
+export const sunRadiusDeg = (t: number) => Math.asin(SUN_RADIUS_KM / sunDistKm(t)) / D2R
 export const sunDecDeg = (t: number) => at(t).sLat
 export const subSolarLonE = (t: number) => at(t).sLon
 
