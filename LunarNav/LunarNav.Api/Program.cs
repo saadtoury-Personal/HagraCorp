@@ -11,6 +11,11 @@ if (args is ["precompute", ..])
     Console.Error.WriteLine("usage: precompute <demPath> <dataDir>");
     return 1;
 }
+if (args is ["manifest", var manifestDir])
+{
+    Tools.WriteManifest(manifestDir);
+    return 0;
+}
 
 var builder = WebApplication.CreateBuilder(args);
 

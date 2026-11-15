@@ -46,10 +46,56 @@ public static class Tools
             Write(Path.Combine(dataDir, $"heatmap_{mast}m.json"), Analysis.Heatmap(eph, sites, masks, from, to));
         }
 
+        WriteManifest(dataDir, Path.GetFileName(demPath));
+
         void Write<T>(string path, T value)
         {
             File.WriteAllText(path, JsonSerializer.Serialize(value, json));
             Console.WriteLine($"wrote {path}");
         }
+    }
+
+    /// <summary>One data file: its SHA-256, where it comes from and the command that produced it.</summary>
+    public record ManifestEntry(string Path, long Bytes, string Sha256, string Source, string Command);
+
+    /// <summary>Writes manifest.json listing every data file with its SHA-256, so anyone can check the data was not changed.
+    /// Run by Precompute, or alone with: dotnet run --project LunarNav.Api -- manifest LunarNav.Web/wwwroot/data</summary>
+    public static IReadOnlyList<ManifestEntry> WriteManifest(string dataDir, string demName = "LDEM_80S_80M.IMG")
+    {
+        const string precompute = "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data";
+        var lola = $"NASA LOLA {Path.GetFileNameWithoutExtension(demName)} (PDS) + ephem.csv";
+        var entries = Directory.EnumerateFiles(dataDir, "*.*", SearchOption.AllDirectories)
+            .Select(f => Path.GetRelativePath(dataDir, f).Replace('\\', '/'))
+            .Where(p => p != "manifest.json")
+            .Order(StringComparer.Ordinal)
+            .Select(p =>
+            {
+                var full = Path.Combine(dataDir, p);
+                var (source, command) = p switch
+                {
+                    "sites.json" => ("NASA Lunar Surface Data Book ACD-50044 Table A2-2, NASA Artemis III candidate regions", "written by hand"),
+                    "ephem.csv" => ("JPL Horizons (DE441), hourly sub-solar and sub-Earth points 2026-2030", "python fetch_ephem.py"),
+                    _ when p.StartsWith("masks/") || p.StartsWith("heatmap_") => (lola, precompute),
+                    _ => ("unknown", "unknown"),
+                };
+                return new ManifestEntry(p, new FileInfo(full).Length, Sha256(full), source, command);
+            })
+            .ToList();
+
+        var path = Path.Combine(dataDir, "manifest.json");
+        File.WriteAllText(path, JsonSerializer.Serialize(new { files = entries },
+            new JsonSerializerOptions(JsonSerializerDefaults.Web)
+            {
+                WriteIndented = true,
+                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            }));
+        Console.WriteLine($"wrote {path}");
+        return entries;
+    }
+
+    private static string Sha256(string path)
+    {
+        using var stream = File.OpenRead(path);
+        return Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(stream));
     }
 }
