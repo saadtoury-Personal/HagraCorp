@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { azEl, bodiesAt, MAST_TO_DEG, maskAt, SITES, track } from '../../lib/sites'
+import { azEl, bodiesAt, earthDistMoons, maskAt, SITES, SUN_EDGE_DEG, track } from '../../lib/sites'
 
 type Props = { site: number; day: number; dur: number; mast: number; mode: 'lander' | 'orbit' }
 
@@ -24,16 +24,15 @@ function splitWrap(pts: { az: number; el: number }[]) {
  */
 export default function Horizon({ site, day, dur, mast, mode }: Props) {
   const s = SITES[site]
-  const ms = mast * MAST_TO_DEG
   const { sun, earth } = useMemo(() => {
     const b = bodiesAt(day)
-    return { sun: azEl(s, b.sun), earth: azEl(s, b.earth, 221.3) }
+    return { sun: azEl(s, b.sun), earth: azEl(s, b.earth, earthDistMoons(day)) }
   }, [s, day])
   const tracks = useMemo(() => ({ sun: splitWrap(track(s, 'sun', day, dur)), earth: splitWrap(track(s, 'earth', day, dur)) }), [s, day, dur])
-  const horizon = useMemo(() => Array.from({ length: 181 }, (_, i) => ({ az: i * 2, el: maskAt(s, i * 2) - ms })), [s, ms])
+  const horizon = useMemo(() => Array.from({ length: 181 }, (_, i) => ({ az: i * 2, el: maskAt(s, i * 2, mast) })), [s, mast])
 
-  const sunUp = sun.el > maskAt(s, sun.az) - ms
-  const earthUp = earth.el > maskAt(s, earth.az) - ms
+  const sunUp = sun.el + SUN_EDGE_DEG > maskAt(s, sun.az, mast)
+  const earthUp = earth.el > maskAt(s, earth.az, mast)
 
   if (mode === 'lander') {
     const W = 1000

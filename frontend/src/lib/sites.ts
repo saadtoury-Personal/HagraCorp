@@ -1,15 +1,34 @@
-// Sites, horizon masks and visibility series, ported from Nazim's mockup (simplified analytic model).
-// Site coordinates and Sun/Earth positions are real (team data). Horizons are still synthetic until the LOLA masks land.
+// Sites, horizon masks and visibility series.
+// Everything here is real team data: site coordinates (NASA Lunar Surface Data Book), Sun and Earth positions (JPL Horizons table)
+// and the horizon skylines computed from the LOLA terrain map (data/masks, one file per site and observer height).
+import bodies from '../data/bodies.json'
 import sitesJson from '../data/sites.json'
-import { earthVec, sunVec, TAU, toVec, type Vec3 } from './ephemeris'
+import { earthDistKm, earthVec, sunVec, toVec, type Vec3 } from './ephemeris'
 
 const D2R = Math.PI / 180
 export const STEP = 0.05 // days per sample
 export const SPAN = 90 // days shown in the UI
 const DAYS = 110 // samples run past SPAN so a window starting on day 90 is complete
 export const N = Math.round(DAYS / STEP)
-const DIST_EM = 221.3 // Earth to Moon in lunar radii
-const MAST_DEG = 0.04 // horizon lowering per metre of mast
+const MOON_KM = bodies.moonRadiusKm
+/** The Sun counts as up when its upper edge clears the horizon (team document: "we test its upper edge"). Apparent radius from the Moon, degrees (Geometry.cs). */
+export const SUN_EDGE_DEG = bodies.sunAngularRadiusDeg
+/** Earth-Moon distance in lunar radii at day t, from the Horizons table. */
+export const earthDistMoons = (t: number) => earthDistKm(t) / MOON_KM
+
+// Skylines: 720 elevations per file, bin i = azimuth i * 0.5 degrees, for an observer 2 m and 10 m above the ground.
+const MASK_FILES = import.meta.glob('../data/masks/*.json', { eager: true, import: 'default' }) as Record<string, number[]>
+const MAST_LO = 2
+const MAST_HI = 10
+const skyline = (id: string, mast: number) => Float32Array.from(MASK_FILES[`../data/masks/${id}_${mast}m.json`] ?? new Array(720).fill(0))
+/** Share of the 10 m skyline to use for a mast height (the data only exists for 2 m and 10 m, so heights in between are interpolated). */
+const mastWeight = (mast: number) => Math.min(1, Math.max(0, (mast - MAST_LO) / (MAST_HI - MAST_LO)))
+function bin(h: Float32Array, az: number) {
+  const f = (((az % 360) + 360) % 360) * 2
+  const i = Math.floor(f)
+  const k = f - i
+  return h[i % 720] * (1 - k) + h[(i + 1) % 720] * k
+}
 
 const dot = (a: Vec3, b: Vec3) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 const cross = (a: Vec3, b: Vec3): Vec3 => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]
@@ -21,11 +40,6 @@ const clamp = (x: number, a: number, b: number) => Math.min(b, Math.max(a, x))
 
 type SiteRow = { id: string; name: string; latDeg: number; lonDeg: number; category: string; terrain: boolean }
 const SITE_DEF = sitesJson as SiteRow[]
-
-function rng(seed: number) {
-  let s = (seed * 2654435761) >>> 0
-  return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296
-}
 
 export type Site = {
   i: number
@@ -39,17 +53,31 @@ export type Site = {
   q: Vec3
   n: Vec3
   e: Vec3
-  mask: number[] // m0, m1, p1, m2, p2, m3, p3
+  /** Horizon elevation by azimuth (720 bins of 0.5 deg), observer 2 m and 10 m above the ground. */
+  sky2: Float32Array
+  sky10: Float32Array
+  /** Elevation of the Sun and Earth over time, and the horizon in their direction for the 2 m and 10 m observer. */
   sEl: Float32Array
-  sMk: Float32Array
+  sMk2: Float32Array
+  sMk10: Float32Array
   eEl: Float32Array
-  eMk: Float32Array
+  eMk2: Float32Array
+  eMk10: Float32Array
 }
 
-export const maskAt = (s: Site, az: number) => {
-  const a = az * D2R
-  const [m0, m1, p1, m2, p2, m3, p3] = s.mask
-  return m0 + m1 * Math.cos(a - p1) + m2 * Math.cos(2 * a - p2) + m3 * Math.cos(3 * a - p3)
+/** Horizon elevation (degrees) at an azimuth, for an observer on a mast of the given height (metres). */
+export const maskAt = (s: Site, az: number, mast: number) => {
+  const w = mastWeight(mast)
+  return bin(s.sky2, az) * (1 - w) + bin(s.sky10, az) * w
+}
+/** Horizon in the Sun's and in Earth's direction at sample k. */
+export const sunMaskAt = (s: Site, k: number, mast: number) => {
+  const w = mastWeight(mast)
+  return s.sMk2[k] * (1 - w) + s.sMk10[k] * w
+}
+export const earthMaskAt = (s: Site, k: number, mast: number) => {
+  const w = mastWeight(mast)
+  return s.eMk2[k] * (1 - w) + s.eMk10[k] * w
 }
 
 /** Azimuth (deg from north, east-positive) and elevation (deg) of a body seen from a site. */
@@ -69,28 +97,36 @@ export function azEl(s: Site, v: Vec3, dist?: number) {
 
 const Sx: Vec3[] = []
 const Ex: Vec3[] = []
+const Dx: number[] = []
 for (let k = 0; k < N; k++) {
   Sx.push(sunVec(k * STEP))
   Ex.push(earthVec(k * STEP))
+  Dx.push(earthDistMoons(k * STEP))
 }
 export const bodiesAt = (t: number) => ({ sun: sunVec(t), earth: earthVec(t) })
 
-export const SITES: Site[] = SITE_DEF.map(({ name, latDeg: lat, lonDeg: lonE, category, terrain }, i) => {
-  const r = rng(i + 11)
+export const SITES: Site[] = SITE_DEF.map(({ id, name, latDeg: lat, lonDeg: lonE, category, terrain }, i) => {
   const q = toVec(lat, lonE)
   const P: Vec3 = [0, 1, 0]
   const pq = dot(P, q)
   const n = norm([P[0] - pq * q[0], P[1] - pq * q[1], P[2] - pq * q[2]])
   const e = cross(n, q)
-  const mask = !terrain ? [0, 0, 0, 0, 0, 0, 0] : [-0.3 + r() * 2.1, 0.3 + r() * 0.7, r() * TAU, 0.2 + r() * 0.5, r() * TAU, 0.1 + r() * 0.3, r() * TAU]
-  const s: Site = { i, name, lat, lonE, category, terrain, q, n, e, mask, sEl: new Float32Array(N), sMk: new Float32Array(N), eEl: new Float32Array(N), eMk: new Float32Array(N) }
+  const sky2 = skyline(id, MAST_LO)
+  const sky10 = skyline(id, MAST_HI)
+  const s: Site = {
+    i, name, lat, lonE, category, terrain, q, n, e, sky2, sky10,
+    sEl: new Float32Array(N), sMk2: new Float32Array(N), sMk10: new Float32Array(N),
+    eEl: new Float32Array(N), eMk2: new Float32Array(N), eMk10: new Float32Array(N),
+  }
   for (let k = 0; k < N; k++) {
     const a = azEl(s, Sx[k])
-    const b = azEl(s, Ex[k], DIST_EM)
+    const b = azEl(s, Ex[k], Dx[k])
     s.sEl[k] = a.el
-    s.sMk[k] = maskAt(s, a.az)
+    s.sMk2[k] = bin(sky2, a.az)
+    s.sMk10[k] = bin(sky10, a.az)
     s.eEl[k] = b.el
-    s.eMk[k] = maskAt(s, b.az)
+    s.eMk2[k] = bin(sky2, b.az)
+    s.eMk10[k] = bin(sky10, b.az)
   }
   return s
 })
@@ -102,13 +138,12 @@ const cache = new Map<number, Series[]>()
 export function getSeries(mast: number): Series[] {
   const hit = cache.get(mast)
   if (hit) return hit
-  const m = mast * MAST_DEG
   const out = SITES.map((s) => {
     const sun = new Uint8Array(N)
     const earth = new Uint8Array(N)
     for (let k = 0; k < N; k++) {
-      sun[k] = s.sEl[k] > s.sMk[k] - m ? 1 : 0
-      earth[k] = s.eEl[k] > s.eMk[k] - m ? 1 : 0
+      sun[k] = s.sEl[k] + SUN_EDGE_DEG > sunMaskAt(s, k, mast) ? 1 : 0
+      earth[k] = s.eEl[k] > earthMaskAt(s, k, mast) ? 1 : 0
     }
     let run = 0
     let best = 0
@@ -160,9 +195,10 @@ export function track(s: Site, which: 'sun' | 'earth', t0: number, dur: number, 
   const pts: { az: number; el: number }[] = []
   for (let t = t0; t <= t0 + dur + 1e-9; t += every) {
     const k = idxAt(t)
-    pts.push(which === 'sun' ? azEl(s, Sx[k]) : azEl(s, Ex[k], DIST_EM))
+    pts.push(which === 'sun' ? azEl(s, Sx[k]) : azEl(s, Ex[k], Dx[k]))
   }
   return pts
 }
 
-export const MAST_TO_DEG = MAST_DEG
+/** Lowest and highest observer height the real skylines cover, metres. */
+export const MAST_RANGE = [MAST_LO, MAST_HI] as const

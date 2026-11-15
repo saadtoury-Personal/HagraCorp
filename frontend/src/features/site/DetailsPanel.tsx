@@ -1,4 +1,4 @@
-import { idxAt, MAST_TO_DEG, metrics, SITES, timeToChange, verdict, type Series } from '../../lib/sites'
+import { earthMaskAt, idxAt, metrics, SITES, SUN_EDGE_DEG, sunMaskAt, timeToChange, verdict, type Series } from '../../lib/sites'
 import { signed, toneClass } from '../../lib/format'
 
 type Props = { site: number; series: Series; day: number; dur: number; mast: number; minD: number; onMast: (m: number) => void }
@@ -24,9 +24,8 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
   const m = metrics(series, day, dur)
   const v = verdict(m.E, m.D)
   const k = idxAt(day)
-  const ms = mast * MAST_TO_DEG
-  const sunHorizon = s.sMk[k] - ms
-  const earthHorizon = s.eMk[k] - ms
+  const sunHorizon = sunMaskAt(s, k, mast)
+  const earthHorizon = earthMaskAt(s, k, mast)
   const night = Math.round(series.night)
   const lit = m.E >= 99
   const link = m.D >= minD
@@ -46,7 +45,7 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
       <Row label="Sunlight" value={`${m.E}%`} sub={`of the ${dur}-day window with the Sun above the local horizon`} bar={{ pct: m.E, color: '#ffc766' }} />
       <Row label="Earth link (DTE)" value={`${m.D}%`} sub={`of the ${dur}-day window with Earth in view`} bar={{ pct: m.D, color: '#6fa8ff' }} />
       <Row label="Longest night" value={`${night} h`} sub={`longest continuous shadow in the next 90 days (${(night / 24).toFixed(1)} days)`} />
-      <Row label="Sun now" value={`${signed(s.sEl[k])}°`} sub={`${s.sEl[k] > sunHorizon ? 'above' : 'below'} the local horizon (${sunHorizon.toFixed(1)}°), ${timeToChange(series.sun, day)}`} />
+      <Row label="Sun now" value={`${signed(s.sEl[k])}°`} sub={`${s.sEl[k] + SUN_EDGE_DEG > sunHorizon ? 'above' : 'below'} the local horizon (${sunHorizon.toFixed(1)}°), ${timeToChange(series.sun, day)}`} />
       <Row label="Earth now" value={`${signed(s.eEl[k])}°`} sub={`${s.eEl[k] > earthHorizon ? 'in view' : 'hidden'} (horizon ${earthHorizon.toFixed(1)}°), ${timeToChange(series.earth, day)}`} />
 
       <div className="mt-5">

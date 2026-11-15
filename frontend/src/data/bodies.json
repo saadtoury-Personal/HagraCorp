@@ -1,0 +1,58 @@
+{
+  "moonRadiusKm": 1737.4,
+  "earthRadiusKm": 6371.0,
+  "sunRadiusKm": 695700,
+  "sunAngularRadiusDeg": 0.2666,
+  "moon": {
+    "equatorialRadiusKm": 1738.1,
+    "polarRadiusKm": 1736,
+    "meanRadiusKm": 1737.4,
+    "massE24Kg": 0.07346,
+    "meanDensityKgM3": 3344,
+    "surfaceGravityMs2": 1.62,
+    "escapeVelocityKmS": 2.38,
+    "siderealRotationHours": 655.72,
+    "obliquityToOrbitDeg": 6.68,
+    "orbit": {
+      "semiMajorAxisKm": 384400,
+      "perigeeKm": 363300,
+      "apogeeKm": 405500,
+      "eccentricity": 0.0549,
+      "revolutionDays": 27.3217,
+      "synodicDays": 29.53,
+      "inclinationToEclipticDeg": 5.145,
+      "meanOrbitalVelocityKmS": 1.022,
+      "recessionCmPerYear": 3.8
+    }
+  },
+  "earth": {
+    "equatorialRadiusKm": 6378.1,
+    "polarRadiusKm": 6356.8,
+    "meanRadiusKm": 6371,
+    "massE24Kg": 5.9724,
+    "meanDensityKgM3": 5514,
+    "surfaceGravityMs2": 9.8,
+    "escapeVelocityKmS": 11.2,
+    "siderealRotationHours": 23.9345,
+    "obliquityDeg": 23.44
+  },
+  "sun": {
+    "meanRadiusKm": 695700,
+    "massE24Kg": 1988400,
+    "meanDensityKgM3": 1408,
+    "surfaceGravityMs2": 274,
+    "escapeVelocityKmS": 617.6,
+    "siderealRotationHours": 609.12,
+    "obliquityDeg": 7.25,
+    "luminosityE24Watts": 382.8,
+    "solarIrradianceWm2": 1361,
+    "spectralType": "G2 V"
+  },
+  "sources": {
+    "moon, earth, sun": "workbook 3Dobjets/Coordonnées 13 sites mission .xlsx, sheets 'Diamètre Lune Terre soleil' and 'Distance Terre-Lune' (NASA planetary fact sheets, by Maggie)",
+    "moonRadiusKm, earthRadiusKm": "also LunarNav.Core/Geometry.cs (MoonRadiusKm, EarthRadiusKm)",
+    "sunAngularRadiusDeg": "LunarNav.Core/Geometry.cs (SunAngularRadiusDeg), the radius of the Sun's disc seen from the Moon. The Sun's distance is derived from it and the Sun's radius",
+    "earth-moon distance": "not here: it comes from the JPL Horizons table (data/ephem-window.csv, column earthRangeKm), hour by hour",
+    "solarIrradianceWm2": "workbook and LunarNav.Core/Analysis.cs (SolarConstantWm2)"
+  }
+}
