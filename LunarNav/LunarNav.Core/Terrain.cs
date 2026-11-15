@@ -105,23 +105,30 @@ public static class HorizonMask
     /// <summary>Computes the skyline. Takes up to about 1 s. mastM = observer height above the ground (2 or 10).</summary>
     public static float[] Compute(Dem dem, double latDeg, double lonDeg, double mastM, double maxDistKm = 150)
     {
-        // TODO (work in km, R = Geometry.MoonRadiusKm):                       MATH-REVIEW
-        // 1. dem.TryHeightM(site) -> hSite; throw ArgumentException if the site is outside the map
-        // 2. u = Geometry.UnitVector(lat, lon);  O = (R + hSite/1000 + mastM/1000) * u      (observer eye)
-        // 3. Parallel.For(0, Bins, i => {
-        //      az = i * 0.5; best = -90
-        //      for d = 0.08 km; d <= maxDistKm; d += 0.08 km      (one pixel per step)
-        //          (lat2, lon2) = Destination(lat, lon, az, d)
-        //          if (!dem.TryHeightM(lat2, lon2, out h)) break   (ray left the map)
-        //          P = (R + h/1000) * Geometry.UnitVector(lat2, lon2)
-        //          V = P - O
-        //          angle = asin(dot(V, u) / |V|) in degrees
-        //          best = max(best, angle)
-        //      mask[i] = (float)best
-        //    })
-        // Curvature needs no special handling: P and O are true 3D points.
-        // Speed-up allowed later: grow the step with distance (e.g. d *= 1.01 beyond 5 km).
-        throw new NotImplementedException();
+        if (!dem.TryHeightM(latDeg, lonDeg, out double hSite)) throw new ArgumentException("site is outside the terrain map");
+        var u = Geometry.UnitVector(latDeg, lonDeg);
+        double rEye = Geometry.MoonRadiusKm + hSite / 1000.0 + mastM / 1000.0;
+        var O = (X: rEye * u.X, Y: rEye * u.Y, Z: rEye * u.Z);
+        var mask = new float[Bins];
+        // MATH-REVIEW: P and O are true 3D points, so the Moon's curvature needs no special handling.
+        Parallel.For(0, Bins, i => {
+            double az = i * 0.5;
+            double best = -90;
+            for (double d = 0.08; d <= maxDistKm; d += 0.08) {
+                var (lat2, lon2) = Destination(latDeg, lonDeg, az, d);
+                if (!dem.TryHeightM(lat2, lon2, out double h)) break;
+                double r = Geometry.MoonRadiusKm + h / 1000.0;
+                var p = Geometry.UnitVector(lat2, lon2);
+                double vx = r * p.X - O.X;
+                double vy = r * p.Y - O.Y;
+                double vz = r * p.Z - O.Z;
+                double len = Math.Sqrt(vx * vx + vy * vy + vz * vz);
+                double angle = Math.Asin((vx * u.X + vy * u.Y + vz * u.Z) / len) * 180.0 / Math.PI;
+                if (angle > best) best = angle;
+            }
+            mask[i] = (float)best;
+        });
+        return mask;
     }
 
     /// <summary>Skyline for a site outside the map (Apollo 11): all zeros.</summary>
