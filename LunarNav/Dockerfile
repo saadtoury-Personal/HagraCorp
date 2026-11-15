@@ -20,7 +20,8 @@ COPY --from=build /dem/ /app/dem/
 COPY LunarNav.Web/wwwroot/data/ /app/data/
 ENV DataDir=/app/data \
     DemPath=/app/dem/LDEM_80S_80M.IMG \
-    ASPNETCORE_HTTP_PORTS=10000
+    ASPNETCORE_HTTP_PORTS=10000 \
+    ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
 EXPOSE 10000
 USER app
 ENTRYPOINT ["dotnet", "LunarNav.Api.dll"]
