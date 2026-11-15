@@ -1,0 +1,12 @@
+# Render blueprint: New > Blueprint > pick this repo. Redeploys on every merge into dev.
+services:
+  - type: web
+    name: lunarnav-api
+    runtime: docker
+    dockerContext: ./LunarNav
+    dockerfilePath: ./LunarNav/Dockerfile
+    branch: dev
+    plan: free
+    region: ohio   # closest Render region to Toronto
+    healthCheckPath: /api/health
+    autoDeploy: true

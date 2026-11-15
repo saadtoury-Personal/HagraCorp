@@ -14,10 +14,13 @@ public static class Tools
     /// <summary>Loads data/LDEM_80S_80M.IMG (110 MB of 16-bit little-endian integers) into memory.</summary>
     public static Dem LoadDem(string imgPath)
     {
-        var bytes = File.ReadAllBytes(imgPath);
-        if (bytes.Length != 7600 * 7600 * 2)
-            throw new InvalidDataException($"{imgPath}: expected {7600 * 7600 * 2} bytes, got {bytes.Length}");
-        return new Dem(MemoryMarshal.Cast<byte, short>(bytes).ToArray());
+        using var file = File.OpenRead(imgPath);
+        if (file.Length != 7600L * 7600 * 2)
+            throw new InvalidDataException($"{imgPath}: expected {7600 * 7600 * 2} bytes, got {file.Length}");
+        // Read straight into the final array: one 115 MB copy in memory, not two (Render's free plan has 512 MB).
+        var dn = new short[7600 * 7600];
+        file.ReadExactly(MemoryMarshal.AsBytes(dn.AsSpan()));
+        return new Dem(dn);
     }
 
     /// <summary>Writes masks/{id}_{mast}m.json, heatmap_{mast}m.json and uncertainty_{mast}m.json for every site, masts 2 and 10.</summary>
