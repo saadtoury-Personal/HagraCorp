@@ -1,0 +1,75 @@
+{
+  "note": "Every threshold the app uses. status = validated (checked against an independent source) or assumed (our choice, shown as such in the app).",
+  "rules": [
+    {
+      "id": "sunUp",
+      "label": "Sun up",
+      "value": "upper edge",
+      "description": "The Sun counts as up as soon as its upper edge is above the terrain (no atmosphere, so no refraction).",
+      "status": "assumed",
+      "source": "LunarNav choice; same convention as sunrise/sunset times"
+    },
+    {
+      "id": "earthInView",
+      "label": "Earth in view",
+      "value": "any part",
+      "description": "The Earth counts as in view when any part of its disk is above the terrain.",
+      "status": "assumed",
+      "source": "LunarNav choice (direct-to-Earth radio link needs line of sight)"
+    },
+    {
+      "id": "maxGapHours",
+      "label": "Tolerated dark gap",
+      "value": 6,
+      "unit": "h",
+      "description": "Continuous windows bridge dark gaps of this length or less (a battery covers them).",
+      "status": "assumed",
+      "source": "LunarNav choice, to be replaced by the battery simulation"
+    },
+    {
+      "id": "viperMaxDarkHours",
+      "label": "VIPER rule",
+      "value": 50,
+      "unit": "h",
+      "description": "Longest period with Sun down and Earth down that a solar rover survives.",
+      "status": "assumed",
+      "source": "NASA VIPER mission planning (rover survival without Sun and Earth contact)"
+    },
+    {
+      "id": "horizonMarginDeg",
+      "label": "Horizon error margin",
+      "value": 0.2,
+      "unit": "deg",
+      "description": "The whole skyline is raised and lowered by this amount; a verdict that flips is marked close call.",
+      "status": "assumed",
+      "source": "LunarNav choice (80 m terrain pixel, observer height)"
+    },
+    {
+      "id": "battery",
+      "label": "Default mission (battery)",
+      "value": { "panelM2": 2, "efficiency": 0.28, "loadW": 150, "capacityWh": 5000, "minSocPct": 20 },
+      "description": "Default lander used by the battery simulation; every value can be changed in the Mission panel.",
+      "status": "assumed",
+      "source": "LunarNav team, to be checked by Maggie and Edi"
+    },
+    {
+      "id": "verdict",
+      "label": "GO / RISKY / NO-GO",
+      "value": { "noGo": "not viable, or VIPER rule broken", "risky": "viable but close call", "go": "viable and not a close call" },
+      "description": "Viable = continuous window (Sun, plus Earth if required) at least as long as the stay.",
+      "status": "assumed",
+      "source": "LunarNav choice"
+    }
+  ],
+  "validated": [
+    {
+      "id": "sunEarthDirections",
+      "label": "Sun and Earth directions",
+      "value": 0.006,
+      "unit": "deg",
+      "description": "Largest difference between our Sun/Earth azimuth and elevation and JPL Horizons.",
+      "status": "validated",
+      "source": "JPL Horizons (DE441); unit test SunAzEl_Haworth_MatchesJplHorizons"
+    }
+  ]
+}

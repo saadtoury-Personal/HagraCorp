@@ -45,8 +45,9 @@ var api = app.MapGroup("/api");
 
 api.MapGet("/health", (AppData data) => Results.Ok(new { status = "ok", sites = data.Sites.Count })).WithName("Health");
 
-api.MapGet("/about", () => Results.Ok(new
+api.MapGet("/about", (AppData data) => Results.Ok(new
 {
+    rules = data.Rules,
     precision = new[]
     {
         "Sun up = the Sun's upper edge is above the terrain (no atmosphere, so no refraction). Earth in view = any part of the Earth is visible.",

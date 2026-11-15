@@ -470,6 +470,13 @@
       "command": "dotnet run --project LunarNav.Api -- precompute ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data"
     },
     {
+      "path": "rules.json",
+      "bytes": 2949,
+      "sha256": "232741ea6d8149798252f516cc2921e01f502fe03b722869a84b5cbf311525dc",
+      "source": "LunarNav team: thresholds, each marked assumed or validated",
+      "command": "written by hand"
+    },
+    {
       "path": "sites.json",
       "bytes": 6534,
       "sha256": "434286b127fa5ce23266cedbb15d7bbdb2066b4050b9c64bc77303b4e00f5599",

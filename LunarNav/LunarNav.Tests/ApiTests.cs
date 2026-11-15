@@ -68,6 +68,20 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
+    public async Task About_RulesMatchTheCodeAndAreLabelled()
+    {
+        using var doc = System.Text.Json.JsonDocument.Parse(await _client.GetStringAsync("/api/about"));
+        var rules = doc.RootElement.GetProperty("rules").GetProperty("rules").EnumerateArray().ToList();
+
+        Assert.All(rules, r => Assert.Contains(r.GetProperty("status").GetString(), new[] { "assumed", "validated" }));
+        Assert.All(rules, r => Assert.False(string.IsNullOrWhiteSpace(r.GetProperty("source").GetString())));
+        // rules.json is what the app shows; it must not drift from the constants the analysis really uses.
+        double Value(string id) => rules.Single(r => r.GetProperty("id").GetString() == id).GetProperty("value").GetDouble();
+        Assert.Equal(Analysis.ViperMaxDarkHours, Value("viperMaxDarkHours"));
+        Assert.Equal(Analysis.MaxGapHours, Value("maxGapHours"));
+    }
+
+    [Fact]
     public async Task Metrics_Apollo11_ReturnsSiteMetrics()
     {
         var m = await _client.GetFromJsonAsync<SiteMetrics>("/api/sites/apollo11/metrics?at=2027-01-01T06:00:00Z&stayDays=14");
