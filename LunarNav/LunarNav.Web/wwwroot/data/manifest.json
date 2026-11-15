@@ -499,8 +499,8 @@
     },
     {
       "path": "validation.json",
-      "bytes": 57431,
-      "sha256": "b10b79c10894bfff639d4deced7eb0e77fb86c6e138e0bd4851392a798a3cae0",
+      "bytes": 67886,
+      "sha256": "6ef6b7940efc14395da017a5ae4d460bfde59f70d523fd069c9cb6845e59e41f",
       "source": "C# product code vs NASA PGDA product 69 and the Python reimplementation (tools/validation)",
       "command": "dotnet run -c Release --project LunarNav.Api -- validate ../data/LDEM_80S_80M.IMG LunarNav.Web/wwwroot/data ../tools/validation LunarNav.Web/wwwroot/data/validation.json"
     }

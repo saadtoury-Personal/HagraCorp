@@ -1,5 +1,5 @@
 {
-  "note": "Pass/fail rules for the C# validation (N1/N8). Written and committed BEFORE the first C# run, so they cannot be tuned to the results. Failures are reported, not hidden.",
+  "note": "Pass/fail rules for the C# validation (N1/N8). Written and committed BEFORE the first C# run, so they cannot be tuned to the results (except csharpVsPortedPython, added 2026-11-15 after the first run, see that block). Failures are reported, not hidden.",
   "reference": "NASA PGDA product 69 (Mazarico), AVGVISIB_85S_060M_201608 (+_EARTH) when the site is inside it, else AVGVISIB_75S_120M_201608; values in tools/validation/pgda.json.",
   "comparison": "C# product code (HorizonMask.Compute + Analysis.Timeline, hourly over the whole ephem.csv), observer at 0 m, Sun up = any part of the disk (sunFrac > 0), Earth in view = earthFrac > 0. PGDA is a surface map with the same 'any part of the disc' definition.",
   "perSite": {
@@ -17,6 +17,11 @@
     "maxAbsDiffPoints": 0.05,
     "rows": "0 m vs pgda.json ours0m, 2 m and 10 m vs ours.json (sunEdge, earthEdge)",
     "caveat": "known before running: since PR 26 the C# compares 16 strips of the disk with the real skyline, scales the Sun with distance and removes eclipses; the Python does not. A difference above 0.05 is reported as is, never tuned away."
+  },
+  "csharpVsPortedPython": {
+    "addedAfterFirstRun": "2026-11-15. NOT a pre-registered rule. The registered csharpVsPython rule above failed (0.08 Sun, 0.42 Earth) and stays as it is. This second rule checks the cause: ours_ported.py is ours.py plus the three changes named in the caveat above (16 strips, Sun size from distance, eclipses). If they explain the whole gap, the C# matches it within the same margin.",
+    "maxAbsDiffPoints": 0.05,
+    "rows": "0, 2 and 10 m vs ours_ported.json (sunEdge, earthEdge)"
   },
   "negativeControls": {
     "rule": "each control is run like the real comparison; it must FAIL, i.e. give fewer than pass.sunSitesWithin5 Sun sites within 5 points. A control that passes means the comparison cannot tell right from wrong.",
