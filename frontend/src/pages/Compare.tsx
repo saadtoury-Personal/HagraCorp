@@ -1,29 +1,13 @@
 import { CheckIcon } from '@phosphor-icons/react'
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router'
+import Field from '../components/Field'
 import { dayLabel, pad2 } from '../lib/format'
 import { getSeries, metrics, SITES } from '../lib/sites'
 import { useScenario } from '../store/scenario'
 
 const COLS = 10
 const COL_STEP = 9 // 10 start dates over 90 days (a human lander stays viable about 90 days, per the 2023 white paper)
-
-function Field({ id, label, value, out, ...range }: { id: string; label: string; value: number; out: string; min: number; max: number; step: number; onChange: (v: number) => void }) {
-  const { onChange, ...rest } = range
-  return (
-    <div className="mt-6">
-      <div className="flex justify-between">
-        <label htmlFor={id} className="lab">
-          {label}
-        </label>
-        <output htmlFor={id} className="font-medium">
-          {out}
-        </output>
-      </div>
-      <input id={id} type="range" value={value} onChange={(e) => onChange(Number(e.target.value))} {...rest} />
-    </div>
-  )
-}
 
 export default function Compare() {
   const { dur, minE, minD, mast, set } = useScenario()

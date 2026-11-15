@@ -16,6 +16,10 @@ type Scenario = {
   minD: number
   /** Mast height in metres. */
   mast: number
+  /** Longest stretch without sunlight the batteries can bridge, hours. */
+  maxDark: number
+  /** Launch delay explored on the Slip page, days. */
+  slip: number
   set: (patch: Partial<Omit<Scenario, 'set'>>) => void
 }
 
@@ -27,5 +31,7 @@ export const useScenario = create<Scenario>((set) => ({
   minE: 90,
   minD: 50,
   mast: 3,
+  maxDark: 96, // four days: a lander with a large battery or a radioisotope heater
+  slip: 14,
   set: (patch) => set(patch),
 }))

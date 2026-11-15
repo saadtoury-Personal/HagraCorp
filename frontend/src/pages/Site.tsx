@@ -48,7 +48,9 @@ export default function Site() {
     if (params.get('tour') === '1') {
       tourStep.current = 0
       set({ site: 0 })
-      setParams({}, { replace: true })
+      const rest = new URLSearchParams(params)
+      rest.delete('tour')
+      setParams(rest, { replace: true })
     }
   }, [params, setParams, set])
 
