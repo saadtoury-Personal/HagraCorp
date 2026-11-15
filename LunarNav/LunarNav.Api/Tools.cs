@@ -20,7 +20,7 @@ public static class Tools
         return new Dem(MemoryMarshal.Cast<byte, short>(bytes).ToArray());
     }
 
-    /// <summary>Writes masks/{id}_{mast}m.json and heatmap_{mast}m.json for every site, masts 2 and 10.</summary>
+    /// <summary>Writes masks/{id}_{mast}m.json, heatmap_{mast}m.json and uncertainty_{mast}m.json for every site, masts 2 and 10.</summary>
     public static void Precompute(string demPath, string dataDir)
     {
         var json = new JsonSerializerOptions(JsonSerializerDefaults.Web);
@@ -43,7 +43,18 @@ public static class Tools
             }
             var from = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var to = new DateTime(2030, 10, 31, 0, 0, 0, DateTimeKind.Utc);
-            Write(Path.Combine(dataDir, $"heatmap_{mast}m.json"), Analysis.Heatmap(eph, sites, masks, from, to));
+            Write(Path.Combine(dataDir, $"heatmap_{mast}m.json"), Analysis.Heatmap(eph, sites, masks, from, to, new BatteryParams()));
+
+            // S1: 40 extra skylines per site, the slow part (minutes).
+            var uncertainty = new List<UncertaintyDto>();
+            for (int i = 0; i < sites.Count; i++)
+            {
+                if (!sites[i].Terrain)
+                    continue;
+                uncertainty.Add(Analysis.Uncertainty(eph, dem, sites[i], masks[i], mast, from, new DateTime(2031, 1, 1, 0, 0, 0, DateTimeKind.Utc)));
+                Console.WriteLine($"uncertainty {mast} m: {sites[i].Id}");
+            }
+            Write(Path.Combine(dataDir, $"uncertainty_{mast}m.json"), uncertainty);
         }
 
         WriteManifest(dataDir, Path.GetFileName(demPath));
