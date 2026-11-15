@@ -1,6 +1,6 @@
 import { Html, Stars, useGLTF } from '@react-three/drei'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type RefObject } from 'react'
 import { PerspectiveCamera, Vector3, type DirectionalLight } from 'three'
 import { sunVec } from '../../lib/ephemeris'
 import { toneClass } from '../../lib/format'
@@ -14,9 +14,13 @@ export type Level = 0 | 1 | 2
 const D2R = Math.PI / 180
 const toVec = (lat: number, lon: number, r: number) =>
   new Vector3(Math.cos(lat * D2R) * Math.cos(lon * D2R), Math.sin(lat * D2R), Math.cos(lat * D2R) * Math.sin(lon * D2R)).multiplyScalar(r)
-const SIDE = toVec(0, 112, 1) // horizontal direction the camera looks from
-const NEG_SIDE = SIDE.clone().negate()
 const Y = new Vector3(0, 1, 0)
+const LON0 = 112 // longitude the camera looks from before the user rotates the Moon
+const ZOOM_MIN = 0.6
+const ZOOM_MAX = 1.8
+
+/** User view: yaw spins the camera around the polar axis (degrees), so the south pole stays put. */
+type View = { yaw: number; zoom: number }
 
 function Moon() {
   const { scene } = useGLTF(MODEL_URLS.moon)
@@ -27,39 +31,115 @@ function Moon() {
   return <primitive object={clone} />
 }
 
-function Rig({ level }: { level: Level }) {
+function Rig({ level, view }: { level: Level; view: RefObject<View> }) {
   const { camera, size } = useThree()
-  const pos = useRef(toVec(-38, 112, 7))
+  const pos = useRef(toVec(-38, LON0, 7))
   const look = useRef(new Vector3())
-  const goal = useRef({ pos: new Vector3(), look: new Vector3(), up: new Vector3(0, 1, 0) })
+  const cur = useRef({ yaw: 0, zoom: 1 })
+  const goal = useRef({ pos: new Vector3(), look: new Vector3(), up: new Vector3(0, 1, 0), side: new Vector3(), negSide: new Vector3() })
   useFrame((_, dt) => {
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches
-    const { pos: goalPos, look: goalLook, up } = goal.current
+    const { pos: goalPos, look: goalLook, up, side, negSide } = goal.current
+    const k = reduce ? 1 : 1 - Math.exp(-dt * 3.2)
+    cur.current.yaw += (view.current.yaw - cur.current.yaw) * k
+    cur.current.zoom += (view.current.zoom - cur.current.zoom) * k
+    const z = cur.current.zoom
+    const lon = LON0 + cur.current.yaw
+    side.copy(toVec(0, lon, 1))
+    negSide.copy(side).negate()
     const fit = size.width < size.height ? 0.75 / (size.width / size.height) : 1 // keep the Moon inside a portrait screen
     if (level === 0) {
-      goalPos.copy(toVec(-38, 112, 7 * fit))
+      goalPos.copy(toVec(-38, lon, 7 * fit * z))
       goalLook.set(0, 0, 0)
     } else if (level === 1) {
-      goalPos.copy(toVec(-72, 112, 2.2 * fit))
+      goalPos.copy(toVec(-72, lon, 2.2 * fit * z))
       goalLook.set(0, -0.95, 0)
     } else {
       const q = SITES[useScenario.getState().site].q
       goalLook.set(q[0], q[1], q[2])
       // Above the site, tilted a little toward the camera side, looking down at it.
-      goalPos.copy(goalLook).multiplyScalar(1.7).addScaledVector(SIDE, 0.55 * Math.max(1, fit * 0.7))
+      goalPos.copy(goalLook).multiplyScalar(1.7 * z).addScaledVector(side, 0.55 * Math.max(1, fit * 0.7) * z)
     }
-    const k = reduce ? 1 : 1 - Math.exp(-dt * 3.2)
     pos.current.lerp(goalPos, k)
     look.current.lerp(goalLook, k)
     camera.position.copy(pos.current)
     // Looking straight up the axis from below the pole, +y is degenerate, so tilt the up vector.
-    up.lerp(level === 2 ? NEG_SIDE : Y, k).normalize()
+    up.lerp(level === 2 ? negSide : Y, k).normalize()
     camera.up.copy(up)
     camera.lookAt(look.current)
     // Push the Moon right of the headline on wide screens, and a little low on narrow ones.
     const wide = size.width >= 1024
     ;(camera as PerspectiveCamera).setViewOffset(size.width, size.height, wide && level === 0 ? -size.width * 0.15 : 0, wide ? 0 : size.height * 0.04, size.width, size.height)
   })
+  return null
+}
+
+/** Drag to spin around the pole, pinch or wheel to zoom, arrow keys and +/- for keyboard users. */
+function Controls({ view, level }: { view: RefObject<View>; level: Level }) {
+  const el = useThree((s) => s.gl.domElement)
+  useEffect(() => {
+    Object.assign(view.current, { zoom: 1 }) // each level starts at its own framing
+  }, [level, view])
+  useEffect(() => {
+    const v = view.current
+    const pts = new Map<number, { x: number; y: number }>()
+    const zoomBy = (f: number) => {
+      v.zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, v.zoom * f))
+    }
+    const gap = () => {
+      const [a, b] = [...pts.values()]
+      return Math.hypot(a.x - b.x, a.y - b.y)
+    }
+    const down = (e: PointerEvent) => {
+      el.setPointerCapture(e.pointerId)
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY })
+    }
+    const move = (e: PointerEvent) => {
+      const p = pts.get(e.pointerId)
+      if (!p) return
+      if (pts.size === 2) {
+        const before = gap()
+        p.x = e.clientX
+        p.y = e.clientY
+        const after = gap()
+        if (after > 0) zoomBy(before / after)
+      } else {
+        v.yaw += (e.clientX - p.x) * 0.4
+        p.x = e.clientX
+        p.y = e.clientY
+      }
+    }
+    const up = (e: PointerEvent) => void pts.delete(e.pointerId)
+    const wheel = (e: WheelEvent) => {
+      e.preventDefault()
+      zoomBy(Math.exp(e.deltaY * 0.0012))
+    }
+    const key = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') v.yaw -= 10
+      else if (e.key === 'ArrowRight') v.yaw += 10
+      else if (e.key === '+' || e.key === '=') zoomBy(0.85)
+      else if (e.key === '-') zoomBy(1.18)
+      else return
+      e.preventDefault()
+    }
+    el.style.setProperty('touch-action', 'none')
+    el.style.setProperty('cursor', 'grab')
+    el.setAttribute('tabindex', '0')
+    el.addEventListener('pointerdown', down)
+    el.addEventListener('pointermove', move)
+    el.addEventListener('pointerup', up)
+    el.addEventListener('pointercancel', up)
+    el.addEventListener('wheel', wheel, { passive: false })
+    el.addEventListener('keydown', key)
+    return () => {
+      el.removeEventListener('pointerdown', down)
+      el.removeEventListener('pointermove', move)
+      el.removeEventListener('pointerup', up)
+      el.removeEventListener('pointercancel', up)
+      el.removeEventListener('wheel', wheel)
+      el.removeEventListener('keydown', key)
+    }
+  }, [el, view])
   return null
 }
 
@@ -140,6 +220,7 @@ function Marker({ i, level, onSelect, onOpen }: { i: number; level: Level; onSel
 }
 
 export default function MoonScene({ level, onSelect, onOpen }: { level: Level; onSelect: (i: number) => void; onOpen: (i: number) => void }) {
+  const view = useRef<View>({ yaw: 0, zoom: 1 })
   return (
     <Canvas
       dpr={[1, 2]}
@@ -149,7 +230,8 @@ export default function MoonScene({ level, onSelect, onOpen }: { level: Level; o
     >
       <color attach="background" args={['#050608']} />
       <Stars radius={150} depth={40} count={2200} factor={3} saturation={0} fade speed={0} />
-      <Rig level={level} />
+      <Rig level={level} view={view} />
+      <Controls view={view} level={level} />
       <SunLight />
       <Moon />
       {SITES.map((s) => (

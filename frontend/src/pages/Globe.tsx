@@ -1,4 +1,3 @@
-import { MinusIcon, PlusIcon } from '@phosphor-icons/react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import TimeBar from '../components/TimeBar'
@@ -44,7 +43,6 @@ export default function Globe() {
     set({ site: i })
     setLevel(2)
   }
-  const step = (d: number) => setLevel((l) => Math.min(2, Math.max(0, l + d)) as Level)
 
   return (
     <div className="relative flex h-dvh min-h-[640px] flex-col overflow-hidden">
@@ -98,7 +96,10 @@ export default function Globe() {
           </nav>
         )}
 
-        <div className="pointer-events-auto">{level === 0 && <Readouts />}</div>
+        <div>
+          <p className="mb-3 max-w-[55%] text-xs uppercase md:max-w-none tracking-[0.16em] text-dim [text-shadow:0_1px_8px_#000]">Drag to rotate. Pinch or scroll to zoom.</p>
+          <div className="pointer-events-auto">{level === 0 && <Readouts />}</div>
+        </div>
       </main>
 
       <div className="absolute right-5 top-1/2 z-10 flex -translate-y-1/2 flex-col items-end md:right-9" role="group" aria-label="Zoom level">
@@ -114,14 +115,6 @@ export default function Globe() {
             <i className="block h-px w-4 bg-current transition-[width] duration-300 group-aria-[current=true]:w-11" />
           </button>
         ))}
-        <div className="mt-3 flex border border-line bg-bg/70">
-          <button type="button" aria-label="Zoom in" onClick={() => step(1)} className="grid size-11 place-items-center text-dim hover:text-ink">
-            <PlusIcon size={16} />
-          </button>
-          <button type="button" aria-label="Zoom out" onClick={() => step(-1)} className="grid size-11 place-items-center border-l border-line text-dim hover:text-ink">
-            <MinusIcon size={16} />
-          </button>
-        </div>
       </div>
 
       <div className="relative z-20">
