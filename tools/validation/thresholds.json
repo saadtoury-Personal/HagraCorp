@@ -1,0 +1,30 @@
+{
+  "note": "Pass/fail rules for the C# validation (N1/N8). Written and committed BEFORE the first C# run, so they cannot be tuned to the results. Failures are reported, not hidden.",
+  "reference": "NASA PGDA product 69 (Mazarico), AVGVISIB_85S_060M_201608 (+_EARTH) when the site is inside it, else AVGVISIB_75S_120M_201608; values in tools/validation/pgda.json.",
+  "comparison": "C# product code (HorizonMask.Compute + Analysis.Timeline, hourly over the whole ephem.csv), observer at 0 m, Sun up = any part of the disk (sunFrac > 0), Earth in view = earthFrac > 0. PGDA is a surface map with the same 'any part of the disc' definition.",
+  "perSite": {
+    "okWithinPoints": 5,
+    "explainedRule": "|diff| > 5 but our value is inside the PGDA 3x3 range +-5, or PGDA is inside our +-80 m (8 neighbours) range +-5",
+    "problem": "anything else"
+  },
+  "pass": {
+    "sunSitesWithin5": 25,
+    "earthSitesWithin5": 27,
+    "maxProblemSites": 0,
+    "why": "the Python reimplementation gave 26/31 and 28/31; the C# must reproduce it within one site"
+  },
+  "csharpVsPython": {
+    "maxAbsDiffPoints": 0.05,
+    "rows": "0 m vs pgda.json ours0m, 2 m and 10 m vs ours.json (sunEdge, earthEdge)",
+    "caveat": "known before running: since PR 26 the C# compares 16 strips of the disk with the real skyline, scales the Sun with distance and removes eclipses; the Python does not. A difference above 0.05 is reported as is, never tuned away."
+  },
+  "negativeControls": {
+    "rule": "each control is run like the real comparison; it must FAIL, i.e. give fewer than pass.sunSitesWithin5 Sun sites within 5 points. A control that passes means the comparison cannot tell right from wrong.",
+    "controls": [
+      { "id": "mirroredAzimuth", "what": "skyline mirrored east-west: mask[i] -> mask[(720 - i) % 720]" },
+      { "id": "sunRotated180", "what": "sub-solar longitude + 180 deg" },
+      { "id": "dateShifted", "what": "ephemeris read 14.77 days late (half a synodic month)" }
+    ]
+  },
+  "illuminationBins": [0, 10, 25, 50, 70, 100]
+}
