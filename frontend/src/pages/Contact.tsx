@@ -2,12 +2,12 @@ import SiteFooter from '../components/SiteFooter'
 
 // Roles from the repository README (Nazim's wording updated to his frontend work).
 const TEAM = [
-  ['Saad', 'Tech lead, full-stack and ephemeris engineer', 'Application architecture, Sun and Earth position engine, integration.'],
   ['Edi', 'Geospatial scientist, data validation lead', 'LOLA terrain, horizon masks, illumination and Earth-visibility windows, physical checks.'],
-  ['Youssef', 'Frontend and data visualization engineer', 'Horizon charts, power and communications timeline, site comparison matrix.'],
-  ['Nizar', 'Backend and API developer', 'API, per-site pre-computation cache, deployment.'],
   ['Nazim', 'Frontend developer, UI/UX design', 'Interface design system, the 3D Moon, Earth and Sun scene, the Site and Globe pages.'],
   ['Maggie', 'Mission domain specialist, pitch lead', 'Landing-site research, explanatory text, video, final submission and pitch.'],
+  ['Youssef', 'Frontend and data visualization engineer', 'Horizon charts, power and communications timeline, site comparison matrix.'],
+  ['Saad', 'Tech lead, full-stack and ephemeris engineer', 'Application architecture, Sun and Earth position engine, integration.'],
+  ['Nizar', 'Backend and API developer', 'API, per-site pre-computation cache, deployment.'],
 ] as const
 
 export default function Contact() {

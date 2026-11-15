@@ -5,10 +5,28 @@ import Field from '../components/Field'
 import { Tag } from '../components/Tag'
 import { dayLabel, pad2 } from '../lib/format'
 import { getSeries, metrics, SITES } from '../lib/sites'
+import SourceTag from '../components/SourceTag'
+import { useSiteMetrics } from '../lib/useSiteMetrics'
 import { useScenario } from '../store/scenario'
 
 const COLS = 10
 const COL_STEP = 9 // 10 start dates over 90 days (a human lander stays viable about 90 days, per the 2023 white paper)
+
+/** Sunlight and Earth link of one recommended window: the server's figures when it answers. */
+function PickStats({ site, id, t0, dur, mast }: { site: number; id: string; t0: number; dur: number; mast: number }) {
+  const m = useSiteMetrics(site, id, t0, dur, mast)
+  return (
+    <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 text-sm">
+      <span>
+        Sunlight <b className="font-medium">{m.E}%</b>
+      </span>
+      <span>
+        Earth link <b className="font-medium">{m.D}%</b>
+      </span>
+      <SourceTag source={m.source} />
+    </div>
+  )
+}
 
 export default function Compare() {
   const { dur, minE, minD, mast, set } = useScenario()
@@ -117,6 +135,9 @@ export default function Compare() {
             Falls short
           </li>
           <li>Cell value: the lower of the two scores (%)</li>
+          <li>
+            Grid: <SourceTag source="bundled" /> with the server’s rules; the recommended windows are checked by the server when it is on
+          </li>
         </ul>
       </section>
 
@@ -132,14 +153,7 @@ export default function Compare() {
                 <div className="mb-2.5 mt-0.5 text-sm text-dim">
                   {dayLabel(c.t0)} to {dayLabel(c.t0 + dur)}
                 </div>
-                <div className="flex gap-5 text-sm">
-                  <span>
-                    Sunlight <b className="font-medium">{c.m.E}%</b>
-                  </span>
-                  <span>
-                    Earth link <b className="font-medium">{c.m.D}%</b>
-                  </span>
-                </div>
+                <PickStats site={c.s.i} id={c.s.id} t0={c.t0} dur={dur} mast={mast} />
               </button>
             ))
           ) : (

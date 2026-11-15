@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { azEl, bodiesAt, earthDistMoons, maskAt, SITES, SUN_EDGE_DEG, track } from '../../lib/sites'
+import { azEl, bodiesAt, earthDistMoons, earthUpAt, maskAt, SITES, sunUpAt, track } from '../../lib/sites'
 
 type Props = { site: number; day: number; dur: number; mast: number; mode: 'lander' | 'orbit' }
 
@@ -31,8 +31,8 @@ export default function Horizon({ site, day, dur, mast, mode }: Props) {
   const tracks = useMemo(() => ({ sun: splitWrap(track(s, 'sun', day, dur)), earth: splitWrap(track(s, 'earth', day, dur)) }), [s, day, dur])
   const horizon = useMemo(() => Array.from({ length: 181 }, (_, i) => ({ az: i * 2, el: maskAt(s, i * 2, mast) })), [s, mast])
 
-  const sunUp = sun.el + SUN_EDGE_DEG > maskAt(s, sun.az, mast)
-  const earthUp = earth.el > maskAt(s, earth.az, mast)
+  const sunUp = sunUpAt(sun.el, maskAt(s, sun.az, mast))
+  const earthUp = earthUpAt(earth.el, maskAt(s, earth.az, mast), earthDistMoons(day))
 
   if (mode === 'lander') {
     const W = 1000

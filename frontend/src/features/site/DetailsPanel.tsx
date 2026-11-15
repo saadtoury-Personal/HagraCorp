@@ -1,6 +1,7 @@
-import { earthMaskAt, idxAt, metrics, SITES, SUN_EDGE_DEG, sunMaskAt, timeToChange, verdict, type Series } from '../../lib/sites'
+import { earthDistMoons, earthMaskAt, earthUpAt, idxAt, SITES, sunMaskAt, sunUpAt, timeToChange, verdict, type Series } from '../../lib/sites'
 import { categoryLabel, coords, signed, toneClass } from '../../lib/format'
-import { Tag } from '../../components/Tag'
+import SourceTag from '../../components/SourceTag'
+import { useSiteMetrics } from '../../lib/useSiteMetrics'
 import BatteryPanel from './BatteryPanel'
 import ServerPanel from './ServerPanel'
 import Uncertainty from './Uncertainty'
@@ -25,7 +26,7 @@ function Row({ label, value, sub, bar }: { label: string; value: string; sub: st
 /** Assessment, live values and selection criteria for one site at the selected time. */
 export default function DetailsPanel({ site, series, day, dur, mast, minD, onMast }: Props) {
   const s = SITES[site]
-  const m = metrics(series, day, dur)
+  const m = useSiteMetrics(site, s.id, day, dur, mast)
   const v = verdict(m.E, m.D)
   const k = idxAt(day)
   const sunHorizon = sunMaskAt(s, k, mast)
@@ -44,7 +45,7 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
       <div className="border-b border-line-soft pb-5">
         <span className="flex items-center justify-between gap-3">
           <span className="lab">Assessment</span>
-          <Tag kind="bundled" />
+          <SourceTag source={m.source} />
         </span>
         <b className={`mt-1 block text-4xl font-light leading-tight tracking-tight ${toneClass[v.tone]}`}>{v.word}</b>
         <p className="mt-2.5 text-sm text-dim">{v.why}</p>
@@ -52,8 +53,8 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
       <Row label="Sunlight" value={`${m.E}%`} sub={`of the ${dur}-day window with the Sun above the local horizon`} bar={{ pct: m.E, color: '#ffc766' }} />
       <Row label="Earth link (DTE)" value={`${m.D}%`} sub={`of the ${dur}-day window with Earth in view`} bar={{ pct: m.D, color: '#6fa8ff' }} />
       <Row label="Longest night" value={`${night} h`} sub={`longest continuous shadow in the next 90 days (${(night / 24).toFixed(1)} days)`} />
-      <Row label="Sun now" value={`${signed(s.sEl[k])}°`} sub={`${s.sEl[k] + SUN_EDGE_DEG > sunHorizon ? 'above' : 'below'} the local horizon (${sunHorizon.toFixed(1)}°), ${timeToChange(series.sun, day)}`} />
-      <Row label="Earth now" value={`${signed(s.eEl[k])}°`} sub={`${s.eEl[k] > earthHorizon ? 'in view' : 'hidden'} (horizon ${earthHorizon.toFixed(1)}°), ${timeToChange(series.earth, day)}`} />
+      <Row label="Sun now" value={`${signed(s.sEl[k])}°`} sub={`${sunUpAt(s.sEl[k], sunHorizon) ? 'above' : 'below'} the local horizon (${sunHorizon.toFixed(1)}°), ${timeToChange(series.sun, day)}`} />
+      <Row label="Earth now" value={`${signed(s.eEl[k])}°`} sub={`${earthUpAt(s.eEl[k], earthHorizon, earthDistMoons(day)) ? 'in view' : 'hidden'} (horizon ${earthHorizon.toFixed(1)}°), ${timeToChange(series.earth, day)}`} />
 
       <section aria-label="Location" className="mt-5 border-t border-line-soft pt-4">
         <span className="lab">Location</span>
@@ -62,7 +63,7 @@ export default function DetailsPanel({ site, series, day, dur, mast, minD, onMas
         {s.notes && <p className="mt-2 text-[13px] text-dim">{s.notes}</p>}
       </section>
 
-      <ServerPanel siteId={s.id} day={day} dur={dur} mast={mast} />
+      <ServerPanel dur={dur} mast={mast} server={m.server} />
       <Uncertainty siteId={s.id} mast={mast} />
       <BatteryPanel siteId={s.id} day={day} dur={dur} mast={mast} />
 

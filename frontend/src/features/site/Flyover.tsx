@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { azEl, bodiesAt, maskAt, SITES, SUN_EDGE_DEG } from '../../lib/sites'
+import { azEl, bodiesAt, earthDistMoons, earthUpAt, maskAt, SITES, sunUpAt } from '../../lib/sites'
 
 type Props = { site: number; day: number; mast: number; /** Camera at ground level instead of high above the terrain. */ low: boolean; tour: boolean }
 type V3 = [number, number, number]
@@ -135,9 +135,9 @@ export default function Flyover({ site, day, mast, low, tour }: Props) {
       const b = bodiesAt(d)
       const sp = azEl(s, b.sun)
       const ep = azEl(s, b.earth, DIST_EM)
-      // Real LOLA horizon at this mast height, same rule as the Site charts (Sun counted by its upper edge).
-      const lit = sp.el + SUN_EDGE_DEG > maskAt(s, sp.az, m)
-      const earthUp = ep.el > maskAt(s, ep.az, m)
+      // Real LOLA horizon at this mast height, same rules as the server and the Site charts.
+      const lit = sunUpAt(sp.el, maskAt(s, sp.az, m))
+      const earthUp = earthUpAt(ep.el, maskAt(s, ep.az, m), earthDistMoons(d))
       // The real Sun is only a few degrees high: raise it for the shader so relief stays readable. Labels keep the true value.
       const sunVis = clamp(0.9 + 2.4 * Math.max(sp.el, 0), 0.9, 10) * D2R
       const sa = sp.az * D2R

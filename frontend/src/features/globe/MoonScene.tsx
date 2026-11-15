@@ -7,7 +7,9 @@ import { sunAxis } from '../../lib/earthOrientation'
 import { earthQuaternion } from './earthPose'
 import { earthDistKm, earthVec, sunVec } from '../../lib/ephemeris'
 import { coords, toneClass } from '../../lib/format'
-import { getSeries, metrics, SITES, verdict } from '../../lib/sites'
+import SourceTag from '../../components/SourceTag'
+import { SITES, verdict } from '../../lib/sites'
+import { useSiteMetrics } from '../../lib/useSiteMetrics'
 import { useScenario } from '../../store/scenario'
 import { EARTH_R, kmToUnits, MODEL_URLS, MOON_KM, normalise, SUN_DIST, SUN_R, SUN_ROTATION_DAYS } from './models'
 
@@ -487,9 +489,10 @@ function Marker({ i, level, onSelect, onOpen }: { i: number; level: Level; onSel
     el.style.display = level > 0 && level < 3 && q.dot(tmp) > 0.02 ? '' : 'none'
   })
 
-  const m = metrics(getSeries(mast)[i], day, dur)
-  const v = verdict(m.E, m.D)
   const open = hover || (selected && level === 2)
+  // The server is only asked for the card that is open: 32 markers must not each call it.
+  const m = useSiteMetrics(i, s.id, day, dur, mast, open)
+  const v = verdict(m.E, m.D)
   return (
     <Html position={q} center zIndexRange={[20, 0]}>
       <div ref={wrap} className="relative">
@@ -517,6 +520,10 @@ function Marker({ i, level, onSelect, onOpen }: { i: number; level: Level; onSel
               <dd className="text-right font-medium">{m.D}%</dd>
               <dt className="text-dim">Assessment</dt>
               <dd className={`text-right font-medium ${toneClass[v.tone]}`}>{v.word}</dd>
+              <dt className="text-dim">Source</dt>
+              <dd className="text-right">
+                <SourceTag source={m.source} />
+              </dd>
             </dl>
             <button type="button" onClick={() => onOpen(i)} className="btn min-h-9 px-4">
               Open site

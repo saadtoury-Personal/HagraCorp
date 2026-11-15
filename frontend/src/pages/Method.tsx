@@ -11,7 +11,7 @@ const HOW: Item[] = [
   { k: 'Sun and Earth', v: 'Positions seen from the Moon come from JPL Horizons in the Moon Mean Earth frame. The server uses 2026 to 2030; the data bundled with the app covers 14 Nov 2026 to 10 Mar 2027.' },
   { k: 'Horizon', v: 'Each site has a skyline of 720 elevations, one every 0.5 degrees of azimuth, computed from NASA LOLA terrain for an observer 2 m and 10 m above the ground.' },
   { k: 'Sun up', v: 'The Sun counts as up when its upper edge clears the skyline, so a grazing Sun is not lost.' },
-  { k: 'Earth in view', v: 'On the server, any part of the Earth above the skyline. In the bundled data, the centre of the Earth.' },
+  { k: 'Earth in view', v: 'Any part of the Earth above the skyline. The bundled data follows the same rules as the server.' },
   { k: 'Where it runs', v: 'The Slip ranking, landing accuracy, battery and close calls come from the LunarNav server. The Compare grid and the Slip calendar are computed in your browser from the bundled data, and are labelled so.' },
 ]
 
