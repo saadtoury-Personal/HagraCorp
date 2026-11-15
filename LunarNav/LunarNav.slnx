@@ -1,5 +1,7 @@
 <Solution>
   <Project Path="LunarNav.Api/LunarNav.Api.csproj" />
   <Project Path="LunarNav.Core/LunarNav.Core.csproj" />
+  <Project Path="LunarNav.Core.Tests/LunarNav.Core.Tests.csproj" />
+  <Project Path="LunarNav.Tests/LunarNav.Tests.csproj" />
   <Project Path="LunarNav.Web/LunarNav.Web.csproj" />
 </Solution>

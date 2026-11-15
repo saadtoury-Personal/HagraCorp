@@ -1,0 +1,4094 @@
+[
+ {
+  "siteId": "peak-near-cabeus-b",
+  "lat": -83.5925,
+  "lon": -68.454,
+  "mastM": 2,
+  "sunCentre": 57.97,
+  "sunEdge": 58.9,
+  "sunFull": 57.04,
+  "sunMeanFrac": 57.97,
+  "earthEdge": 77.11,
+  "earthCentre": 71.06,
+  "earthFull": 65.77,
+  "earthMeanFrac": 71.15,
+  "perYear": {
+   "2026": {
+    "sunCentre": 59.06,
+    "sunEdge": 60.0,
+    "sunFull": 58.2,
+    "sunMeanFrac": 59.08,
+    "earthEdge": 74.42,
+    "earthCentre": 68.18,
+    "earthFull": 62.66,
+    "earthMeanFrac": 68.25
+   },
+   "2027": {
+    "sunCentre": 57.89,
+    "sunEdge": 58.84,
+    "sunFull": 56.96,
+    "sunMeanFrac": 57.9,
+    "earthEdge": 74.14,
+    "earthCentre": 68.47,
+    "earthFull": 63.37,
+    "earthMeanFrac": 68.53
+   },
+   "2028": {
+    "sunCentre": 57.08,
+    "sunEdge": 58.06,
+    "sunFull": 56.08,
+    "sunMeanFrac": 57.07,
+    "earthEdge": 78.59,
+    "earthCentre": 73.05,
+    "earthFull": 68.19,
+    "earthMeanFrac": 73.11
+   },
+   "2029": {
+    "sunCentre": 59.06,
+    "sunEdge": 59.94,
+    "sunFull": 58.14,
+    "sunMeanFrac": 59.04,
+    "earthEdge": 78.76,
+    "earthCentre": 72.21,
+    "earthFull": 66.66,
+    "earthMeanFrac": 72.34
+   },
+   "2030": {
+    "sunCentre": 56.76,
+    "sunEdge": 57.69,
+    "sunFull": 55.84,
+    "sunMeanFrac": 56.75,
+    "earthEdge": 79.65,
+    "earthCentre": 73.36,
+    "earthFull": 67.95,
+    "earthMeanFrac": 73.49
+   }
+  }
+ },
+ {
+  "siteId": "peak-near-cabeus-b",
+  "lat": -83.5925,
+  "lon": -68.454,
+  "mastM": 10,
+  "sunCentre": 62.13,
+  "sunEdge": 63.28,
+  "sunFull": 60.98,
+  "sunMeanFrac": 62.12,
+  "earthEdge": 99.07,
+  "earthCentre": 86.03,
+  "earthFull": 77.79,
+  "earthMeanFrac": 87.08,
+  "perYear": {
+   "2026": {
+    "sunCentre": 63.09,
+    "sunEdge": 64.26,
+    "sunFull": 62.09,
+    "sunMeanFrac": 63.09,
+    "earthEdge": 99.27,
+    "earthCentre": 84.27,
+    "earthFull": 75.76,
+    "earthMeanFrac": 85.37
+   },
+   "2027": {
+    "sunCentre": 62.05,
+    "sunEdge": 63.16,
+    "sunFull": 60.89,
+    "sunMeanFrac": 62.03,
+    "earthEdge": 97.09,
+    "earthCentre": 82.42,
+    "earthFull": 75.01,
+    "earthMeanFrac": 83.19
+   },
+   "2028": {
+    "sunCentre": 61.67,
+    "sunEdge": 62.75,
+    "sunFull": 60.29,
+    "sunMeanFrac": 61.62,
+    "earthEdge": 98.98,
+    "earthCentre": 86.16,
+    "earthFull": 79.01,
+    "earthMeanFrac": 87.05
+   },
+   "2029": {
+    "sunCentre": 63.09,
+    "sunEdge": 64.25,
+    "sunFull": 61.95,
+    "sunMeanFrac": 63.07,
+    "earthEdge": 100.0,
+    "earthCentre": 88.0,
+    "earthFull": 78.96,
+    "earthMeanFrac": 89.28
+   },
+   "2030": {
+    "sunCentre": 60.74,
+    "sunEdge": 62.0,
+    "sunFull": 59.67,
+    "sunMeanFrac": 60.79,
+    "earthEdge": 100.0,
+    "earthCentre": 89.28,
+    "earthFull": 80.22,
+    "earthMeanFrac": 90.52
+   }
+  }
+ },
+ {
+  "siteId": "haworth",
+  "lat": -86.3354,
+  "lon": -23.3339,
+  "mastM": 2,
+  "sunCentre": 55.27,
+  "sunEdge": 56.15,
+  "sunFull": 54.23,
+  "sunMeanFrac": 55.25,
+  "earthEdge": 80.46,
+  "earthCentre": 73.68,
+  "earthFull": 68.04,
+  "earthMeanFrac": 73.82,
+  "perYear": {
+   "2026": {
+    "sunCentre": 56.48,
+    "sunEdge": 57.33,
+    "sunFull": 55.38,
+    "sunMeanFrac": 56.46,
+    "earthEdge": 77.67,
+    "earthCentre": 71.19,
+    "earthFull": 65.68,
+    "earthMeanFrac": 71.31
+   },
+   "2027": {
+    "sunCentre": 55.11,
+    "sunEdge": 56.03,
+    "sunFull": 54.22,
+    "sunMeanFrac": 55.13,
+    "earthEdge": 79.74,
+    "earthCentre": 72.04,
+    "earthFull": 65.79,
+    "earthMeanFrac": 72.22
+   },
+   "2028": {
+    "sunCentre": 54.35,
+    "sunEdge": 55.24,
+    "sunFull": 53.44,
+    "sunMeanFrac": 54.36,
+    "earthEdge": 82.64,
+    "earthCentre": 76.28,
+    "earthFull": 71.0,
+    "earthMeanFrac": 76.41
+   },
+   "2029": {
+    "sunCentre": 56.46,
+    "sunEdge": 57.26,
+    "sunFull": 55.33,
+    "sunMeanFrac": 56.41,
+    "earthEdge": 80.96,
+    "earthCentre": 74.68,
+    "earthFull": 69.33,
+    "earthMeanFrac": 74.8
+   },
+   "2030": {
+    "sunCentre": 53.94,
+    "sunEdge": 54.9,
+    "sunFull": 52.81,
+    "sunMeanFrac": 53.9,
+    "earthEdge": 81.27,
+    "earthCentre": 74.22,
+    "earthFull": 68.39,
+    "earthMeanFrac": 74.35
+   }
+  }
+ },
+ {
+  "siteId": "haworth",
+  "lat": -86.3354,
+  "lon": -23.3339,
+  "mastM": 10,
+  "sunCentre": 59.79,
+  "sunEdge": 60.9,
+  "sunFull": 58.72,
+  "sunMeanFrac": 59.8,
+  "earthEdge": 80.59,
+  "earthCentre": 73.79,
+  "earthFull": 68.14,
+  "earthMeanFrac": 73.94,
+  "perYear": {
+   "2026": {
+    "sunCentre": 60.98,
+    "sunEdge": 61.96,
+    "sunFull": 59.75,
+    "sunMeanFrac": 60.95,
+    "earthEdge": 77.81,
+    "earthCentre": 71.34,
+    "earthFull": 65.74,
+    "earthMeanFrac": 71.44
+   },
+   "2027": {
+    "sunCentre": 59.66,
+    "sunEdge": 60.73,
+    "sunFull": 58.77,
+    "sunMeanFrac": 59.67,
+    "earthEdge": 79.91,
+    "earthCentre": 72.17,
+    "earthFull": 65.94,
+    "earthMeanFrac": 72.36
+   },
+   "2028": {
+    "sunCentre": 59.03,
+    "sunEdge": 60.27,
+    "sunFull": 58.2,
+    "sunMeanFrac": 59.1,
+    "earthEdge": 82.76,
+    "earthCentre": 76.41,
+    "earthFull": 71.14,
+    "earthMeanFrac": 76.56
+   },
+   "2029": {
+    "sunCentre": 60.91,
+    "sunEdge": 61.94,
+    "sunFull": 59.69,
+    "sunMeanFrac": 60.88,
+    "earthEdge": 81.1,
+    "earthCentre": 74.78,
+    "earthFull": 69.37,
+    "earthMeanFrac": 74.9
+   },
+   "2030": {
+    "sunCentre": 58.37,
+    "sunEdge": 59.6,
+    "sunFull": 57.18,
+    "sunMeanFrac": 58.38,
+    "earthEdge": 81.38,
+    "earthCentre": 74.26,
+    "earthFull": 68.48,
+    "earthMeanFrac": 74.45
+   }
+  }
+ },
+ {
+  "siteId": "malapert-massif",
+  "lat": -85.9119,
+  "lon": -4.157,
+  "mastM": 2,
+  "sunCentre": 63.62,
+  "sunEdge": 64.63,
+  "sunFull": 62.42,
+  "sunMeanFrac": 63.61,
+  "earthEdge": 100.0,
+  "earthCentre": 100.0,
+  "earthFull": 86.86,
+  "earthMeanFrac": 97.64,
+  "perYear": {
+   "2026": {
+    "sunCentre": 64.74,
+    "sunEdge": 65.76,
+    "sunFull": 63.66,
+    "sunMeanFrac": 64.77,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 85.76,
+    "earthMeanFrac": 97.09
+   },
+   "2027": {
+    "sunCentre": 63.07,
+    "sunEdge": 64.04,
+    "sunFull": 61.71,
+    "sunMeanFrac": 63.01,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 84.68,
+    "earthMeanFrac": 97.11
+   },
+   "2028": {
+    "sunCentre": 63.85,
+    "sunEdge": 64.79,
+    "sunFull": 62.45,
+    "sunMeanFrac": 63.76,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 87.25,
+    "earthMeanFrac": 97.43
+   },
+   "2029": {
+    "sunCentre": 64.62,
+    "sunEdge": 65.7,
+    "sunFull": 63.53,
+    "sunMeanFrac": 64.67,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 87.97,
+    "earthMeanFrac": 98.38
+   },
+   "2030": {
+    "sunCentre": 61.82,
+    "sunEdge": 62.89,
+    "sunFull": 60.73,
+    "sunMeanFrac": 61.85,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 88.62,
+    "earthMeanFrac": 98.17
+   }
+  }
+ },
+ {
+  "siteId": "malapert-massif",
+  "lat": -85.9119,
+  "lon": -4.157,
+  "mastM": 10,
+  "sunCentre": 65.62,
+  "sunEdge": 66.59,
+  "sunFull": 64.36,
+  "sunMeanFrac": 65.59,
+  "earthEdge": 100.0,
+  "earthCentre": 100.0,
+  "earthFull": 86.9,
+  "earthMeanFrac": 97.66,
+  "perYear": {
+   "2026": {
+    "sunCentre": 66.77,
+    "sunEdge": 67.68,
+    "sunFull": 65.61,
+    "sunMeanFrac": 66.7,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 85.79,
+    "earthMeanFrac": 97.12
+   },
+   "2027": {
+    "sunCentre": 65.08,
+    "sunEdge": 66.04,
+    "sunFull": 63.7,
+    "sunMeanFrac": 65.04,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 84.73,
+    "earthMeanFrac": 97.14
+   },
+   "2028": {
+    "sunCentre": 65.76,
+    "sunEdge": 66.71,
+    "sunFull": 64.34,
+    "sunMeanFrac": 65.72,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 87.28,
+    "earthMeanFrac": 97.46
+   },
+   "2029": {
+    "sunCentre": 66.56,
+    "sunEdge": 67.59,
+    "sunFull": 65.39,
+    "sunMeanFrac": 66.61,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 88.03,
+    "earthMeanFrac": 98.4
+   },
+   "2030": {
+    "sunCentre": 63.93,
+    "sunEdge": 64.93,
+    "sunFull": 62.75,
+    "sunMeanFrac": 63.91,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 88.66,
+    "earthMeanFrac": 98.19
+   }
+  }
+ },
+ {
+  "siteId": "mons-mouton-plateau",
+  "lat": -84.5635,
+  "lon": 37.9959,
+  "mastM": 2,
+  "sunCentre": 57.03,
+  "sunEdge": 58.4,
+  "sunFull": 55.8,
+  "sunMeanFrac": 57.07,
+  "earthEdge": 100.0,
+  "earthCentre": 100.0,
+  "earthFull": 97.64,
+  "earthMeanFrac": 99.85,
+  "perYear": {
+   "2026": {
+    "sunCentre": 58.23,
+    "sunEdge": 59.65,
+    "sunFull": 56.99,
+    "sunMeanFrac": 58.28,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 98.8,
+    "earthMeanFrac": 99.98
+   },
+   "2027": {
+    "sunCentre": 55.37,
+    "sunEdge": 56.75,
+    "sunFull": 54.2,
+    "sunMeanFrac": 55.43,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 100.0,
+    "earthMeanFrac": 100.0
+   },
+   "2028": {
+    "sunCentre": 58.3,
+    "sunEdge": 59.64,
+    "sunFull": 57.1,
+    "sunMeanFrac": 58.31,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 99.52,
+    "earthMeanFrac": 100.0
+   },
+   "2029": {
+    "sunCentre": 57.21,
+    "sunEdge": 58.53,
+    "sunFull": 55.91,
+    "sunMeanFrac": 57.23,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 96.48,
+    "earthMeanFrac": 99.89
+   },
+   "2030": {
+    "sunCentre": 56.02,
+    "sunEdge": 57.41,
+    "sunFull": 54.79,
+    "sunMeanFrac": 56.07,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 93.38,
+    "earthMeanFrac": 99.38
+   }
+  }
+ },
+ {
+  "siteId": "mons-mouton-plateau",
+  "lat": -84.5635,
+  "lon": 37.9959,
+  "mastM": 10,
+  "sunCentre": 57.75,
+  "sunEdge": 59.02,
+  "sunFull": 56.61,
+  "sunMeanFrac": 57.79,
+  "earthEdge": 100.0,
+  "earthCentre": 100.0,
+  "earthFull": 97.69,
+  "earthMeanFrac": 99.85,
+  "perYear": {
+   "2026": {
+    "sunCentre": 58.94,
+    "sunEdge": 60.24,
+    "sunFull": 57.81,
+    "sunMeanFrac": 58.99,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 98.84,
+    "earthMeanFrac": 99.98
+   },
+   "2027": {
+    "sunCentre": 56.05,
+    "sunEdge": 57.41,
+    "sunFull": 54.95,
+    "sunMeanFrac": 56.14,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 100.0,
+    "earthMeanFrac": 100.0
+   },
+   "2028": {
+    "sunCentre": 59.06,
+    "sunEdge": 60.25,
+    "sunFull": 57.89,
+    "sunMeanFrac": 59.02,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 99.54,
+    "earthMeanFrac": 100.0
+   },
+   "2029": {
+    "sunCentre": 57.91,
+    "sunEdge": 59.16,
+    "sunFull": 56.66,
+    "sunMeanFrac": 57.94,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 96.56,
+    "earthMeanFrac": 99.89
+   },
+   "2030": {
+    "sunCentre": 56.8,
+    "sunEdge": 58.06,
+    "sunFull": 55.72,
+    "sunMeanFrac": 56.86,
+    "earthEdge": 100.0,
+    "earthCentre": 100.0,
+    "earthFull": 93.49,
+    "earthMeanFrac": 99.4
+   }
+  }
+ },
+ {
+  "siteId": "mons-mouton",
+  "lat": -85.4781,
+  "lon": 31.0203,
+  "mastM": 2,
+  "sunCentre": 65.48,
+  "sunEdge": 70.83,
+  "sunFull": 60.08,
+  "sunMeanFrac": 65.46,
+  "earthEdge": 70.57,
+  "earthCentre": 65.32,
+  "earthFull": 60.48,
+  "earthMeanFrac": 65.37,
+  "perYear": {
+   "2026": {
+    "sunCentre": 66.6,
+    "sunEdge": 71.63,
+    "sunFull": 61.56,
+    "sunMeanFrac": 66.54,
+    "earthEdge": 67.56,
+    "earthCentre": 62.15,
+    "earthFull": 57.13,
+    "earthMeanFrac": 62.22
+   },
+   "2027": {
+    "sunCentre": 66.26,
+    "sunEdge": 71.85,
+    "sunFull": 60.98,
+    "sunMeanFrac": 66.28,
+    "earthEdge": 68.29,
+    "earthCentre": 63.15,
+    "earthFull": 58.33,
+    "earthMeanFrac": 63.17
+   },
+   "2028": {
+    "sunCentre": 64.91,
+    "sunEdge": 70.43,
+    "sunFull": 59.12,
+    "sunMeanFrac": 64.91,
+    "earthEdge": 72.93,
+    "earthCentre": 68.0,
+    "earthFull": 63.47,
+    "earthMeanFrac": 68.06
+   },
+   "2029": {
+    "sunCentre": 65.98,
+    "sunEdge": 70.86,
+    "sunFull": 60.57,
+    "sunMeanFrac": 65.89,
+    "earthEdge": 71.82,
+    "earthCentre": 66.37,
+    "earthFull": 61.52,
+    "earthMeanFrac": 66.46
+   },
+   "2030": {
+    "sunCentre": 63.68,
+    "sunEdge": 69.37,
+    "sunFull": 58.2,
+    "sunMeanFrac": 63.69,
+    "earthEdge": 72.25,
+    "earthCentre": 66.94,
+    "earthFull": 61.92,
+    "earthMeanFrac": 66.95
+   }
+  }
+ },
+ {
+  "siteId": "mons-mouton",
+  "lat": -85.4781,
+  "lon": 31.0203,
+  "mastM": 10,
+  "sunCentre": 74.87,
+  "sunEdge": 79.3,
+  "sunFull": 70.07,
+  "sunMeanFrac": 74.72,
+  "earthEdge": 82.67,
+  "earthCentre": 75.45,
+  "earthFull": 69.63,
+  "earthMeanFrac": 75.61,
+  "perYear": {
+   "2026": {
+    "sunCentre": 75.99,
+    "sunEdge": 79.79,
+    "sunFull": 71.18,
+    "sunMeanFrac": 75.59,
+    "earthEdge": 80.19,
+    "earthCentre": 72.89,
+    "earthFull": 66.82,
+    "earthMeanFrac": 73.0
+   },
+   "2027": {
+    "sunCentre": 75.29,
+    "sunEdge": 80.3,
+    "sunFull": 70.89,
+    "sunMeanFrac": 75.46,
+    "earthEdge": 79.57,
+    "earthCentre": 72.85,
+    "earthFull": 67.23,
+    "earthMeanFrac": 72.98
+   },
+   "2028": {
+    "sunCentre": 74.89,
+    "sunEdge": 79.18,
+    "sunFull": 70.12,
+    "sunMeanFrac": 74.79,
+    "earthEdge": 83.56,
+    "earthCentre": 77.05,
+    "earthFull": 71.71,
+    "earthMeanFrac": 77.18
+   },
+   "2029": {
+    "sunCentre": 75.24,
+    "sunEdge": 79.05,
+    "sunFull": 69.86,
+    "sunMeanFrac": 74.86,
+    "earthEdge": 84.53,
+    "earthCentre": 76.79,
+    "earthFull": 70.75,
+    "earthMeanFrac": 76.99
+   },
+   "2030": {
+    "sunCentre": 72.93,
+    "sunEdge": 78.2,
+    "sunFull": 68.29,
+    "sunMeanFrac": 72.93,
+    "earthEdge": 85.47,
+    "earthCentre": 77.67,
+    "earthFull": 71.66,
+    "earthMeanFrac": 77.89
+   }
+  }
+ },
+ {
+  "siteId": "nobile-rim-1",
+  "lat": -85.1394,
+  "lon": 36.5272,
+  "mastM": 2,
+  "sunCentre": 65.44,
+  "sunEdge": 66.53,
+  "sunFull": 64.53,
+  "sunMeanFrac": 65.49,
+  "earthEdge": 77.45,
+  "earthCentre": 71.35,
+  "earthFull": 66.04,
+  "earthMeanFrac": 71.43,
+  "perYear": {
+   "2026": {
+    "sunCentre": 66.31,
+    "sunEdge": 67.43,
+    "sunFull": 65.41,
+    "sunMeanFrac": 66.37,
+    "earthEdge": 74.99,
+    "earthCentre": 68.56,
+    "earthFull": 62.92,
+    "earthMeanFrac": 68.65
+   },
+   "2027": {
+    "sunCentre": 64.17,
+    "sunEdge": 65.24,
+    "sunFull": 63.3,
+    "sunMeanFrac": 64.24,
+    "earthEdge": 74.54,
+    "earthCentre": 68.9,
+    "earthFull": 63.89,
+    "earthMeanFrac": 68.97
+   },
+   "2028": {
+    "sunCentre": 66.61,
+    "sunEdge": 67.69,
+    "sunFull": 65.66,
+    "sunMeanFrac": 66.64,
+    "earthEdge": 79.19,
+    "earthCentre": 73.53,
+    "earthFull": 68.52,
+    "earthMeanFrac": 73.6
+   },
+   "2029": {
+    "sunCentre": 65.19,
+    "sunEdge": 66.28,
+    "sunFull": 64.22,
+    "sunMeanFrac": 65.23,
+    "earthEdge": 78.95,
+    "earthCentre": 72.34,
+    "earthFull": 66.75,
+    "earthMeanFrac": 72.45
+   },
+   "2030": {
+    "sunCentre": 64.91,
+    "sunEdge": 66.0,
+    "sunFull": 64.03,
+    "sunMeanFrac": 64.96,
+    "earthEdge": 79.57,
+    "earthCentre": 73.41,
+    "earthFull": 68.11,
+    "earthMeanFrac": 73.49
+   }
+  }
+ },
+ {
+  "siteId": "nobile-rim-1",
+  "lat": -85.1394,
+  "lon": 36.5272,
+  "mastM": 10,
+  "sunCentre": 65.9,
+  "sunEdge": 67.0,
+  "sunFull": 64.92,
+  "sunMeanFrac": 65.92,
+  "earthEdge": 80.22,
+  "earthCentre": 73.58,
+  "earthFull": 68.06,
+  "earthMeanFrac": 73.71,
+  "perYear": {
+   "2026": {
+    "sunCentre": 66.71,
+    "sunEdge": 67.9,
+    "sunFull": 65.82,
+    "sunMeanFrac": 66.8,
+    "earthEdge": 77.44,
+    "earthCentre": 70.87,
+    "earthFull": 65.19,
+    "earthMeanFrac": 70.96
+   },
+   "2027": {
+    "sunCentre": 64.62,
+    "sunEdge": 65.73,
+    "sunFull": 63.72,
+    "sunMeanFrac": 64.68,
+    "earthEdge": 76.03,
+    "earthCentre": 70.08,
+    "earthFull": 64.98,
+    "earthMeanFrac": 70.19
+   },
+   "2028": {
+    "sunCentre": 67.09,
+    "sunEdge": 68.15,
+    "sunFull": 66.05,
+    "sunMeanFrac": 67.06,
+    "earthEdge": 80.87,
+    "earthCentre": 75.09,
+    "earthFull": 70.16,
+    "earthMeanFrac": 75.19
+   },
+   "2029": {
+    "sunCentre": 65.65,
+    "sunEdge": 66.7,
+    "sunFull": 64.61,
+    "sunMeanFrac": 65.66,
+    "earthEdge": 82.45,
+    "earthCentre": 75.03,
+    "earthFull": 69.1,
+    "earthMeanFrac": 75.2
+   },
+   "2030": {
+    "sunCentre": 65.42,
+    "sunEdge": 66.5,
+    "sunFull": 64.39,
+    "sunMeanFrac": 65.41,
+    "earthEdge": 84.29,
+    "earthCentre": 76.82,
+    "earthFull": 70.88,
+    "earthMeanFrac": 77.02
+   }
+  }
+ },
+ {
+  "siteId": "nobile-rim-2",
+  "lat": -83.8179,
+  "lon": 59.076,
+  "mastM": 2,
+  "sunCentre": 50.97,
+  "sunEdge": 52.36,
+  "sunFull": 49.2,
+  "sunMeanFrac": 50.93,
+  "earthEdge": 63.61,
+  "earthCentre": 58.84,
+  "earthFull": 54.24,
+  "earthMeanFrac": 58.87,
+  "perYear": {
+   "2026": {
+    "sunCentre": 51.03,
+    "sunEdge": 52.48,
+    "sunFull": 49.29,
+    "sunMeanFrac": 51.01,
+    "earthEdge": 60.41,
+    "earthCentre": 55.54,
+    "earthFull": 50.82,
+    "earthMeanFrac": 55.56
+   },
+   "2027": {
+    "sunCentre": 50.59,
+    "sunEdge": 51.86,
+    "sunFull": 48.55,
+    "sunMeanFrac": 50.46,
+    "earthEdge": 61.83,
+    "earthCentre": 56.91,
+    "earthFull": 52.13,
+    "earthMeanFrac": 56.93
+   },
+   "2028": {
+    "sunCentre": 52.6,
+    "sunEdge": 54.01,
+    "sunFull": 50.93,
+    "sunMeanFrac": 52.57,
+    "earthEdge": 66.95,
+    "earthCentre": 62.25,
+    "earthFull": 57.81,
+    "earthMeanFrac": 62.31
+   },
+   "2029": {
+    "sunCentre": 49.94,
+    "sunEdge": 51.26,
+    "sunFull": 48.34,
+    "sunMeanFrac": 49.91,
+    "earthEdge": 64.47,
+    "earthCentre": 59.77,
+    "earthFull": 55.24,
+    "earthMeanFrac": 59.79
+   },
+   "2030": {
+    "sunCentre": 50.7,
+    "sunEdge": 52.18,
+    "sunFull": 48.86,
+    "sunMeanFrac": 50.68,
+    "earthEdge": 64.38,
+    "earthCentre": 59.73,
+    "earthFull": 55.19,
+    "earthMeanFrac": 59.74
+   }
+  }
+ },
+ {
+  "siteId": "nobile-rim-2",
+  "lat": -83.8179,
+  "lon": 59.076,
+  "mastM": 10,
+  "sunCentre": 51.21,
+  "sunEdge": 52.48,
+  "sunFull": 49.58,
+  "sunMeanFrac": 51.14,
+  "earthEdge": 72.87,
+  "earthCentre": 67.17,
+  "earthFull": 62.06,
+  "earthMeanFrac": 67.24,
+  "perYear": {
+   "2026": {
+    "sunCentre": 51.3,
+    "sunEdge": 52.63,
+    "sunFull": 49.78,
+    "sunMeanFrac": 51.24,
+    "earthEdge": 70.53,
+    "earthCentre": 64.5,
+    "earthFull": 59.11,
+    "earthMeanFrac": 64.56
+   },
+   "2027": {
+    "sunCentre": 50.83,
+    "sunEdge": 52.0,
+    "sunFull": 48.96,
+    "sunMeanFrac": 50.68,
+    "earthEdge": 73.8,
+    "earthCentre": 67.13,
+    "earthFull": 61.28,
+    "earthMeanFrac": 67.23
+   },
+   "2028": {
+    "sunCentre": 52.8,
+    "sunEdge": 54.13,
+    "sunFull": 51.22,
+    "sunMeanFrac": 52.78,
+    "earthEdge": 77.04,
+    "earthCentre": 71.19,
+    "earthFull": 65.96,
+    "earthMeanFrac": 71.26
+   },
+   "2029": {
+    "sunCentre": 50.15,
+    "sunEdge": 51.37,
+    "sunFull": 48.73,
+    "sunMeanFrac": 50.11,
+    "earthEdge": 72.26,
+    "earthCentre": 66.89,
+    "earthFull": 62.19,
+    "earthMeanFrac": 66.99
+   },
+   "2030": {
+    "sunCentre": 50.95,
+    "sunEdge": 52.28,
+    "sunFull": 49.18,
+    "sunMeanFrac": 50.89,
+    "earthEdge": 70.72,
+    "earthCentre": 66.12,
+    "earthFull": 61.75,
+    "earthMeanFrac": 66.14
+   }
+  }
+ },
+ {
+  "siteId": "de-gerlache-rim-2",
+  "lat": -88.632,
+  "lon": -68.0601,
+  "mastM": 2,
+  "sunCentre": 58.11,
+  "sunEdge": 61.62,
+  "sunFull": 53.64,
+  "sunMeanFrac": 57.95,
+  "earthEdge": 61.86,
+  "earthCentre": 57.16,
+  "earthFull": 52.63,
+  "earthMeanFrac": 57.18,
+  "perYear": {
+   "2026": {
+    "sunCentre": 59.09,
+    "sunEdge": 62.23,
+    "sunFull": 54.34,
+    "sunMeanFrac": 58.85,
+    "earthEdge": 58.61,
+    "earthCentre": 54.1,
+    "earthFull": 49.71,
+    "earthMeanFrac": 54.13
+   },
+   "2027": {
+    "sunCentre": 57.64,
+    "sunEdge": 61.43,
+    "sunFull": 53.32,
+    "sunMeanFrac": 57.55,
+    "earthEdge": 59.37,
+    "earthCentre": 54.43,
+    "earthFull": 49.66,
+    "earthMeanFrac": 54.44
+   },
+   "2028": {
+    "sunCentre": 57.72,
+    "sunEdge": 61.71,
+    "sunFull": 53.55,
+    "sunMeanFrac": 57.69,
+    "earthEdge": 64.74,
+    "earthCentre": 60.34,
+    "earthFull": 56.1,
+    "earthMeanFrac": 60.37
+   },
+   "2029": {
+    "sunCentre": 59.29,
+    "sunEdge": 62.55,
+    "sunFull": 54.81,
+    "sunMeanFrac": 59.08,
+    "earthEdge": 64.19,
+    "earthCentre": 59.39,
+    "earthFull": 54.73,
+    "earthMeanFrac": 59.4
+   },
+   "2030": {
+    "sunCentre": 56.84,
+    "sunEdge": 60.19,
+    "sunFull": 52.18,
+    "sunMeanFrac": 56.59,
+    "earthEdge": 62.37,
+    "earthCentre": 57.51,
+    "earthFull": 52.93,
+    "earthMeanFrac": 57.56
+   }
+  }
+ },
+ {
+  "siteId": "de-gerlache-rim-2",
+  "lat": -88.632,
+  "lon": -68.0601,
+  "mastM": 10,
+  "sunCentre": 67.36,
+  "sunEdge": 69.99,
+  "sunFull": 64.2,
+  "sunMeanFrac": 67.27,
+  "earthEdge": 61.88,
+  "earthCentre": 57.18,
+  "earthFull": 52.65,
+  "earthMeanFrac": 57.21,
+  "perYear": {
+   "2026": {
+    "sunCentre": 68.06,
+    "sunEdge": 70.3,
+    "sunFull": 64.7,
+    "sunMeanFrac": 67.87,
+    "earthEdge": 58.65,
+    "earthCentre": 54.11,
+    "earthFull": 49.74,
+    "earthMeanFrac": 54.15
+   },
+   "2027": {
+    "sunCentre": 67.1,
+    "sunEdge": 70.02,
+    "sunFull": 64.14,
+    "sunMeanFrac": 67.1,
+    "earthEdge": 59.37,
+    "earthCentre": 54.44,
+    "earthFull": 49.69,
+    "earthMeanFrac": 54.47
+   },
+   "2028": {
+    "sunCentre": 67.11,
+    "sunEdge": 70.08,
+    "sunFull": 63.83,
+    "sunMeanFrac": 67.03,
+    "earthEdge": 64.77,
+    "earthCentre": 60.36,
+    "earthFull": 56.12,
+    "earthMeanFrac": 60.39
+   },
+   "2029": {
+    "sunCentre": 68.34,
+    "sunEdge": 70.75,
+    "sunFull": 65.21,
+    "sunMeanFrac": 68.24,
+    "earthEdge": 64.2,
+    "earthCentre": 59.41,
+    "earthFull": 54.74,
+    "earthMeanFrac": 59.43
+   },
+   "2030": {
+    "sunCentre": 66.21,
+    "sunEdge": 68.82,
+    "sunFull": 63.12,
+    "sunMeanFrac": 66.13,
+    "earthEdge": 62.39,
+    "earthCentre": 57.55,
+    "earthFull": 52.96,
+    "earthMeanFrac": 57.58
+   }
+  }
+ },
+ {
+  "siteId": "slater-plain",
+  "lat": -87.2638,
+  "lon": 127.5189,
+  "mastM": 2,
+  "sunCentre": 61.59,
+  "sunEdge": 64.55,
+  "sunFull": 58.23,
+  "sunMeanFrac": 61.53,
+  "earthEdge": 50.38,
+  "earthCentre": 45.87,
+  "earthFull": 41.23,
+  "earthMeanFrac": 45.84,
+  "perYear": {
+   "2026": {
+    "sunCentre": 61.16,
+    "sunEdge": 64.21,
+    "sunFull": 58.09,
+    "sunMeanFrac": 61.17,
+    "earthEdge": 47.1,
+    "earthCentre": 42.58,
+    "earthFull": 37.91,
+    "earthMeanFrac": 42.57
+   },
+   "2027": {
+    "sunCentre": 62.26,
+    "sunEdge": 65.09,
+    "sunFull": 58.72,
+    "sunMeanFrac": 62.15,
+    "earthEdge": 47.76,
+    "earthCentre": 43.37,
+    "earthFull": 38.82,
+    "earthMeanFrac": 43.33
+   },
+   "2028": {
+    "sunCentre": 62.4,
+    "sunEdge": 65.14,
+    "sunFull": 58.75,
+    "sunMeanFrac": 62.23,
+    "earthEdge": 54.13,
+    "earthCentre": 49.53,
+    "earthFull": 44.89,
+    "earthMeanFrac": 49.54
+   },
+   "2029": {
+    "sunCentre": 59.67,
+    "sunEdge": 62.71,
+    "sunFull": 56.43,
+    "sunMeanFrac": 59.67,
+    "earthEdge": 51.76,
+    "earthCentre": 47.36,
+    "earthFull": 42.75,
+    "earthMeanFrac": 47.32
+   },
+   "2030": {
+    "sunCentre": 62.44,
+    "sunEdge": 65.57,
+    "sunFull": 59.13,
+    "sunMeanFrac": 62.43,
+    "earthEdge": 51.15,
+    "earthCentre": 46.47,
+    "earthFull": 41.74,
+    "earthMeanFrac": 46.45
+   }
+  }
+ },
+ {
+  "siteId": "slater-plain",
+  "lat": -87.2638,
+  "lon": 127.5189,
+  "mastM": 10,
+  "sunCentre": 65.84,
+  "sunEdge": 68.78,
+  "sunFull": 63.4,
+  "sunMeanFrac": 65.9,
+  "earthEdge": 50.41,
+  "earthCentre": 45.92,
+  "earthFull": 41.26,
+  "earthMeanFrac": 45.89,
+  "perYear": {
+   "2026": {
+    "sunCentre": 65.19,
+    "sunEdge": 68.14,
+    "sunFull": 63.12,
+    "sunMeanFrac": 65.33,
+    "earthEdge": 47.13,
+    "earthCentre": 42.65,
+    "earthFull": 37.98,
+    "earthMeanFrac": 42.61
+   },
+   "2027": {
+    "sunCentre": 66.48,
+    "sunEdge": 69.33,
+    "sunFull": 64.01,
+    "sunMeanFrac": 66.51,
+    "earthEdge": 47.8,
+    "earthCentre": 43.39,
+    "earthFull": 38.86,
+    "earthMeanFrac": 43.38
+   },
+   "2028": {
+    "sunCentre": 66.62,
+    "sunEdge": 69.39,
+    "sunFull": 63.7,
+    "sunMeanFrac": 66.53,
+    "earthEdge": 54.16,
+    "earthCentre": 49.6,
+    "earthFull": 44.92,
+    "earthMeanFrac": 49.58
+   },
+   "2029": {
+    "sunCentre": 64.25,
+    "sunEdge": 67.23,
+    "sunFull": 61.78,
+    "sunMeanFrac": 64.35,
+    "earthEdge": 51.78,
+    "earthCentre": 47.42,
+    "earthFull": 42.77,
+    "earthMeanFrac": 47.35
+   },
+   "2030": {
+    "sunCentre": 66.64,
+    "sunEdge": 69.82,
+    "sunFull": 64.38,
+    "sunMeanFrac": 66.75,
+    "earthEdge": 51.18,
+    "earthCentre": 46.51,
+    "earthFull": 41.77,
+    "earthMeanFrac": 46.5
+   }
+  }
+ },
+ {
+  "siteId": "shackleton-rim",
+  "lat": -89.7668,
+  "lon": -171.87,
+  "mastM": 2,
+  "sunCentre": 8.88,
+  "sunEdge": 10.93,
+  "sunFull": 6.62,
+  "sunMeanFrac": 8.84,
+  "earthEdge": 9.94,
+  "earthCentre": 5.22,
+  "earthFull": 1.63,
+  "earthMeanFrac": 5.26,
+  "perYear": {
+   "2026": {
+    "sunCentre": 8.9,
+    "sunEdge": 11.04,
+    "sunFull": 6.86,
+    "sunMeanFrac": 8.95,
+    "earthEdge": 5.61,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.9
+   },
+   "2027": {
+    "sunCentre": 9.22,
+    "sunEdge": 11.21,
+    "sunFull": 6.76,
+    "sunMeanFrac": 9.08,
+    "earthEdge": 0.0,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.0
+   },
+   "2028": {
+    "sunCentre": 9.05,
+    "sunEdge": 11.48,
+    "sunFull": 6.51,
+    "sunMeanFrac": 9.09,
+    "earthEdge": 2.13,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.15
+   },
+   "2029": {
+    "sunCentre": 8.53,
+    "sunEdge": 10.39,
+    "sunFull": 6.52,
+    "sunMeanFrac": 8.55,
+    "earthEdge": 17.95,
+    "earthCentre": 8.5,
+    "earthFull": 1.34,
+    "earthMeanFrac": 8.28
+   },
+   "2030": {
+    "sunCentre": 8.69,
+    "sunEdge": 10.54,
+    "sunFull": 6.46,
+    "sunMeanFrac": 8.53,
+    "earthEdge": 24.03,
+    "earthCentre": 17.61,
+    "earthFull": 6.83,
+    "earthMeanFrac": 17.01
+   }
+  }
+ },
+ {
+  "siteId": "shackleton-rim",
+  "lat": -89.7668,
+  "lon": -171.87,
+  "mastM": 10,
+  "sunCentre": 9.09,
+  "sunEdge": 11.13,
+  "sunFull": 6.83,
+  "sunMeanFrac": 9.06,
+  "earthEdge": 10.45,
+  "earthCentre": 5.49,
+  "earthFull": 1.83,
+  "earthMeanFrac": 5.61,
+  "perYear": {
+   "2026": {
+    "sunCentre": 9.1,
+    "sunEdge": 11.23,
+    "sunFull": 7.11,
+    "sunMeanFrac": 9.16,
+    "earthEdge": 6.61,
+    "earthCentre": 0.08,
+    "earthFull": 0.0,
+    "earthMeanFrac": 1.12
+   },
+   "2027": {
+    "sunCentre": 9.42,
+    "sunEdge": 11.4,
+    "sunFull": 6.87,
+    "sunMeanFrac": 9.32,
+    "earthEdge": 0.0,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.0
+   },
+   "2028": {
+    "sunCentre": 9.34,
+    "sunEdge": 11.74,
+    "sunFull": 6.73,
+    "sunMeanFrac": 9.36,
+    "earthEdge": 2.5,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.23
+   },
+   "2029": {
+    "sunCentre": 8.73,
+    "sunEdge": 10.61,
+    "sunFull": 6.87,
+    "sunMeanFrac": 8.74,
+    "earthEdge": 18.71,
+    "earthCentre": 9.19,
+    "earthFull": 1.46,
+    "earthMeanFrac": 9.03
+   },
+   "2030": {
+    "sunCentre": 8.88,
+    "sunEdge": 10.68,
+    "sunFull": 6.56,
+    "sunMeanFrac": 8.74,
+    "earthEdge": 24.45,
+    "earthCentre": 18.18,
+    "earthFull": 7.71,
+    "earthMeanFrac": 17.67
+   }
+  }
+ },
+ {
+  "siteId": "connecting-ridge",
+  "lat": -89.4632,
+  "lon": -137.49,
+  "mastM": 2,
+  "sunCentre": 45.45,
+  "sunEdge": 50.29,
+  "sunFull": 40.82,
+  "sunMeanFrac": 45.45,
+  "earthEdge": 46.5,
+  "earthCentre": 41.85,
+  "earthFull": 37.01,
+  "earthMeanFrac": 41.82,
+  "perYear": {
+   "2026": {
+    "sunCentre": 44.7,
+    "sunEdge": 49.39,
+    "sunFull": 39.91,
+    "sunMeanFrac": 44.85,
+    "earthEdge": 43.15,
+    "earthCentre": 38.46,
+    "earthFull": 33.58,
+    "earthMeanFrac": 38.44
+   },
+   "2027": {
+    "sunCentre": 46.14,
+    "sunEdge": 51.14,
+    "sunFull": 41.69,
+    "sunMeanFrac": 46.13,
+    "earthEdge": 43.85,
+    "earthCentre": 39.04,
+    "earthFull": 34.04,
+    "earthMeanFrac": 39.01
+   },
+   "2028": {
+    "sunCentre": 46.03,
+    "sunEdge": 51.2,
+    "sunFull": 41.38,
+    "sunMeanFrac": 45.86,
+    "earthEdge": 50.15,
+    "earthCentre": 45.36,
+    "earthFull": 40.35,
+    "earthMeanFrac": 45.33
+   },
+   "2029": {
+    "sunCentre": 43.97,
+    "sunEdge": 48.69,
+    "sunFull": 39.53,
+    "sunMeanFrac": 44.05,
+    "earthEdge": 47.82,
+    "earthCentre": 43.33,
+    "earthFull": 38.66,
+    "earthMeanFrac": 43.31
+   },
+   "2030": {
+    "sunCentre": 46.39,
+    "sunEdge": 51.04,
+    "sunFull": 41.59,
+    "sunMeanFrac": 46.36,
+    "earthEdge": 47.5,
+    "earthCentre": 43.04,
+    "earthFull": 38.4,
+    "earthMeanFrac": 43.01
+   }
+  }
+ },
+ {
+  "siteId": "connecting-ridge",
+  "lat": -89.4632,
+  "lon": -137.49,
+  "mastM": 10,
+  "sunCentre": 85.11,
+  "sunEdge": 90.05,
+  "sunFull": 77.97,
+  "sunMeanFrac": 84.79,
+  "earthEdge": 58.65,
+  "earthCentre": 54.05,
+  "earthFull": 49.56,
+  "earthMeanFrac": 54.07,
+  "perYear": {
+   "2026": {
+    "sunCentre": 84.32,
+    "sunEdge": 90.05,
+    "sunFull": 77.51,
+    "sunMeanFrac": 84.32,
+    "earthEdge": 55.54,
+    "earthCentre": 50.97,
+    "earthFull": 46.45,
+    "earthMeanFrac": 50.95
+   },
+   "2027": {
+    "sunCentre": 85.26,
+    "sunEdge": 89.76,
+    "sunFull": 78.08,
+    "sunMeanFrac": 84.76,
+    "earthEdge": 55.21,
+    "earthCentre": 50.95,
+    "earthFull": 46.92,
+    "earthMeanFrac": 50.99
+   },
+   "2028": {
+    "sunCentre": 85.92,
+    "sunEdge": 89.9,
+    "sunFull": 78.42,
+    "sunMeanFrac": 85.34,
+    "earthEdge": 61.66,
+    "earthCentre": 57.43,
+    "earthFull": 53.26,
+    "earthMeanFrac": 57.46
+   },
+   "2029": {
+    "sunCentre": 85.03,
+    "sunEdge": 90.5,
+    "sunFull": 78.22,
+    "sunMeanFrac": 84.75,
+    "earthEdge": 60.42,
+    "earthCentre": 55.79,
+    "earthFull": 51.21,
+    "earthMeanFrac": 55.8
+   },
+   "2030": {
+    "sunCentre": 85.0,
+    "sunEdge": 90.03,
+    "sunFull": 77.63,
+    "sunMeanFrac": 84.81,
+    "earthEdge": 60.41,
+    "earthCentre": 55.11,
+    "earthFull": 49.97,
+    "earthMeanFrac": 55.12
+   }
+  }
+ },
+ {
+  "siteId": "im2-athena",
+  "lat": -84.7906,
+  "lon": 29.1957,
+  "mastM": 2,
+  "sunCentre": 45.06,
+  "sunEdge": 46.77,
+  "sunFull": 43.69,
+  "sunMeanFrac": 45.1,
+  "earthEdge": 93.59,
+  "earthCentre": 81.47,
+  "earthFull": 74.51,
+  "earthMeanFrac": 81.97,
+  "perYear": {
+   "2026": {
+    "sunCentre": 46.13,
+    "sunEdge": 47.87,
+    "sunFull": 44.87,
+    "sunMeanFrac": 46.18,
+    "earthEdge": 94.21,
+    "earthCentre": 80.39,
+    "earthFull": 72.59,
+    "earthMeanFrac": 80.97
+   },
+   "2027": {
+    "sunCentre": 43.73,
+    "sunEdge": 45.49,
+    "sunFull": 42.39,
+    "sunMeanFrac": 43.76,
+    "earthEdge": 92.18,
+    "earthCentre": 80.43,
+    "earthFull": 73.49,
+    "earthMeanFrac": 80.85
+   },
+   "2028": {
+    "sunCentre": 46.31,
+    "sunEdge": 47.86,
+    "sunFull": 44.79,
+    "sunMeanFrac": 46.31,
+    "earthEdge": 95.94,
+    "earthCentre": 83.62,
+    "earthFull": 76.88,
+    "earthMeanFrac": 84.18
+   },
+   "2029": {
+    "sunCentre": 45.21,
+    "sunEdge": 46.78,
+    "sunFull": 43.73,
+    "sunMeanFrac": 45.22,
+    "earthEdge": 95.55,
+    "earthCentre": 81.94,
+    "earthFull": 74.66,
+    "earthMeanFrac": 82.54
+   },
+   "2030": {
+    "sunCentre": 43.9,
+    "sunEdge": 45.82,
+    "sunFull": 42.68,
+    "sunMeanFrac": 44.02,
+    "earthEdge": 90.09,
+    "earthCentre": 80.97,
+    "earthFull": 74.91,
+    "earthMeanFrac": 81.29
+   }
+  }
+ },
+ {
+  "siteId": "im2-athena",
+  "lat": -84.7906,
+  "lon": 29.1957,
+  "mastM": 10,
+  "sunCentre": 45.87,
+  "sunEdge": 47.73,
+  "sunFull": 44.38,
+  "sunMeanFrac": 45.94,
+  "earthEdge": 94.27,
+  "earthCentre": 81.75,
+  "earthFull": 74.73,
+  "earthMeanFrac": 82.28,
+  "perYear": {
+   "2026": {
+    "sunCentre": 47.03,
+    "sunEdge": 48.97,
+    "sunFull": 45.49,
+    "sunMeanFrac": 47.09,
+    "earthEdge": 94.98,
+    "earthCentre": 80.71,
+    "earthFull": 72.81,
+    "earthMeanFrac": 81.31
+   },
+   "2027": {
+    "sunCentre": 44.49,
+    "sunEdge": 46.46,
+    "sunFull": 43.01,
+    "sunMeanFrac": 44.57,
+    "earthEdge": 93.13,
+    "earthCentre": 80.63,
+    "earthFull": 73.68,
+    "earthMeanFrac": 81.13
+   },
+   "2028": {
+    "sunCentre": 47.09,
+    "sunEdge": 48.76,
+    "sunFull": 45.55,
+    "sunMeanFrac": 47.09,
+    "earthEdge": 96.33,
+    "earthCentre": 83.87,
+    "earthFull": 77.09,
+    "earthMeanFrac": 84.45
+   },
+   "2029": {
+    "sunCentre": 46.02,
+    "sunEdge": 47.73,
+    "sunFull": 44.49,
+    "sunMeanFrac": 46.06,
+    "earthEdge": 96.04,
+    "earthCentre": 82.25,
+    "earthFull": 74.92,
+    "earthMeanFrac": 82.89
+   },
+   "2030": {
+    "sunCentre": 44.71,
+    "sunEdge": 46.7,
+    "sunFull": 43.33,
+    "sunMeanFrac": 44.87,
+    "earthEdge": 90.88,
+    "earthCentre": 81.28,
+    "earthFull": 75.16,
+    "earthMeanFrac": 81.62
+   }
+  }
+ },
+ {
+  "siteId": "amundsen-rim",
+  "lat": -84.2287,
+  "lon": 69.44396,
+  "mastM": 2,
+  "sunCentre": 36.2,
+  "sunEdge": 37.6,
+  "sunFull": 34.77,
+  "sunMeanFrac": 36.2,
+  "earthEdge": 55.34,
+  "earthCentre": 50.68,
+  "earthFull": 46.04,
+  "earthMeanFrac": 50.69,
+  "perYear": {
+   "2026": {
+    "sunCentre": 36.27,
+    "sunEdge": 37.63,
+    "sunFull": 34.82,
+    "sunMeanFrac": 36.28,
+    "earthEdge": 51.97,
+    "earthCentre": 47.2,
+    "earthFull": 42.42,
+    "earthMeanFrac": 47.2
+   },
+   "2027": {
+    "sunCentre": 35.38,
+    "sunEdge": 36.76,
+    "sunFull": 33.9,
+    "sunMeanFrac": 35.36,
+    "earthEdge": 53.48,
+    "earthCentre": 48.32,
+    "earthFull": 43.15,
+    "earthMeanFrac": 48.34
+   },
+   "2028": {
+    "sunCentre": 38.21,
+    "sunEdge": 39.67,
+    "sunFull": 36.9,
+    "sunMeanFrac": 38.25,
+    "earthEdge": 59.4,
+    "earthCentre": 54.52,
+    "earthFull": 49.6,
+    "earthMeanFrac": 54.53
+   },
+   "2029": {
+    "sunCentre": 35.19,
+    "sunEdge": 36.6,
+    "sunFull": 33.89,
+    "sunMeanFrac": 35.22,
+    "earthEdge": 55.98,
+    "earthCentre": 51.68,
+    "earthFull": 47.43,
+    "earthMeanFrac": 51.68
+   },
+   "2030": {
+    "sunCentre": 35.92,
+    "sunEdge": 37.32,
+    "sunFull": 34.34,
+    "sunMeanFrac": 35.9,
+    "earthEdge": 55.84,
+    "earthCentre": 51.67,
+    "earthFull": 47.56,
+    "earthMeanFrac": 51.67
+   }
+  }
+ },
+ {
+  "siteId": "amundsen-rim",
+  "lat": -84.2287,
+  "lon": 69.44396,
+  "mastM": 10,
+  "sunCentre": 39.72,
+  "sunEdge": 41.08,
+  "sunFull": 38.31,
+  "sunMeanFrac": 39.71,
+  "earthEdge": 59.66,
+  "earthCentre": 54.9,
+  "earthFull": 50.27,
+  "earthMeanFrac": 54.92,
+  "perYear": {
+   "2026": {
+    "sunCentre": 39.82,
+    "sunEdge": 41.07,
+    "sunFull": 38.3,
+    "sunMeanFrac": 39.76,
+    "earthEdge": 56.5,
+    "earthCentre": 51.53,
+    "earthFull": 46.75,
+    "earthMeanFrac": 51.57
+   },
+   "2027": {
+    "sunCentre": 38.95,
+    "sunEdge": 40.27,
+    "sunFull": 37.49,
+    "sunMeanFrac": 38.92,
+    "earthEdge": 58.25,
+    "earthCentre": 53.03,
+    "earthFull": 47.92,
+    "earthMeanFrac": 53.03
+   },
+   "2028": {
+    "sunCentre": 41.7,
+    "sunEdge": 43.09,
+    "sunFull": 40.49,
+    "sunMeanFrac": 41.74,
+    "earthEdge": 63.75,
+    "earthCentre": 58.93,
+    "earthFull": 54.03,
+    "earthMeanFrac": 58.92
+   },
+   "2029": {
+    "sunCentre": 38.63,
+    "sunEdge": 40.06,
+    "sunFull": 37.34,
+    "sunMeanFrac": 38.66,
+    "earthEdge": 60.05,
+    "earthCentre": 55.53,
+    "earthFull": 51.31,
+    "earthMeanFrac": 55.58
+   },
+   "2030": {
+    "sunCentre": 39.49,
+    "sunEdge": 40.9,
+    "sunFull": 37.92,
+    "sunMeanFrac": 39.45,
+    "earthEdge": 59.71,
+    "earthCentre": 55.49,
+    "earthFull": 51.31,
+    "earthMeanFrac": 55.5
+   }
+  }
+ },
+ {
+  "siteId": "shackleton-rim-b",
+  "lat": -89.5244,
+  "lon": 56.30993,
+  "mastM": 2,
+  "sunCentre": 37.15,
+  "sunEdge": 41.99,
+  "sunFull": 33.24,
+  "sunMeanFrac": 37.3,
+  "earthEdge": 54.5,
+  "earthCentre": 49.95,
+  "earthFull": 45.33,
+  "earthMeanFrac": 49.94,
+  "perYear": {
+   "2026": {
+    "sunCentre": 37.5,
+    "sunEdge": 42.44,
+    "sunFull": 34.35,
+    "sunMeanFrac": 37.81,
+    "earthEdge": 51.45,
+    "earthCentre": 46.89,
+    "earthFull": 42.25,
+    "earthMeanFrac": 46.85
+   },
+   "2027": {
+    "sunCentre": 35.83,
+    "sunEdge": 40.61,
+    "sunFull": 31.86,
+    "sunMeanFrac": 36.02,
+    "earthEdge": 52.34,
+    "earthCentre": 47.04,
+    "earthFull": 41.67,
+    "earthMeanFrac": 47.05
+   },
+   "2028": {
+    "sunCentre": 39.16,
+    "sunEdge": 43.72,
+    "sunFull": 34.36,
+    "sunMeanFrac": 39.02,
+    "earthEdge": 58.45,
+    "earthCentre": 53.88,
+    "earthFull": 49.2,
+    "earthMeanFrac": 53.86
+   },
+   "2029": {
+    "sunCentre": 37.02,
+    "sunEdge": 41.87,
+    "sunFull": 33.38,
+    "sunMeanFrac": 37.19,
+    "earthEdge": 55.7,
+    "earthCentre": 51.28,
+    "earthFull": 46.85,
+    "earthMeanFrac": 51.28
+   },
+   "2030": {
+    "sunCentre": 36.23,
+    "sunEdge": 41.28,
+    "sunFull": 32.26,
+    "sunMeanFrac": 36.44,
+    "earthEdge": 54.57,
+    "earthCentre": 50.63,
+    "earthFull": 46.68,
+    "earthMeanFrac": 50.62
+   }
+  }
+ },
+ {
+  "siteId": "shackleton-rim-b",
+  "lat": -89.5244,
+  "lon": 56.30993,
+  "mastM": 10,
+  "sunCentre": 38.19,
+  "sunEdge": 43.09,
+  "sunFull": 34.21,
+  "sunMeanFrac": 38.33,
+  "earthEdge": 54.56,
+  "earthCentre": 49.99,
+  "earthFull": 45.38,
+  "earthMeanFrac": 49.97,
+  "perYear": {
+   "2026": {
+    "sunCentre": 38.48,
+    "sunEdge": 43.55,
+    "sunFull": 35.26,
+    "sunMeanFrac": 38.8,
+    "earthEdge": 51.48,
+    "earthCentre": 46.92,
+    "earthFull": 42.27,
+    "earthMeanFrac": 46.9
+   },
+   "2027": {
+    "sunCentre": 36.82,
+    "sunEdge": 41.64,
+    "sunFull": 32.82,
+    "sunMeanFrac": 36.99,
+    "earthEdge": 52.39,
+    "earthCentre": 47.08,
+    "earthFull": 41.71,
+    "earthMeanFrac": 47.08
+   },
+   "2028": {
+    "sunCentre": 40.29,
+    "sunEdge": 44.77,
+    "sunFull": 35.36,
+    "sunMeanFrac": 40.09,
+    "earthEdge": 58.52,
+    "earthCentre": 53.94,
+    "earthFull": 49.25,
+    "earthMeanFrac": 53.91
+   },
+   "2029": {
+    "sunCentre": 38.08,
+    "sunEdge": 43.03,
+    "sunFull": 34.39,
+    "sunMeanFrac": 38.24,
+    "earthEdge": 55.79,
+    "earthCentre": 51.35,
+    "earthFull": 46.91,
+    "earthMeanFrac": 51.32
+   },
+   "2030": {
+    "sunCentre": 37.27,
+    "sunEdge": 42.44,
+    "sunFull": 33.18,
+    "sunMeanFrac": 37.52,
+    "earthEdge": 54.59,
+    "earthCentre": 50.65,
+    "earthFull": 46.75,
+    "earthMeanFrac": 50.64
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-a",
+  "lat": -88.0792,
+  "lon": 11.88866,
+  "mastM": 2,
+  "sunCentre": 20.05,
+  "sunEdge": 23.89,
+  "sunFull": 16.01,
+  "sunMeanFrac": 20.04,
+  "earthEdge": 48.22,
+  "earthCentre": 43.44,
+  "earthFull": 38.51,
+  "earthMeanFrac": 43.43,
+  "perYear": {
+   "2026": {
+    "sunCentre": 21.84,
+    "sunEdge": 25.34,
+    "sunFull": 17.45,
+    "sunMeanFrac": 21.7,
+    "earthEdge": 45.71,
+    "earthCentre": 40.94,
+    "earthFull": 35.91,
+    "earthMeanFrac": 40.92
+   },
+   "2027": {
+    "sunCentre": 19.55,
+    "sunEdge": 23.11,
+    "sunFull": 15.53,
+    "sunMeanFrac": 19.52,
+    "earthEdge": 44.14,
+    "earthCentre": 38.33,
+    "earthFull": 32.5,
+    "earthMeanFrac": 38.33
+   },
+   "2028": {
+    "sunCentre": 19.57,
+    "sunEdge": 24.31,
+    "sunFull": 16.2,
+    "sunMeanFrac": 19.86,
+    "earthEdge": 52.46,
+    "earthCentre": 47.22,
+    "earthFull": 41.73,
+    "earthMeanFrac": 47.21
+   },
+   "2029": {
+    "sunCentre": 19.83,
+    "sunEdge": 23.97,
+    "sunFull": 15.63,
+    "sunMeanFrac": 19.83,
+    "earthEdge": 49.91,
+    "earthCentre": 45.59,
+    "earthFull": 41.06,
+    "earthMeanFrac": 45.54
+   },
+   "2030": {
+    "sunCentre": 19.49,
+    "sunEdge": 22.74,
+    "sunFull": 15.24,
+    "sunMeanFrac": 19.3,
+    "earthEdge": 48.86,
+    "earthCentre": 45.11,
+    "earthFull": 41.34,
+    "earthMeanFrac": 45.11
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-a",
+  "lat": -88.0792,
+  "lon": 11.88866,
+  "mastM": 10,
+  "sunCentre": 22.03,
+  "sunEdge": 26.15,
+  "sunFull": 17.65,
+  "sunMeanFrac": 22.03,
+  "earthEdge": 48.24,
+  "earthCentre": 43.5,
+  "earthFull": 38.54,
+  "earthMeanFrac": 43.46,
+  "perYear": {
+   "2026": {
+    "sunCentre": 23.87,
+    "sunEdge": 27.59,
+    "sunFull": 19.08,
+    "sunMeanFrac": 23.71,
+    "earthEdge": 45.75,
+    "earthCentre": 40.99,
+    "earthFull": 35.94,
+    "earthMeanFrac": 40.96
+   },
+   "2027": {
+    "sunCentre": 21.64,
+    "sunEdge": 25.33,
+    "sunFull": 17.19,
+    "sunMeanFrac": 21.55,
+    "earthEdge": 44.16,
+    "earthCentre": 38.41,
+    "earthFull": 32.53,
+    "earthMeanFrac": 38.38
+   },
+   "2028": {
+    "sunCentre": 21.61,
+    "sunEdge": 26.79,
+    "sunFull": 17.86,
+    "sunMeanFrac": 21.91,
+    "earthEdge": 52.5,
+    "earthCentre": 47.29,
+    "earthFull": 41.77,
+    "earthMeanFrac": 47.25
+   },
+   "2029": {
+    "sunCentre": 21.67,
+    "sunEdge": 26.15,
+    "sunFull": 17.28,
+    "sunMeanFrac": 21.75,
+    "earthEdge": 49.91,
+    "earthCentre": 45.61,
+    "earthFull": 41.1,
+    "earthMeanFrac": 45.57
+   },
+   "2030": {
+    "sunCentre": 21.36,
+    "sunEdge": 24.9,
+    "sunFull": 16.82,
+    "sunMeanFrac": 21.22,
+    "earthEdge": 48.86,
+    "earthCentre": 45.16,
+    "earthFull": 41.37,
+    "earthMeanFrac": 45.14
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-b",
+  "lat": -88.3828,
+  "lon": 16.58734,
+  "mastM": 2,
+  "sunCentre": 16.28,
+  "sunEdge": 18.81,
+  "sunFull": 13.69,
+  "sunMeanFrac": 16.27,
+  "earthEdge": 52.17,
+  "earthCentre": 47.49,
+  "earthFull": 42.77,
+  "earthMeanFrac": 47.49,
+  "perYear": {
+   "2026": {
+    "sunCentre": 16.4,
+    "sunEdge": 19.16,
+    "sunFull": 13.92,
+    "sunMeanFrac": 16.46,
+    "earthEdge": 48.77,
+    "earthCentre": 44.12,
+    "earthFull": 39.38,
+    "earthMeanFrac": 44.12
+   },
+   "2027": {
+    "sunCentre": 15.86,
+    "sunEdge": 18.36,
+    "sunFull": 13.42,
+    "sunMeanFrac": 15.87,
+    "earthEdge": 50.13,
+    "earthCentre": 44.25,
+    "earthFull": 38.36,
+    "earthMeanFrac": 44.24
+   },
+   "2028": {
+    "sunCentre": 17.65,
+    "sunEdge": 20.2,
+    "sunFull": 14.65,
+    "sunMeanFrac": 17.56,
+    "earthEdge": 56.15,
+    "earthCentre": 51.26,
+    "earthFull": 46.25,
+    "earthMeanFrac": 51.25
+   },
+   "2029": {
+    "sunCentre": 15.82,
+    "sunEdge": 18.36,
+    "sunFull": 13.29,
+    "sunMeanFrac": 15.79,
+    "earthEdge": 53.01,
+    "earthCentre": 48.69,
+    "earthFull": 44.36,
+    "earthMeanFrac": 48.69
+   },
+   "2030": {
+    "sunCentre": 15.65,
+    "sunEdge": 17.97,
+    "sunFull": 13.16,
+    "sunMeanFrac": 15.64,
+    "earthEdge": 52.79,
+    "earthCentre": 49.11,
+    "earthFull": 45.48,
+    "earthMeanFrac": 49.13
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-b",
+  "lat": -88.3828,
+  "lon": 16.58734,
+  "mastM": 10,
+  "sunCentre": 18.52,
+  "sunEdge": 21.55,
+  "sunFull": 15.38,
+  "sunMeanFrac": 18.5,
+  "earthEdge": 52.39,
+  "earthCentre": 47.7,
+  "earthFull": 42.96,
+  "earthMeanFrac": 47.69,
+  "perYear": {
+   "2026": {
+    "sunCentre": 18.88,
+    "sunEdge": 22.15,
+    "sunFull": 15.75,
+    "sunMeanFrac": 18.93,
+    "earthEdge": 49.03,
+    "earthCentre": 44.42,
+    "earthFull": 39.68,
+    "earthMeanFrac": 44.4
+   },
+   "2027": {
+    "sunCentre": 17.91,
+    "sunEdge": 21.13,
+    "sunFull": 14.98,
+    "sunMeanFrac": 17.98,
+    "earthEdge": 50.3,
+    "earthCentre": 44.36,
+    "earthFull": 38.38,
+    "earthMeanFrac": 44.34
+   },
+   "2028": {
+    "sunCentre": 19.92,
+    "sunEdge": 22.84,
+    "sunFull": 16.39,
+    "sunMeanFrac": 19.81,
+    "earthEdge": 56.48,
+    "earthCentre": 51.55,
+    "earthFull": 46.57,
+    "earthMeanFrac": 51.55
+   },
+   "2029": {
+    "sunCentre": 18.09,
+    "sunEdge": 20.95,
+    "sunFull": 15.02,
+    "sunMeanFrac": 18.01,
+    "earthEdge": 53.29,
+    "earthCentre": 48.97,
+    "earthFull": 44.57,
+    "earthMeanFrac": 48.95
+   },
+   "2030": {
+    "sunCentre": 17.8,
+    "sunEdge": 20.68,
+    "sunFull": 14.77,
+    "sunMeanFrac": 17.78,
+    "earthEdge": 52.85,
+    "earthCentre": 49.17,
+    "earthFull": 45.59,
+    "earthMeanFrac": 49.2
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-c",
+  "lat": -88.9645,
+  "lon": 37.23483,
+  "mastM": 2,
+  "sunCentre": 14.22,
+  "sunEdge": 17.34,
+  "sunFull": 11.51,
+  "sunMeanFrac": 14.22,
+  "earthEdge": 33.23,
+  "earthCentre": 27.61,
+  "earthFull": 20.92,
+  "earthMeanFrac": 27.48,
+  "perYear": {
+   "2026": {
+    "sunCentre": 14.26,
+    "sunEdge": 17.26,
+    "sunFull": 11.69,
+    "sunMeanFrac": 14.22,
+    "earthEdge": 30.26,
+    "earthCentre": 24.69,
+    "earthFull": 17.98,
+    "earthMeanFrac": 24.55
+   },
+   "2027": {
+    "sunCentre": 14.52,
+    "sunEdge": 17.5,
+    "sunFull": 11.77,
+    "sunMeanFrac": 14.51,
+    "earthEdge": 30.84,
+    "earthCentre": 25.38,
+    "earthFull": 18.8,
+    "earthMeanFrac": 25.25
+   },
+   "2028": {
+    "sunCentre": 14.62,
+    "sunEdge": 18.23,
+    "sunFull": 12.03,
+    "sunMeanFrac": 14.82,
+    "earthEdge": 36.18,
+    "earthCentre": 30.16,
+    "earthFull": 23.03,
+    "earthMeanFrac": 30.04
+   },
+   "2029": {
+    "sunCentre": 13.71,
+    "sunEdge": 16.91,
+    "sunFull": 11.05,
+    "sunMeanFrac": 13.73,
+    "earthEdge": 34.51,
+    "earthCentre": 28.96,
+    "earthFull": 22.4,
+    "earthMeanFrac": 28.84
+   },
+   "2030": {
+    "sunCentre": 14.01,
+    "sunEdge": 16.8,
+    "sunFull": 11.0,
+    "sunMeanFrac": 13.82,
+    "earthEdge": 34.34,
+    "earthCentre": 28.84,
+    "earthFull": 22.39,
+    "earthMeanFrac": 28.73
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-c",
+  "lat": -88.9645,
+  "lon": 37.23483,
+  "mastM": 10,
+  "sunCentre": 24.13,
+  "sunEdge": 28.17,
+  "sunFull": 20.59,
+  "sunMeanFrac": 24.14,
+  "earthEdge": 39.63,
+  "earthCentre": 34.67,
+  "earthFull": 29.21,
+  "earthMeanFrac": 34.59,
+  "perYear": {
+   "2026": {
+    "sunCentre": 24.12,
+    "sunEdge": 28.26,
+    "sunFull": 20.78,
+    "sunMeanFrac": 24.23,
+    "earthEdge": 36.74,
+    "earthCentre": 31.77,
+    "earthFull": 26.12,
+    "earthMeanFrac": 31.65
+   },
+   "2027": {
+    "sunCentre": 24.06,
+    "sunEdge": 28.0,
+    "sunFull": 20.42,
+    "sunMeanFrac": 24.06,
+    "earthEdge": 36.58,
+    "earthCentre": 31.79,
+    "earthFull": 26.64,
+    "earthMeanFrac": 31.75
+   },
+   "2028": {
+    "sunCentre": 25.31,
+    "sunEdge": 29.46,
+    "sunFull": 22.07,
+    "sunMeanFrac": 25.37,
+    "earthEdge": 43.08,
+    "earthCentre": 37.75,
+    "earthFull": 31.81,
+    "earthMeanFrac": 37.67
+   },
+   "2029": {
+    "sunCentre": 23.31,
+    "sunEdge": 27.47,
+    "sunFull": 19.82,
+    "sunMeanFrac": 23.43,
+    "earthEdge": 41.4,
+    "earthCentre": 36.46,
+    "earthFull": 31.02,
+    "earthMeanFrac": 36.36
+   },
+   "2030": {
+    "sunCentre": 23.86,
+    "sunEdge": 27.65,
+    "sunFull": 19.84,
+    "sunMeanFrac": 23.6,
+    "earthEdge": 40.32,
+    "earthCentre": 35.58,
+    "earthFull": 30.46,
+    "earthMeanFrac": 35.52
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-d",
+  "lat": -88.632,
+  "lon": 74.62375,
+  "mastM": 2,
+  "sunCentre": 29.23,
+  "sunEdge": 34.42,
+  "sunFull": 24.42,
+  "sunMeanFrac": 29.3,
+  "earthEdge": 53.02,
+  "earthCentre": 48.5,
+  "earthFull": 43.93,
+  "earthMeanFrac": 48.49,
+  "perYear": {
+   "2026": {
+    "sunCentre": 30.56,
+    "sunEdge": 36.26,
+    "sunFull": 25.98,
+    "sunMeanFrac": 30.82,
+    "earthEdge": 49.41,
+    "earthCentre": 44.85,
+    "earthFull": 40.22,
+    "earthMeanFrac": 44.82
+   },
+   "2027": {
+    "sunCentre": 29.63,
+    "sunEdge": 34.27,
+    "sunFull": 24.74,
+    "sunMeanFrac": 29.6,
+    "earthEdge": 50.92,
+    "earthCentre": 46.32,
+    "earthFull": 41.72,
+    "earthMeanFrac": 46.34
+   },
+   "2028": {
+    "sunCentre": 29.8,
+    "sunEdge": 34.68,
+    "sunFull": 24.23,
+    "sunMeanFrac": 29.91,
+    "earthEdge": 56.57,
+    "earthCentre": 52.12,
+    "earthFull": 47.54,
+    "earthMeanFrac": 52.1
+   },
+   "2029": {
+    "sunCentre": 28.04,
+    "sunEdge": 33.53,
+    "sunFull": 23.4,
+    "sunMeanFrac": 28.01,
+    "earthEdge": 53.97,
+    "earthCentre": 49.53,
+    "earthFull": 45.08,
+    "earthMeanFrac": 49.52
+   },
+   "2030": {
+    "sunCentre": 28.13,
+    "sunEdge": 33.39,
+    "sunFull": 23.77,
+    "sunMeanFrac": 28.16,
+    "earthEdge": 54.19,
+    "earthCentre": 49.67,
+    "earthFull": 45.06,
+    "earthMeanFrac": 49.65
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-d",
+  "lat": -88.632,
+  "lon": 74.62375,
+  "mastM": 10,
+  "sunCentre": 31.98,
+  "sunEdge": 36.98,
+  "sunFull": 27.27,
+  "sunMeanFrac": 32.05,
+  "earthEdge": 55.36,
+  "earthCentre": 50.82,
+  "earthFull": 46.32,
+  "earthMeanFrac": 50.83,
+  "perYear": {
+   "2026": {
+    "sunCentre": 33.64,
+    "sunEdge": 38.17,
+    "sunFull": 28.97,
+    "sunMeanFrac": 33.72,
+    "earthEdge": 51.56,
+    "earthCentre": 46.93,
+    "earthFull": 42.4,
+    "earthMeanFrac": 46.95
+   },
+   "2027": {
+    "sunCentre": 31.77,
+    "sunEdge": 36.92,
+    "sunFull": 27.67,
+    "sunMeanFrac": 31.97,
+    "earthEdge": 53.6,
+    "earthCentre": 49.03,
+    "earthFull": 44.35,
+    "earthMeanFrac": 49.01
+   },
+   "2028": {
+    "sunCentre": 32.75,
+    "sunEdge": 38.08,
+    "sunFull": 27.08,
+    "sunMeanFrac": 32.85,
+    "earthEdge": 58.74,
+    "earthCentre": 54.37,
+    "earthFull": 49.86,
+    "earthMeanFrac": 54.36
+   },
+   "2029": {
+    "sunCentre": 31.34,
+    "sunEdge": 36.0,
+    "sunFull": 25.94,
+    "sunMeanFrac": 31.1,
+    "earthEdge": 56.1,
+    "earthCentre": 51.5,
+    "earthFull": 47.16,
+    "earthMeanFrac": 51.56
+   },
+   "2030": {
+    "sunCentre": 30.42,
+    "sunEdge": 35.71,
+    "sunFull": 26.7,
+    "sunMeanFrac": 30.61,
+    "earthEdge": 56.77,
+    "earthCentre": 52.26,
+    "earthFull": 47.81,
+    "earthMeanFrac": 52.29
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-e",
+  "lat": -87.9458,
+  "lon": 71.27421,
+  "mastM": 2,
+  "sunCentre": 14.01,
+  "sunEdge": 18.17,
+  "sunFull": 10.62,
+  "sunMeanFrac": 14.16,
+  "earthEdge": 49.76,
+  "earthCentre": 45.26,
+  "earthFull": 40.68,
+  "earthMeanFrac": 45.25,
+  "perYear": {
+   "2026": {
+    "sunCentre": 14.77,
+    "sunEdge": 19.21,
+    "sunFull": 11.47,
+    "sunMeanFrac": 14.95,
+    "earthEdge": 46.5,
+    "earthCentre": 42.15,
+    "earthFull": 37.68,
+    "earthMeanFrac": 42.11
+   },
+   "2027": {
+    "sunCentre": 13.77,
+    "sunEdge": 17.59,
+    "sunFull": 10.25,
+    "sunMeanFrac": 13.9,
+    "earthEdge": 47.31,
+    "earthCentre": 43.2,
+    "earthFull": 39.12,
+    "earthMeanFrac": 43.21
+   },
+   "2028": {
+    "sunCentre": 14.07,
+    "sunEdge": 18.39,
+    "sunFull": 10.38,
+    "sunMeanFrac": 14.23,
+    "earthEdge": 53.15,
+    "earthCentre": 49.07,
+    "earthFull": 44.79,
+    "earthMeanFrac": 49.04
+   },
+   "2029": {
+    "sunCentre": 14.02,
+    "sunEdge": 18.25,
+    "sunFull": 10.78,
+    "sunMeanFrac": 14.14,
+    "earthEdge": 51.37,
+    "earthCentre": 46.69,
+    "earthFull": 41.92,
+    "earthMeanFrac": 46.68
+   },
+   "2030": {
+    "sunCentre": 13.41,
+    "sunEdge": 17.43,
+    "sunFull": 10.21,
+    "sunMeanFrac": 13.58,
+    "earthEdge": 50.45,
+    "earthCentre": 45.18,
+    "earthFull": 39.89,
+    "earthMeanFrac": 45.19
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-e",
+  "lat": -87.9458,
+  "lon": 71.27421,
+  "mastM": 10,
+  "sunCentre": 14.35,
+  "sunEdge": 18.68,
+  "sunFull": 10.92,
+  "sunMeanFrac": 14.52,
+  "earthEdge": 49.78,
+  "earthCentre": 45.29,
+  "earthFull": 40.71,
+  "earthMeanFrac": 45.27,
+  "perYear": {
+   "2026": {
+    "sunCentre": 15.03,
+    "sunEdge": 19.66,
+    "sunFull": 11.79,
+    "sunMeanFrac": 15.3,
+    "earthEdge": 46.52,
+    "earthCentre": 42.16,
+    "earthFull": 37.72,
+    "earthMeanFrac": 42.14
+   },
+   "2027": {
+    "sunCentre": 14.05,
+    "sunEdge": 18.01,
+    "sunFull": 10.55,
+    "sunMeanFrac": 14.24,
+    "earthEdge": 47.32,
+    "earthCentre": 43.22,
+    "earthFull": 39.17,
+    "earthMeanFrac": 43.23
+   },
+   "2028": {
+    "sunCentre": 14.55,
+    "sunEdge": 19.07,
+    "sunFull": 10.74,
+    "sunMeanFrac": 14.65,
+    "earthEdge": 53.16,
+    "earthCentre": 49.07,
+    "earthFull": 44.81,
+    "earthMeanFrac": 49.07
+   },
+   "2029": {
+    "sunCentre": 14.37,
+    "sunEdge": 18.8,
+    "sunFull": 11.05,
+    "sunMeanFrac": 14.5,
+    "earthEdge": 51.38,
+    "earthCentre": 46.74,
+    "earthFull": 41.94,
+    "earthMeanFrac": 46.71
+   },
+   "2030": {
+    "sunCentre": 13.77,
+    "sunEdge": 17.84,
+    "sunFull": 10.46,
+    "sunMeanFrac": 13.94,
+    "earthEdge": 50.48,
+    "earthCentre": 45.25,
+    "earthFull": 39.89,
+    "earthMeanFrac": 45.21
+   }
+  }
+ },
+ {
+  "siteId": "faustini-rim-a",
+  "lat": -87.8897,
+  "lon": 90.0,
+  "mastM": 2,
+  "sunCentre": 27.97,
+  "sunEdge": 31.52,
+  "sunFull": 24.0,
+  "sunMeanFrac": 27.89,
+  "earthEdge": 51.45,
+  "earthCentre": 46.95,
+  "earthFull": 42.38,
+  "earthMeanFrac": 46.95,
+  "perYear": {
+   "2026": {
+    "sunCentre": 29.44,
+    "sunEdge": 32.91,
+    "sunFull": 25.54,
+    "sunMeanFrac": 29.33,
+    "earthEdge": 48.42,
+    "earthCentre": 43.94,
+    "earthFull": 39.42,
+    "earthMeanFrac": 43.95
+   },
+   "2027": {
+    "sunCentre": 27.11,
+    "sunEdge": 30.47,
+    "sunFull": 23.18,
+    "sunMeanFrac": 27.01,
+    "earthEdge": 48.49,
+    "earthCentre": 44.36,
+    "earthFull": 40.15,
+    "earthMeanFrac": 44.37
+   },
+   "2028": {
+    "sunCentre": 29.11,
+    "sunEdge": 32.68,
+    "sunFull": 24.44,
+    "sunMeanFrac": 28.95,
+    "earthEdge": 54.91,
+    "earthCentre": 50.63,
+    "earthFull": 46.17,
+    "earthMeanFrac": 50.59
+   },
+   "2029": {
+    "sunCentre": 27.43,
+    "sunEdge": 31.08,
+    "sunFull": 23.65,
+    "sunMeanFrac": 27.39,
+    "earthEdge": 53.47,
+    "earthCentre": 48.87,
+    "earthFull": 44.22,
+    "earthMeanFrac": 48.87
+   },
+   "2030": {
+    "sunCentre": 26.75,
+    "sunEdge": 30.47,
+    "sunFull": 23.21,
+    "sunMeanFrac": 26.79,
+    "earthEdge": 51.92,
+    "earthCentre": 46.96,
+    "earthFull": 41.92,
+    "earthMeanFrac": 46.94
+   }
+  }
+ },
+ {
+  "siteId": "faustini-rim-a",
+  "lat": -87.8897,
+  "lon": 90.0,
+  "mastM": 10,
+  "sunCentre": 35.58,
+  "sunEdge": 39.6,
+  "sunFull": 31.23,
+  "sunMeanFrac": 35.53,
+  "earthEdge": 51.47,
+  "earthCentre": 46.98,
+  "earthFull": 42.4,
+  "earthMeanFrac": 46.97,
+  "perYear": {
+   "2026": {
+    "sunCentre": 36.95,
+    "sunEdge": 40.63,
+    "sunFull": 32.43,
+    "sunMeanFrac": 36.77,
+    "earthEdge": 48.45,
+    "earthCentre": 43.98,
+    "earthFull": 39.43,
+    "earthMeanFrac": 43.97
+   },
+   "2027": {
+    "sunCentre": 34.5,
+    "sunEdge": 38.57,
+    "sunFull": 30.23,
+    "sunMeanFrac": 34.43,
+    "earthEdge": 48.53,
+    "earthCentre": 44.41,
+    "earthFull": 40.15,
+    "earthMeanFrac": 44.38
+   },
+   "2028": {
+    "sunCentre": 37.52,
+    "sunEdge": 41.18,
+    "sunFull": 32.51,
+    "sunMeanFrac": 37.37,
+    "earthEdge": 54.92,
+    "earthCentre": 50.64,
+    "earthFull": 46.19,
+    "earthMeanFrac": 50.61
+   },
+   "2029": {
+    "sunCentre": 34.82,
+    "sunEdge": 38.9,
+    "sunFull": 30.83,
+    "sunMeanFrac": 34.87,
+    "earthEdge": 53.49,
+    "earthCentre": 48.9,
+    "earthFull": 44.28,
+    "earthMeanFrac": 48.89
+   },
+   "2030": {
+    "sunCentre": 34.09,
+    "sunEdge": 38.72,
+    "sunFull": 30.14,
+    "sunMeanFrac": 34.19,
+    "earthEdge": 51.93,
+    "earthCentre": 46.97,
+    "earthFull": 41.92,
+    "earthMeanFrac": 46.96
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-f",
+  "lat": -87.3417,
+  "lon": 60.25512,
+  "mastM": 2,
+  "sunCentre": 22.12,
+  "sunEdge": 26.8,
+  "sunFull": 18.09,
+  "sunMeanFrac": 22.19,
+  "earthEdge": 47.32,
+  "earthCentre": 42.74,
+  "earthFull": 38.0,
+  "earthMeanFrac": 42.73,
+  "perYear": {
+   "2026": {
+    "sunCentre": 23.49,
+    "sunEdge": 28.25,
+    "sunFull": 19.16,
+    "sunMeanFrac": 23.55,
+    "earthEdge": 44.63,
+    "earthCentre": 39.97,
+    "earthFull": 35.16,
+    "earthMeanFrac": 39.96
+   },
+   "2027": {
+    "sunCentre": 21.24,
+    "sunEdge": 26.02,
+    "sunFull": 17.32,
+    "sunMeanFrac": 21.43,
+    "earthEdge": 44.24,
+    "earthCentre": 39.93,
+    "earthFull": 35.38,
+    "earthMeanFrac": 39.9
+   },
+   "2028": {
+    "sunCentre": 22.21,
+    "sunEdge": 27.06,
+    "sunFull": 18.43,
+    "sunMeanFrac": 22.32,
+    "earthEdge": 51.12,
+    "earthCentre": 46.52,
+    "earthFull": 41.76,
+    "earthMeanFrac": 46.51
+   },
+   "2029": {
+    "sunCentre": 22.16,
+    "sunEdge": 27.02,
+    "sunFull": 18.21,
+    "sunMeanFrac": 22.23,
+    "earthEdge": 49.3,
+    "earthCentre": 44.69,
+    "earthFull": 39.91,
+    "earthMeanFrac": 44.69
+   },
+   "2030": {
+    "sunCentre": 21.5,
+    "sunEdge": 25.66,
+    "sunFull": 17.35,
+    "sunMeanFrac": 21.41,
+    "earthEdge": 47.28,
+    "earthCentre": 42.57,
+    "earthFull": 37.77,
+    "earthMeanFrac": 42.56
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker-rim-f",
+  "lat": -87.3417,
+  "lon": 60.25512,
+  "mastM": 10,
+  "sunCentre": 29.97,
+  "sunEdge": 35.7,
+  "sunFull": 24.72,
+  "sunMeanFrac": 30.02,
+  "earthEdge": 47.35,
+  "earthCentre": 42.77,
+  "earthFull": 38.04,
+  "earthMeanFrac": 42.76,
+  "perYear": {
+   "2026": {
+    "sunCentre": 31.24,
+    "sunEdge": 36.96,
+    "sunFull": 25.98,
+    "sunMeanFrac": 31.31,
+    "earthEdge": 44.68,
+    "earthCentre": 40.01,
+    "earthFull": 35.18,
+    "earthMeanFrac": 39.99
+   },
+   "2027": {
+    "sunCentre": 30.09,
+    "sunEdge": 35.99,
+    "sunFull": 24.21,
+    "sunMeanFrac": 30.16,
+    "earthEdge": 44.27,
+    "earthCentre": 39.94,
+    "earthFull": 35.42,
+    "earthMeanFrac": 39.92
+   },
+   "2028": {
+    "sunCentre": 29.76,
+    "sunEdge": 35.89,
+    "sunFull": 24.91,
+    "sunMeanFrac": 29.93,
+    "earthEdge": 51.16,
+    "earthCentre": 46.52,
+    "earthFull": 41.79,
+    "earthMeanFrac": 46.54
+   },
+   "2029": {
+    "sunCentre": 29.67,
+    "sunEdge": 35.34,
+    "sunFull": 24.7,
+    "sunMeanFrac": 29.68,
+    "earthEdge": 49.33,
+    "earthCentre": 44.76,
+    "earthFull": 39.97,
+    "earthMeanFrac": 44.72
+   },
+   "2030": {
+    "sunCentre": 29.11,
+    "sunEdge": 34.32,
+    "sunFull": 23.79,
+    "sunMeanFrac": 29.04,
+    "earthEdge": 47.31,
+    "earthCentre": 42.59,
+    "earthFull": 37.82,
+    "earthMeanFrac": 42.59
+   }
+  }
+ },
+ {
+  "siteId": "cabeus-exterior-wall-1",
+  "lat": -86.9243,
+  "lon": -71.5651,
+  "mastM": 2,
+  "sunCentre": 17.48,
+  "sunEdge": 20.81,
+  "sunFull": 14.89,
+  "sunMeanFrac": 17.6,
+  "earthEdge": 38.16,
+  "earthCentre": 33.05,
+  "earthFull": 27.41,
+  "earthMeanFrac": 33.0,
+  "perYear": {
+   "2026": {
+    "sunCentre": 18.05,
+    "sunEdge": 21.63,
+    "sunFull": 15.97,
+    "sunMeanFrac": 18.17,
+    "earthEdge": 35.02,
+    "earthCentre": 29.98,
+    "earthFull": 24.29,
+    "earthMeanFrac": 29.91
+   },
+   "2027": {
+    "sunCentre": 17.76,
+    "sunEdge": 21.44,
+    "sunFull": 15.22,
+    "sunMeanFrac": 18.02,
+    "earthEdge": 35.0,
+    "earthCentre": 29.81,
+    "earthFull": 24.1,
+    "earthMeanFrac": 29.78
+   },
+   "2028": {
+    "sunCentre": 17.09,
+    "sunEdge": 19.44,
+    "sunFull": 13.97,
+    "sunMeanFrac": 16.95,
+    "earthEdge": 41.5,
+    "earthCentre": 35.94,
+    "earthFull": 29.75,
+    "earthMeanFrac": 35.86
+   },
+   "2029": {
+    "sunCentre": 17.97,
+    "sunEdge": 21.23,
+    "sunFull": 15.05,
+    "sunMeanFrac": 18.01,
+    "earthEdge": 39.45,
+    "earthCentre": 34.47,
+    "earthFull": 29.05,
+    "earthMeanFrac": 34.43
+   },
+   "2030": {
+    "sunCentre": 16.53,
+    "sunEdge": 20.31,
+    "sunFull": 14.25,
+    "sunMeanFrac": 16.83,
+    "earthEdge": 39.82,
+    "earthCentre": 35.06,
+    "earthFull": 29.83,
+    "earthMeanFrac": 35.0
+   }
+  }
+ },
+ {
+  "siteId": "cabeus-exterior-wall-1",
+  "lat": -86.9243,
+  "lon": -71.5651,
+  "mastM": 10,
+  "sunCentre": 21.07,
+  "sunEdge": 24.53,
+  "sunFull": 18.07,
+  "sunMeanFrac": 21.13,
+  "earthEdge": 38.39,
+  "earthCentre": 33.32,
+  "earthFull": 27.7,
+  "earthMeanFrac": 33.26,
+  "perYear": {
+   "2026": {
+    "sunCentre": 21.68,
+    "sunEdge": 25.11,
+    "sunFull": 18.79,
+    "sunMeanFrac": 21.69,
+    "earthEdge": 35.27,
+    "earthCentre": 30.25,
+    "earthFull": 24.59,
+    "earthMeanFrac": 30.16
+   },
+   "2027": {
+    "sunCentre": 21.4,
+    "sunEdge": 24.93,
+    "sunFull": 18.29,
+    "sunMeanFrac": 21.49,
+    "earthEdge": 35.23,
+    "earthCentre": 30.08,
+    "earthFull": 24.37,
+    "earthMeanFrac": 30.03
+   },
+   "2028": {
+    "sunCentre": 20.16,
+    "sunEdge": 23.25,
+    "sunFull": 17.3,
+    "sunMeanFrac": 20.16,
+    "earthEdge": 41.72,
+    "earthCentre": 36.21,
+    "earthFull": 30.08,
+    "earthMeanFrac": 36.14
+   },
+   "2029": {
+    "sunCentre": 21.88,
+    "sunEdge": 25.38,
+    "sunFull": 18.68,
+    "sunMeanFrac": 21.93,
+    "earthEdge": 39.69,
+    "earthCentre": 34.76,
+    "earthFull": 29.34,
+    "earthMeanFrac": 34.69
+   },
+   "2030": {
+    "sunCentre": 20.22,
+    "sunEdge": 24.01,
+    "sunFull": 17.32,
+    "sunMeanFrac": 20.36,
+    "earthEdge": 40.02,
+    "earthCentre": 35.3,
+    "earthFull": 30.11,
+    "earthMeanFrac": 35.24
+   }
+  }
+ },
+ {
+  "siteId": "amundsen-1",
+  "lat": -83.9046,
+  "lon": 89.53545,
+  "mastM": 2,
+  "sunCentre": 1.55,
+  "sunEdge": 3.53,
+  "sunFull": 0.4,
+  "sunMeanFrac": 1.66,
+  "earthEdge": 38.09,
+  "earthCentre": 32.9,
+  "earthFull": 27.12,
+  "earthMeanFrac": 32.83,
+  "perYear": {
+   "2026": {
+    "sunCentre": 1.68,
+    "sunEdge": 3.73,
+    "sunFull": 0.45,
+    "sunMeanFrac": 1.79,
+    "earthEdge": 34.47,
+    "earthCentre": 29.42,
+    "earthFull": 23.82,
+    "earthMeanFrac": 29.37
+   },
+   "2027": {
+    "sunCentre": 1.67,
+    "sunEdge": 3.74,
+    "sunFull": 0.41,
+    "sunMeanFrac": 1.73,
+    "earthEdge": 34.79,
+    "earthCentre": 29.19,
+    "earthFull": 22.81,
+    "earthMeanFrac": 29.09
+   },
+   "2028": {
+    "sunCentre": 1.53,
+    "sunEdge": 3.4,
+    "sunFull": 0.4,
+    "sunMeanFrac": 1.62,
+    "earthEdge": 41.12,
+    "earthCentre": 35.38,
+    "earthFull": 28.86,
+    "earthMeanFrac": 35.29
+   },
+   "2029": {
+    "sunCentre": 1.4,
+    "sunEdge": 3.3,
+    "sunFull": 0.4,
+    "sunMeanFrac": 1.56,
+    "earthEdge": 39.47,
+    "earthCentre": 34.68,
+    "earthFull": 29.41,
+    "earthMeanFrac": 34.63
+   },
+   "2030": {
+    "sunCentre": 1.47,
+    "sunEdge": 3.49,
+    "sunFull": 0.37,
+    "sunMeanFrac": 1.57,
+    "earthEdge": 40.57,
+    "earthCentre": 35.83,
+    "earthFull": 30.68,
+    "earthMeanFrac": 35.78
+   }
+  }
+ },
+ {
+  "siteId": "amundsen-1",
+  "lat": -83.9046,
+  "lon": 89.53545,
+  "mastM": 10,
+  "sunCentre": 1.65,
+  "sunEdge": 3.67,
+  "sunFull": 0.45,
+  "sunMeanFrac": 1.75,
+  "earthEdge": 38.14,
+  "earthCentre": 32.96,
+  "earthFull": 27.18,
+  "earthMeanFrac": 32.88,
+  "perYear": {
+   "2026": {
+    "sunCentre": 1.77,
+    "sunEdge": 3.85,
+    "sunFull": 0.51,
+    "sunMeanFrac": 1.89,
+    "earthEdge": 34.51,
+    "earthCentre": 29.5,
+    "earthFull": 23.87,
+    "earthMeanFrac": 29.41
+   },
+   "2027": {
+    "sunCentre": 1.72,
+    "sunEdge": 3.9,
+    "sunFull": 0.49,
+    "sunMeanFrac": 1.83,
+    "earthEdge": 34.85,
+    "earthCentre": 29.25,
+    "earthFull": 22.92,
+    "earthMeanFrac": 29.14
+   },
+   "2028": {
+    "sunCentre": 1.62,
+    "sunEdge": 3.56,
+    "sunFull": 0.43,
+    "sunMeanFrac": 1.72,
+    "earthEdge": 41.18,
+    "earthCentre": 35.42,
+    "earthFull": 28.87,
+    "earthMeanFrac": 35.34
+   },
+   "2029": {
+    "sunCentre": 1.54,
+    "sunEdge": 3.46,
+    "sunFull": 0.42,
+    "sunMeanFrac": 1.65,
+    "earthEdge": 39.53,
+    "earthCentre": 34.73,
+    "earthFull": 29.46,
+    "earthMeanFrac": 34.67
+   },
+   "2030": {
+    "sunCentre": 1.62,
+    "sunEdge": 3.56,
+    "sunFull": 0.41,
+    "sunMeanFrac": 1.66,
+    "earthEdge": 40.62,
+    "earthCentre": 35.88,
+    "earthFull": 30.74,
+    "earthMeanFrac": 35.82
+   }
+  }
+ },
+ {
+  "siteId": "idelson-l-crater-1",
+  "lat": -84.5397,
+  "lon": 126.9045,
+  "mastM": 2,
+  "sunCentre": 22.15,
+  "sunEdge": 25.26,
+  "sunFull": 18.93,
+  "sunMeanFrac": 22.15,
+  "earthEdge": 25.45,
+  "earthCentre": 17.98,
+  "earthFull": 4.81,
+  "earthMeanFrac": 17.22,
+  "perYear": {
+   "2026": {
+    "sunCentre": 21.62,
+    "sunEdge": 24.57,
+    "sunFull": 18.85,
+    "sunMeanFrac": 21.71,
+    "earthEdge": 22.76,
+    "earthCentre": 15.24,
+    "earthFull": 0.79,
+    "earthMeanFrac": 14.32
+   },
+   "2027": {
+    "sunCentre": 24.14,
+    "sunEdge": 26.74,
+    "sunFull": 20.55,
+    "sunMeanFrac": 23.98,
+    "earthEdge": 22.11,
+    "earthCentre": 14.13,
+    "earthFull": 0.0,
+    "earthMeanFrac": 12.97
+   },
+   "2028": {
+    "sunCentre": 22.05,
+    "sunEdge": 25.61,
+    "sunFull": 18.65,
+    "sunMeanFrac": 22.08,
+    "earthEdge": 26.92,
+    "earthCentre": 18.29,
+    "earthFull": 1.25,
+    "earthMeanFrac": 17.33
+   },
+   "2029": {
+    "sunCentre": 21.19,
+    "sunEdge": 24.21,
+    "sunFull": 18.53,
+    "sunMeanFrac": 21.19,
+    "earthEdge": 27.26,
+    "earthCentre": 20.33,
+    "earthFull": 9.18,
+    "earthMeanFrac": 19.9
+   },
+   "2030": {
+    "sunCentre": 21.77,
+    "sunEdge": 25.17,
+    "sunFull": 18.06,
+    "sunMeanFrac": 21.79,
+    "earthEdge": 28.2,
+    "earthCentre": 21.91,
+    "earthFull": 12.85,
+    "earthMeanFrac": 21.58
+   }
+  }
+ },
+ {
+  "siteId": "idelson-l-crater-1",
+  "lat": -84.5397,
+  "lon": 126.9045,
+  "mastM": 10,
+  "sunCentre": 22.75,
+  "sunEdge": 25.77,
+  "sunFull": 19.54,
+  "sunMeanFrac": 22.71,
+  "earthEdge": 27.35,
+  "earthCentre": 20.48,
+  "earthFull": 9.17,
+  "earthMeanFrac": 20.04,
+  "perYear": {
+   "2026": {
+    "sunCentre": 22.16,
+    "sunEdge": 24.98,
+    "sunFull": 19.44,
+    "sunMeanFrac": 22.23,
+    "earthEdge": 24.54,
+    "earthCentre": 17.69,
+    "earthFull": 5.39,
+    "earthMeanFrac": 17.16
+   },
+   "2027": {
+    "sunCentre": 24.77,
+    "sunEdge": 27.23,
+    "sunFull": 21.21,
+    "sunMeanFrac": 24.53,
+    "earthEdge": 24.0,
+    "earthCentre": 16.72,
+    "earthFull": 2.32,
+    "earthMeanFrac": 16.1
+   },
+   "2028": {
+    "sunCentre": 22.56,
+    "sunEdge": 26.15,
+    "sunFull": 19.3,
+    "sunMeanFrac": 22.67,
+    "earthEdge": 29.08,
+    "earthCentre": 21.23,
+    "earthFull": 8.05,
+    "earthMeanFrac": 20.72
+   },
+   "2029": {
+    "sunCentre": 21.85,
+    "sunEdge": 24.87,
+    "sunFull": 19.02,
+    "sunMeanFrac": 21.73,
+    "earthEdge": 29.17,
+    "earthCentre": 22.73,
+    "earthFull": 13.9,
+    "earthMeanFrac": 22.45
+   },
+   "2030": {
+    "sunCentre": 22.42,
+    "sunEdge": 25.64,
+    "sunFull": 18.74,
+    "sunMeanFrac": 22.41,
+    "earthEdge": 29.93,
+    "earthCentre": 24.01,
+    "earthFull": 16.2,
+    "earthMeanFrac": 23.79
+   }
+  }
+ },
+ {
+  "siteId": "malapert-crater-1",
+  "lat": -84.8034,
+  "lon": 8.387032,
+  "mastM": 2,
+  "sunCentre": 8.84,
+  "sunEdge": 10.09,
+  "sunFull": 7.4,
+  "sunMeanFrac": 8.8,
+  "earthEdge": 52.78,
+  "earthCentre": 48.27,
+  "earthFull": 43.68,
+  "earthMeanFrac": 48.26,
+  "perYear": {
+   "2026": {
+    "sunCentre": 9.65,
+    "sunEdge": 11.04,
+    "sunFull": 8.2,
+    "sunMeanFrac": 9.61,
+    "earthEdge": 49.03,
+    "earthCentre": 44.5,
+    "earthFull": 39.85,
+    "earthMeanFrac": 44.48
+   },
+   "2027": {
+    "sunCentre": 8.5,
+    "sunEdge": 9.62,
+    "sunFull": 7.03,
+    "sunMeanFrac": 8.43,
+    "earthEdge": 50.88,
+    "earthCentre": 46.2,
+    "earthFull": 41.38,
+    "earthMeanFrac": 46.17
+   },
+   "2028": {
+    "sunCentre": 8.77,
+    "sunEdge": 10.01,
+    "sunFull": 7.16,
+    "sunMeanFrac": 8.69,
+    "earthEdge": 56.38,
+    "earthCentre": 51.83,
+    "earthFull": 47.19,
+    "earthMeanFrac": 51.83
+   },
+   "2029": {
+    "sunCentre": 8.8,
+    "sunEdge": 10.21,
+    "sunFull": 7.61,
+    "sunMeanFrac": 8.85,
+    "earthEdge": 53.57,
+    "earthCentre": 49.17,
+    "earthFull": 44.75,
+    "earthMeanFrac": 49.16
+   },
+   "2030": {
+    "sunCentre": 8.48,
+    "sunEdge": 9.58,
+    "sunFull": 7.01,
+    "sunMeanFrac": 8.45,
+    "earthEdge": 54.04,
+    "earthCentre": 49.66,
+    "earthFull": 45.21,
+    "earthMeanFrac": 49.66
+   }
+  }
+ },
+ {
+  "siteId": "malapert-crater-1",
+  "lat": -84.8034,
+  "lon": 8.387032,
+  "mastM": 10,
+  "sunCentre": 8.91,
+  "sunEdge": 10.17,
+  "sunFull": 7.51,
+  "sunMeanFrac": 8.89,
+  "earthEdge": 52.86,
+  "earthCentre": 48.33,
+  "earthFull": 43.75,
+  "earthMeanFrac": 48.33,
+  "perYear": {
+   "2026": {
+    "sunCentre": 9.74,
+    "sunEdge": 11.12,
+    "sunFull": 8.3,
+    "sunMeanFrac": 9.69,
+    "earthEdge": 49.13,
+    "earthCentre": 44.54,
+    "earthFull": 39.93,
+    "earthMeanFrac": 44.55
+   },
+   "2027": {
+    "sunCentre": 8.55,
+    "sunEdge": 9.67,
+    "sunFull": 7.12,
+    "sunMeanFrac": 8.51,
+    "earthEdge": 50.98,
+    "earthCentre": 46.27,
+    "earthFull": 41.43,
+    "earthMeanFrac": 46.24
+   },
+   "2028": {
+    "sunCentre": 8.82,
+    "sunEdge": 10.14,
+    "sunFull": 7.31,
+    "sunMeanFrac": 8.78,
+    "earthEdge": 56.42,
+    "earthCentre": 51.88,
+    "earthFull": 47.3,
+    "earthMeanFrac": 51.9
+   },
+   "2029": {
+    "sunCentre": 8.89,
+    "sunEdge": 10.31,
+    "sunFull": 7.68,
+    "sunMeanFrac": 8.93,
+    "earthEdge": 53.66,
+    "earthCentre": 49.24,
+    "earthFull": 44.82,
+    "earthMeanFrac": 49.23
+   },
+   "2030": {
+    "sunCentre": 8.54,
+    "sunEdge": 9.63,
+    "sunFull": 7.12,
+    "sunMeanFrac": 8.52,
+    "earthEdge": 54.06,
+    "earthCentre": 49.71,
+    "earthFull": 45.25,
+    "earthMeanFrac": 49.72
+   }
+  }
+ },
+ {
+  "siteId": "peak-near-shackleton",
+  "lat": -88.811,
+  "lon": 123.6901,
+  "mastM": 2,
+  "sunCentre": 72.92,
+  "sunEdge": 80.77,
+  "sunFull": 66.8,
+  "sunMeanFrac": 73.26,
+  "earthEdge": 61.29,
+  "earthCentre": 56.61,
+  "earthFull": 52.04,
+  "earthMeanFrac": 56.64,
+  "perYear": {
+   "2026": {
+    "sunCentre": 72.52,
+    "sunEdge": 80.73,
+    "sunFull": 67.65,
+    "sunMeanFrac": 73.4,
+    "earthEdge": 57.33,
+    "earthCentre": 52.37,
+    "earthFull": 47.55,
+    "earthMeanFrac": 52.41
+   },
+   "2027": {
+    "sunCentre": 73.07,
+    "sunEdge": 81.02,
+    "sunFull": 67.41,
+    "sunMeanFrac": 73.42,
+    "earthEdge": 60.56,
+    "earthCentre": 55.8,
+    "earthFull": 51.07,
+    "earthMeanFrac": 55.81
+   },
+   "2028": {
+    "sunCentre": 74.21,
+    "sunEdge": 81.16,
+    "sunFull": 66.79,
+    "sunMeanFrac": 74.07,
+    "earthEdge": 64.55,
+    "earthCentre": 59.88,
+    "earthFull": 55.4,
+    "earthMeanFrac": 59.92
+   },
+   "2029": {
+    "sunCentre": 73.18,
+    "sunEdge": 80.16,
+    "sunFull": 65.75,
+    "sunMeanFrac": 73.05,
+    "earthEdge": 61.15,
+    "earthCentre": 56.46,
+    "earthFull": 52.01,
+    "earthMeanFrac": 56.52
+   },
+   "2030": {
+    "sunCentre": 71.62,
+    "sunEdge": 80.76,
+    "sunFull": 66.38,
+    "sunMeanFrac": 72.38,
+    "earthEdge": 62.85,
+    "earthCentre": 58.53,
+    "earthFull": 54.17,
+    "earthMeanFrac": 58.51
+   }
+  }
+ },
+ {
+  "siteId": "peak-near-shackleton",
+  "lat": -88.811,
+  "lon": 123.6901,
+  "mastM": 10,
+  "sunCentre": 85.49,
+  "sunEdge": 88.52,
+  "sunFull": 82.42,
+  "sunMeanFrac": 85.53,
+  "earthEdge": 61.31,
+  "earthCentre": 56.64,
+  "earthFull": 52.06,
+  "earthMeanFrac": 56.65,
+  "perYear": {
+   "2026": {
+    "sunCentre": 85.49,
+    "sunEdge": 88.26,
+    "sunFull": 82.51,
+    "sunMeanFrac": 85.53,
+    "earthEdge": 57.34,
+    "earthCentre": 52.4,
+    "earthFull": 47.56,
+    "earthMeanFrac": 52.42
+   },
+   "2027": {
+    "sunCentre": 85.49,
+    "sunEdge": 88.57,
+    "sunFull": 82.53,
+    "sunMeanFrac": 85.54,
+    "earthEdge": 60.58,
+    "earthCentre": 55.82,
+    "earthFull": 51.11,
+    "earthMeanFrac": 55.83
+   },
+   "2028": {
+    "sunCentre": 86.03,
+    "sunEdge": 88.83,
+    "sunFull": 82.53,
+    "sunMeanFrac": 85.85,
+    "earthEdge": 64.56,
+    "earthCentre": 59.92,
+    "earthFull": 55.42,
+    "earthMeanFrac": 59.93
+   },
+   "2029": {
+    "sunCentre": 84.87,
+    "sunEdge": 88.13,
+    "sunFull": 81.51,
+    "sunMeanFrac": 84.95,
+    "earthEdge": 61.18,
+    "earthCentre": 56.51,
+    "earthFull": 52.03,
+    "earthMeanFrac": 56.54
+   },
+   "2030": {
+    "sunCentre": 85.57,
+    "sunEdge": 88.79,
+    "sunFull": 83.03,
+    "sunMeanFrac": 85.77,
+    "earthEdge": 62.88,
+    "earthCentre": 58.55,
+    "earthFull": 54.19,
+    "earthMeanFrac": 58.52
+   }
+  }
+ },
+ {
+  "siteId": "de-gerlache-rim-1",
+  "lat": -88.6834,
+  "lon": -67.9321,
+  "mastM": 2,
+  "sunCentre": 63.78,
+  "sunEdge": 69.19,
+  "sunFull": 56.91,
+  "sunMeanFrac": 63.58,
+  "earthEdge": 61.87,
+  "earthCentre": 57.19,
+  "earthFull": 52.63,
+  "earthMeanFrac": 57.2,
+  "perYear": {
+   "2026": {
+    "sunCentre": 64.98,
+    "sunEdge": 69.58,
+    "sunFull": 57.75,
+    "sunMeanFrac": 64.7,
+    "earthEdge": 58.49,
+    "earthCentre": 53.84,
+    "earthFull": 49.38,
+    "earthMeanFrac": 53.85
+   },
+   "2027": {
+    "sunCentre": 64.16,
+    "sunEdge": 69.93,
+    "sunFull": 56.92,
+    "sunMeanFrac": 63.9,
+    "earthEdge": 59.84,
+    "earthCentre": 54.97,
+    "earthFull": 50.14,
+    "earthMeanFrac": 54.98
+   },
+   "2028": {
+    "sunCentre": 63.91,
+    "sunEdge": 70.69,
+    "sunFull": 58.12,
+    "sunMeanFrac": 64.2,
+    "earthEdge": 64.94,
+    "earthCentre": 60.42,
+    "earthFull": 56.08,
+    "earthMeanFrac": 60.43
+   },
+   "2029": {
+    "sunCentre": 63.37,
+    "sunEdge": 68.25,
+    "sunFull": 56.66,
+    "sunMeanFrac": 63.0,
+    "earthEdge": 63.65,
+    "earthCentre": 58.9,
+    "earthFull": 54.2,
+    "earthMeanFrac": 58.9
+   },
+   "2030": {
+    "sunCentre": 62.47,
+    "sunEdge": 67.49,
+    "sunFull": 55.11,
+    "sunMeanFrac": 62.11,
+    "earthEdge": 62.43,
+    "earthCentre": 57.81,
+    "earthFull": 53.31,
+    "earthMeanFrac": 57.8
+   }
+  }
+ },
+ {
+  "siteId": "de-gerlache-rim-1",
+  "lat": -88.6834,
+  "lon": -67.9321,
+  "mastM": 10,
+  "sunCentre": 76.84,
+  "sunEdge": 81.71,
+  "sunFull": 70.91,
+  "sunMeanFrac": 76.7,
+  "earthEdge": 61.9,
+  "earthCentre": 57.21,
+  "earthFull": 52.65,
+  "earthMeanFrac": 57.22,
+  "perYear": {
+   "2026": {
+    "sunCentre": 77.19,
+    "sunEdge": 82.04,
+    "sunFull": 71.08,
+    "sunMeanFrac": 77.04,
+    "earthEdge": 58.49,
+    "earthCentre": 53.87,
+    "earthFull": 49.39,
+    "earthMeanFrac": 53.88
+   },
+   "2027": {
+    "sunCentre": 77.27,
+    "sunEdge": 81.93,
+    "sunFull": 71.46,
+    "sunMeanFrac": 77.08,
+    "earthEdge": 59.9,
+    "earthCentre": 54.98,
+    "earthFull": 50.18,
+    "earthMeanFrac": 55.01
+   },
+   "2028": {
+    "sunCentre": 77.19,
+    "sunEdge": 82.04,
+    "sunFull": 71.62,
+    "sunMeanFrac": 77.23,
+    "earthEdge": 64.97,
+    "earthCentre": 60.44,
+    "earthFull": 56.1,
+    "earthMeanFrac": 60.46
+   },
+   "2029": {
+    "sunCentre": 76.91,
+    "sunEdge": 81.93,
+    "sunFull": 70.59,
+    "sunMeanFrac": 76.67,
+    "earthEdge": 63.66,
+    "earthCentre": 58.95,
+    "earthFull": 54.25,
+    "earthMeanFrac": 58.93
+   },
+   "2030": {
+    "sunCentre": 75.62,
+    "sunEdge": 80.61,
+    "sunFull": 69.79,
+    "sunMeanFrac": 75.48,
+    "earthEdge": 62.45,
+    "earthCentre": 57.82,
+    "earthFull": 53.33,
+    "earthMeanFrac": 57.83
+   }
+  }
+ },
+ {
+  "siteId": "leibnitz-beta-plateau",
+  "lat": -85.4266,
+  "lon": 31.74276,
+  "mastM": 2,
+  "sunCentre": 21.25,
+  "sunEdge": 25.15,
+  "sunFull": 17.34,
+  "sunMeanFrac": 21.22,
+  "earthEdge": 42.77,
+  "earthCentre": 38.03,
+  "earthFull": 32.98,
+  "earthMeanFrac": 37.99,
+  "perYear": {
+   "2026": {
+    "sunCentre": 22.28,
+    "sunEdge": 25.95,
+    "sunFull": 18.36,
+    "sunMeanFrac": 22.18,
+    "earthEdge": 39.38,
+    "earthCentre": 34.74,
+    "earthFull": 29.77,
+    "earthMeanFrac": 34.7
+   },
+   "2027": {
+    "sunCentre": 22.17,
+    "sunEdge": 26.32,
+    "sunFull": 18.05,
+    "sunMeanFrac": 22.17,
+    "earthEdge": 40.73,
+    "earthCentre": 36.11,
+    "earthFull": 31.39,
+    "earthMeanFrac": 36.1
+   },
+   "2028": {
+    "sunCentre": 20.38,
+    "sunEdge": 24.09,
+    "sunFull": 16.47,
+    "sunMeanFrac": 20.25,
+    "earthEdge": 46.38,
+    "earthCentre": 41.69,
+    "earthFull": 36.58,
+    "earthMeanFrac": 41.64
+   },
+   "2029": {
+    "sunCentre": 20.97,
+    "sunEdge": 25.1,
+    "sunFull": 17.02,
+    "sunMeanFrac": 21.03,
+    "earthEdge": 43.86,
+    "earthCentre": 39.11,
+    "earthFull": 34.02,
+    "earthMeanFrac": 39.07
+   },
+   "2030": {
+    "sunCentre": 20.46,
+    "sunEdge": 24.32,
+    "sunFull": 16.82,
+    "sunMeanFrac": 20.47,
+    "earthEdge": 43.46,
+    "earthCentre": 38.47,
+    "earthFull": 33.11,
+    "earthMeanFrac": 38.42
+   }
+  }
+ },
+ {
+  "siteId": "leibnitz-beta-plateau",
+  "lat": -85.4266,
+  "lon": 31.74276,
+  "mastM": 10,
+  "sunCentre": 38.82,
+  "sunEdge": 46.31,
+  "sunFull": 32.21,
+  "sunMeanFrac": 38.81,
+  "earthEdge": 51.03,
+  "earthCentre": 46.54,
+  "earthFull": 41.97,
+  "earthMeanFrac": 46.54,
+  "perYear": {
+   "2026": {
+    "sunCentre": 40.06,
+    "sunEdge": 47.75,
+    "sunFull": 34.01,
+    "sunMeanFrac": 40.09,
+    "earthEdge": 47.48,
+    "earthCentre": 43.06,
+    "earthFull": 38.48,
+    "earthMeanFrac": 43.02
+   },
+   "2027": {
+    "sunCentre": 39.79,
+    "sunEdge": 47.58,
+    "sunFull": 32.99,
+    "sunMeanFrac": 40.08,
+    "earthEdge": 48.79,
+    "earthCentre": 44.43,
+    "earthFull": 40.05,
+    "earthMeanFrac": 44.45
+   },
+   "2028": {
+    "sunCentre": 37.75,
+    "sunEdge": 44.29,
+    "sunFull": 30.82,
+    "sunMeanFrac": 37.37,
+    "earthEdge": 54.5,
+    "earthCentre": 50.16,
+    "earthFull": 45.71,
+    "earthMeanFrac": 50.17
+   },
+   "2029": {
+    "sunCentre": 39.37,
+    "sunEdge": 46.64,
+    "sunFull": 32.26,
+    "sunMeanFrac": 39.22,
+    "earthEdge": 52.19,
+    "earthCentre": 47.65,
+    "earthFull": 43.13,
+    "earthMeanFrac": 47.66
+   },
+   "2030": {
+    "sunCentre": 37.16,
+    "sunEdge": 45.31,
+    "sunFull": 31.0,
+    "sunMeanFrac": 37.29,
+    "earthEdge": 52.18,
+    "earthCentre": 47.39,
+    "earthFull": 42.49,
+    "earthMeanFrac": 47.37
+   }
+  }
+ },
+ {
+  "siteId": "de-gerlache-kocher-massif",
+  "lat": -85.8296,
+  "lon": -116.322,
+  "mastM": 2,
+  "sunCentre": 78.81,
+  "sunEdge": 82.09,
+  "sunFull": 75.69,
+  "sunMeanFrac": 78.84,
+  "earthEdge": 61.03,
+  "earthCentre": 56.37,
+  "earthFull": 51.81,
+  "earthMeanFrac": 56.38,
+  "perYear": {
+   "2026": {
+    "sunCentre": 79.35,
+    "sunEdge": 82.15,
+    "sunFull": 75.95,
+    "sunMeanFrac": 79.21,
+    "earthEdge": 58.74,
+    "earthCentre": 54.22,
+    "earthFull": 49.69,
+    "earthMeanFrac": 54.23
+   },
+   "2027": {
+    "sunCentre": 79.26,
+    "sunEdge": 82.55,
+    "sunFull": 76.12,
+    "sunMeanFrac": 79.3,
+    "earthEdge": 56.89,
+    "earthCentre": 52.15,
+    "earthFull": 47.67,
+    "earthMeanFrac": 52.19
+   },
+   "2028": {
+    "sunCentre": 77.5,
+    "sunEdge": 81.57,
+    "sunFull": 74.8,
+    "sunMeanFrac": 77.77,
+    "earthEdge": 64.2,
+    "earthCentre": 59.97,
+    "earthFull": 55.76,
+    "earthMeanFrac": 59.99
+   },
+   "2029": {
+    "sunCentre": 79.28,
+    "sunEdge": 82.42,
+    "sunFull": 76.07,
+    "sunMeanFrac": 79.25,
+    "earthEdge": 63.56,
+    "earthCentre": 58.94,
+    "earthFull": 54.45,
+    "earthMeanFrac": 58.95
+   },
+   "2030": {
+    "sunCentre": 78.66,
+    "sunEdge": 81.76,
+    "sunFull": 75.51,
+    "sunMeanFrac": 78.67,
+    "earthEdge": 61.74,
+    "earthCentre": 56.53,
+    "earthFull": 51.46,
+    "earthMeanFrac": 56.54
+   }
+  }
+ },
+ {
+  "siteId": "de-gerlache-kocher-massif",
+  "lat": -85.8296,
+  "lon": -116.322,
+  "mastM": 10,
+  "sunCentre": 79.11,
+  "sunEdge": 82.35,
+  "sunFull": 76.09,
+  "sunMeanFrac": 79.18,
+  "earthEdge": 61.06,
+  "earthCentre": 56.39,
+  "earthFull": 51.84,
+  "earthMeanFrac": 56.41,
+  "perYear": {
+   "2026": {
+    "sunCentre": 79.54,
+    "sunEdge": 82.37,
+    "sunFull": 76.52,
+    "sunMeanFrac": 79.55,
+    "earthEdge": 58.79,
+    "earthCentre": 54.28,
+    "earthFull": 49.76,
+    "earthMeanFrac": 54.27
+   },
+   "2027": {
+    "sunCentre": 79.61,
+    "sunEdge": 82.83,
+    "sunFull": 76.51,
+    "sunMeanFrac": 79.65,
+    "earthEdge": 56.91,
+    "earthCentre": 52.15,
+    "earthFull": 47.68,
+    "earthMeanFrac": 52.2
+   },
+   "2028": {
+    "sunCentre": 77.95,
+    "sunEdge": 81.84,
+    "sunFull": 74.99,
+    "sunMeanFrac": 78.11,
+    "earthEdge": 64.22,
+    "earthCentre": 59.97,
+    "earthFull": 55.78,
+    "earthMeanFrac": 60.0
+   },
+   "2029": {
+    "sunCentre": 79.57,
+    "sunEdge": 82.73,
+    "sunFull": 76.48,
+    "sunMeanFrac": 79.58,
+    "earthEdge": 63.62,
+    "earthCentre": 59.02,
+    "earthFull": 54.52,
+    "earthMeanFrac": 59.03
+   },
+   "2030": {
+    "sunCentre": 78.87,
+    "sunEdge": 82.0,
+    "sunFull": 75.96,
+    "sunMeanFrac": 79.0,
+    "earthEdge": 61.75,
+    "earthCentre": 56.54,
+    "earthFull": 51.46,
+    "earthMeanFrac": 56.56
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker",
+  "lat": -87.1835,
+  "lon": 62.83502,
+  "mastM": 2,
+  "sunCentre": 33.27,
+  "sunEdge": 35.16,
+  "sunFull": 31.42,
+  "sunMeanFrac": 33.27,
+  "earthEdge": 44.45,
+  "earthCentre": 39.75,
+  "earthFull": 34.82,
+  "earthMeanFrac": 39.72,
+  "perYear": {
+   "2026": {
+    "sunCentre": 32.84,
+    "sunEdge": 34.74,
+    "sunFull": 31.05,
+    "sunMeanFrac": 32.82,
+    "earthEdge": 41.02,
+    "earthCentre": 36.28,
+    "earthFull": 31.31,
+    "earthMeanFrac": 36.25
+   },
+   "2027": {
+    "sunCentre": 33.36,
+    "sunEdge": 34.81,
+    "sunFull": 31.37,
+    "sunMeanFrac": 33.25,
+    "earthEdge": 42.19,
+    "earthCentre": 37.72,
+    "earthFull": 33.18,
+    "earthMeanFrac": 37.72
+   },
+   "2028": {
+    "sunCentre": 34.84,
+    "sunEdge": 36.78,
+    "sunFull": 33.09,
+    "sunMeanFrac": 34.87,
+    "earthEdge": 48.16,
+    "earthCentre": 43.33,
+    "earthFull": 38.17,
+    "earthMeanFrac": 43.3
+   },
+   "2029": {
+    "sunCentre": 32.1,
+    "sunEdge": 34.55,
+    "sunFull": 30.58,
+    "sunMeanFrac": 32.31,
+    "earthEdge": 45.81,
+    "earthCentre": 41.22,
+    "earthFull": 36.32,
+    "earthMeanFrac": 41.18
+   },
+   "2030": {
+    "sunCentre": 33.18,
+    "sunEdge": 34.9,
+    "sunFull": 31.0,
+    "sunMeanFrac": 33.07,
+    "earthEdge": 45.05,
+    "earthCentre": 40.17,
+    "earthFull": 35.07,
+    "earthMeanFrac": 40.14
+   }
+  }
+ },
+ {
+  "siteId": "shoemaker",
+  "lat": -87.1835,
+  "lon": 62.83502,
+  "mastM": 10,
+  "sunCentre": 36.47,
+  "sunEdge": 38.84,
+  "sunFull": 34.39,
+  "sunMeanFrac": 36.52,
+  "earthEdge": 44.65,
+  "earthCentre": 39.99,
+  "earthFull": 35.08,
+  "earthMeanFrac": 39.96,
+  "perYear": {
+   "2026": {
+    "sunCentre": 36.02,
+    "sunEdge": 38.38,
+    "sunFull": 33.78,
+    "sunMeanFrac": 35.99,
+    "earthEdge": 41.42,
+    "earthCentre": 36.74,
+    "earthFull": 31.74,
+    "earthMeanFrac": 36.67
+   },
+   "2027": {
+    "sunCentre": 36.69,
+    "sunEdge": 38.76,
+    "sunFull": 35.15,
+    "sunMeanFrac": 36.76,
+    "earthEdge": 42.24,
+    "earthCentre": 37.82,
+    "earthFull": 33.39,
+    "earthMeanFrac": 37.82
+   },
+   "2028": {
+    "sunCentre": 38.14,
+    "sunEdge": 40.32,
+    "sunFull": 35.79,
+    "sunMeanFrac": 38.04,
+    "earthEdge": 48.39,
+    "earthCentre": 43.7,
+    "earthFull": 38.6,
+    "earthMeanFrac": 43.62
+   },
+   "2029": {
+    "sunCentre": 35.25,
+    "sunEdge": 38.01,
+    "sunFull": 33.18,
+    "sunMeanFrac": 35.54,
+    "earthEdge": 46.1,
+    "earthCentre": 41.45,
+    "earthFull": 36.53,
+    "earthMeanFrac": 41.43
+   },
+   "2030": {
+    "sunCentre": 36.26,
+    "sunEdge": 38.72,
+    "sunFull": 34.03,
+    "sunMeanFrac": 36.26,
+    "earthEdge": 45.11,
+    "earthCentre": 40.22,
+    "earthFull": 35.11,
+    "earthMeanFrac": 40.23
+   }
+  }
+ },
+ {
+  "siteId": "connecting-ridge-extension",
+  "lat": -89.0324,
+  "lon": -101.999,
+  "mastM": 2,
+  "sunCentre": 33.55,
+  "sunEdge": 35.77,
+  "sunFull": 31.03,
+  "sunMeanFrac": 33.46,
+  "earthEdge": 0.0,
+  "earthCentre": 0.0,
+  "earthFull": 0.0,
+  "earthMeanFrac": 0.0,
+  "perYear": {
+   "2026": {
+    "sunCentre": 32.66,
+    "sunEdge": 34.78,
+    "sunFull": 30.16,
+    "sunMeanFrac": 32.58,
+    "earthEdge": 0.0,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.0
+   },
+   "2027": {
+    "sunCentre": 35.35,
+    "sunEdge": 37.45,
+    "sunFull": 32.74,
+    "sunMeanFrac": 35.21,
+    "earthEdge": 0.0,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.0
+   },
+   "2028": {
+    "sunCentre": 32.56,
+    "sunEdge": 35.01,
+    "sunFull": 30.12,
+    "sunMeanFrac": 32.54,
+    "earthEdge": 0.0,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.0
+   },
+   "2029": {
+    "sunCentre": 32.76,
+    "sunEdge": 35.01,
+    "sunFull": 30.35,
+    "sunMeanFrac": 32.7,
+    "earthEdge": 0.0,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.0
+   },
+   "2030": {
+    "sunCentre": 34.42,
+    "sunEdge": 36.59,
+    "sunFull": 31.79,
+    "sunMeanFrac": 34.29,
+    "earthEdge": 0.0,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.0
+   }
+  }
+ },
+ {
+  "siteId": "connecting-ridge-extension",
+  "lat": -89.0324,
+  "lon": -101.999,
+  "mastM": 10,
+  "sunCentre": 36.65,
+  "sunEdge": 39.18,
+  "sunFull": 33.89,
+  "sunMeanFrac": 36.6,
+  "earthEdge": 7.66,
+  "earthCentre": 0.52,
+  "earthFull": 0.0,
+  "earthMeanFrac": 1.59,
+  "perYear": {
+   "2026": {
+    "sunCentre": 35.67,
+    "sunEdge": 38.06,
+    "sunFull": 32.84,
+    "sunMeanFrac": 35.6,
+    "earthEdge": 5.84,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.46
+   },
+   "2027": {
+    "sunCentre": 38.39,
+    "sunEdge": 40.87,
+    "sunFull": 35.63,
+    "sunMeanFrac": 38.32,
+    "earthEdge": 0.0,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.0
+   },
+   "2028": {
+    "sunCentre": 35.97,
+    "sunEdge": 38.65,
+    "sunFull": 33.24,
+    "sunMeanFrac": 35.91,
+    "earthEdge": 2.15,
+    "earthCentre": 0.0,
+    "earthFull": 0.0,
+    "earthMeanFrac": 0.15
+   },
+   "2029": {
+    "sunCentre": 35.76,
+    "sunEdge": 38.41,
+    "sunFull": 33.2,
+    "sunMeanFrac": 35.82,
+    "earthEdge": 13.44,
+    "earthCentre": 0.4,
+    "earthFull": 0.0,
+    "earthMeanFrac": 2.53
+   },
+   "2030": {
+    "sunCentre": 37.44,
+    "sunEdge": 39.92,
+    "sunFull": 34.53,
+    "sunMeanFrac": 37.35,
+    "earthEdge": 16.89,
+    "earthCentre": 2.21,
+    "earthFull": 0.0,
+    "earthMeanFrac": 4.81
+   }
+  }
+ }
+]
