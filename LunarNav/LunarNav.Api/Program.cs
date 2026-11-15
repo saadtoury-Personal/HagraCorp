@@ -19,7 +19,10 @@ var demPath = builder.Configuration["DemPath"] ?? Path.Combine(builder.Environme
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddSingleton(new AppData(dataDir, demPath));
+var appData = new AppData(dataDir, demPath);
+builder.Services.AddSingleton(appData);
+
+builder.Services.AddSingleton(new MoonService(new HttpClient { Timeout = TimeSpan.FromSeconds(3) }, appData));
 
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
@@ -41,6 +44,12 @@ api.MapGet("/about", () => Results.Ok(new
 {
     precision = new[]
     {
+        "Sun up = the Sun's upper edge is above the terrain (no atmosphere, so no refraction). Earth in view = any part of the Earth is visible. Other rules: sunRule=edge|center|full, earthRule=any|center on /metrics.",
+        "Each disk is cut into 16 vertical bands compared with the real skyline at their own azimuth; the Sun's size follows the Earth-Sun distance (0.262 to 0.272 deg).",
+        "Every verdict on /metrics and /fallback is recomputed with the whole skyline raised and lowered by 0.2 deg: closeCall = the verdict can flip.",
+        "Sites without a relief map (Apollo 11) use a flat skyline and are never ranked above a site with real relief.",
+        "Stay statistics on /metrics use 10-minute steps; windows and the heatmap use 1-hour steps. Lunar eclipses (Earth in front of the Sun) dim the Sun.",
+        "dsnPct = share of the stay with the Earth in view and the Moon above 10 deg at Goldstone, Madrid or Canberra (Moon position to about 0.3 deg).",
         "Sun and Earth directions match JPL Horizons within 0.006 deg.",
         "Results are for an observer 2 m (or 10 m) above one 80 m terrain pixel, not a whole region: moving a few hundred metres can change Sun % by tens of points.",
         "Percentages are good to about +-5 points; rise and set times to about +-2 h (up to +-4 h when the Sun grazes the horizon).",
@@ -70,18 +79,65 @@ api.MapGet("/sites/{id}/mask", (string id, AppData data, int mast = 2) =>
     return Results.Ok(mask);
 }).WithName("GetSiteMask");
 
-api.MapGet("/sites/{id}/metrics", (string id, AppData data, DateTime? at, double stayDays = 14, int mast = 2) =>
+api.MapGet("/sites/{id}/metrics", (string id, AppData data, DateTime? at, double stayDays = 14, int mast = 2,
+    string sunRule = "edge", string earthRule = "any") =>
 {
     if (BadMast(mast) is { } bad)
         return bad;
+    if (!Enum.TryParse<SunRule>(sunRule, true, out var sr) || !Enum.TryParse<EarthRule>(earthRule, true, out var er))
+        return Results.BadRequest("sunRule must be edge|center|full and earthRule any|center");
     if (stayDays is <= 0 or > 60)
         return Results.BadRequest("stayDays must be in (0, 60]");
     var site = data.FindSite(id);
     if (site is null)
         return Results.NotFound($"unknown site '{id}'");
 
-    return Guard(() => Results.Ok(Analysis.Metrics(data.Ephemeris, site, data.MaskOrFlat(site, mast), Utc(at), stayDays)));
+    return Guard(() => Results.Ok(Analysis.Metrics(data.Ephemeris, site, data.MaskOrFlat(site, mast), Utc(at), stayDays,
+        sr, er, Analysis.HorizonMarginDeg)));
 }).WithName("GetSiteMetrics");
+
+api.MapGet("/sites/{id}/battery", (string id, AppData data, DateTime? at, double stayDays = 14, int mast = 2,
+    double capacityWh = 5000, double loadW = 150, double panelM2 = 2, double efficiency = 0.28, double minSocPct = 20) =>
+{
+    if (BadMast(mast) is { } bad)
+        return bad;
+    if (stayDays is <= 0 or > 60 || capacityWh <= 0 || loadW < 0 || panelM2 < 0 || efficiency is < 0 or > 1 || minSocPct is < 0 or >= 100)
+        return Results.BadRequest("need stayDays in (0, 60], capacityWh > 0, loadW >= 0, panelM2 >= 0, efficiency in [0, 1], minSocPct in [0, 100)");
+    var site = data.FindSite(id);
+    if (site is null)
+        return Results.NotFound($"unknown site '{id}'");
+
+    var p = new BatteryParams(capacityWh, loadW, panelM2, efficiency, minSocPct);
+    return Guard(() => Results.Ok(Analysis.Battery(data.Ephemeris, site, data.MaskOrFlat(site, mast), Utc(at), stayDays, p)));
+}).WithName("GetSiteBattery");
+
+api.MapGet("/sites/{id}/uncertainty", (string id, AppData data, int mast = 2) =>
+{
+    if (BadMast(mast) is { } bad)
+        return bad;
+    var site = data.FindSite(id);
+    if (site is null)
+        return Results.NotFound($"unknown site '{id}'");
+    if (!site.Terrain)
+        return Results.NotFound($"'{id}' is outside the relief map: no position uncertainty");
+    return data.Uncertainty(site.Id, mast) is { } u ? Results.Ok(u) : Results.NotFound("uncertainty not computed yet (run precompute)");
+}).WithName("GetSiteUncertainty");
+
+api.MapGet("/sites/{id}/blockers", (string id, AppData data, DateTime? from, DateTime? to, int mast = 2) =>
+{
+    if (BadMast(mast) is { } bad)
+        return bad;
+    var site = data.FindSite(id);
+    if (site is null)
+        return Results.NotFound($"unknown site '{id}'");
+
+    return Guard(() =>
+    {
+        var start = from is null ? data.Ephemeris.Start : Utc(from);
+        var end = to is null ? data.Ephemeris.End : Utc(to);
+        return Results.Ok(Analysis.Blockers(data.Ephemeris, site, data.MaskOrFlat(site, 2), data.MaskOrFlat(site, 10), mast, start, end));
+    });
+}).WithName("GetSiteBlockers");
 
 api.MapGet("/sites/{id}/timeline", (string id, AppData data, DateTime? from, int days = 30, int stepMinutes = 60, int mast = 2) =>
 {
@@ -105,7 +161,7 @@ api.MapGet("/heatmap", (AppData data, int mast = 2) =>
     return data.Heatmap(mast) is { } heat ? Results.Ok(heat) : Results.NotFound("heatmap not computed yet");
 }).WithName("GetHeatmap");
 
-api.MapGet("/fallback", (AppData data, DateTime date, int slipWeeks = 0, double stayDays = 14, bool requireEarth = false, int mast = 2) =>
+api.MapGet("/fallback", (AppData data, DateTime date, int slipWeeks = 0, double stayDays = 14, bool requireEarth = true, int mast = 2) =>
 {
     if (BadMast(mast) is { } bad)
         return bad;
@@ -114,8 +170,30 @@ api.MapGet("/fallback", (AppData data, DateTime date, int slipWeeks = 0, double 
     if (data.Heatmap(mast) is not { } heat)
         return Results.NotFound("heatmap not computed yet");
 
-    return Guard(() => Results.Ok(Analysis.BestFallback(heat, Utc(date), slipWeeks, stayDays, requireEarth)));
+    var sites = heat.Sites.Select(id => data.FindSite(id)!).ToArray();
+    return Guard(() => Results.Ok(Analysis.BestFallback(heat, Utc(date), slipWeeks, stayDays, requireEarth,
+        longestDark: (s, at) => Analysis.LongestDarkHours(data.Ephemeris, sites[s], data.MaskOrFlat(sites[s], mast), at, stayDays),
+        terrain: s => sites[s].Terrain,
+        closeCall: (s, at) =>
+        {
+            var mask = data.MaskOrFlat(sites[s], mast);
+            bool Viable(double shift) =>
+                Analysis.ViableAt(data.Ephemeris, sites[s], Analysis.Shift(mask, shift), at, stayDays, requireEarth);
+            return at.AddDays(stayDays + 1) > data.Ephemeris.End ? null : Viable(Analysis.HorizonMarginDeg) != Viable(-Analysis.HorizonMarginDeg);
+        })));
 }).WithName("GetFallback");
+
+api.MapGet("/ranking", (AppData data, DateTime date, double stayDays = 14, int mast = 2) =>
+{
+    if (BadMast(mast) is { } bad)
+        return bad;
+    if (stayDays is <= 0 or > 60)
+        return Results.BadRequest("stayDays must be in (0, 60]");
+
+    var sites = data.Sites.Where(s => s.Terrain).ToArray();   // S10: a flat skyline cannot compete with real relief
+    return Guard(() => Results.Ok(Analysis.Ranking(data.Ephemeris, sites, sites.Select(s => data.MaskOrFlat(s, mast)).ToArray(),
+        Utc(date), stayDays)));
+}).WithName("GetRanking");
 
 api.MapPost("/custom", (CustomRequest req, AppData data) =>
 {
@@ -131,6 +209,18 @@ api.MapPost("/custom", (CustomRequest req, AppData data) =>
         return Results.Ok(new CustomResponse(mask, Analysis.Metrics(data.Ephemeris, site, mask, Utc(req.At), 14)));
     });
 }).WithName("PostCustom");
+
+api.MapGet("/moon", async (MoonService moon, DateTime? at, CancellationToken ct) =>
+{
+    try
+    {
+        return Results.Ok(await moon.GetAsync(Utc(at), ct));
+    }
+    catch (ArgumentOutOfRangeException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+}).WithName("GetMoon");
 
 app.Run();
 return 0;
