@@ -86,6 +86,17 @@ public class ToolsTests : IDisposable
     }
 
     [Fact]
+    public void WriteManifest_UsesLfLineEndingsOnEveryOs()
+    {
+        // CRLF on Windows and LF on macOS rewrote every line of manifest.json and changed its hash for nothing.
+        File.WriteAllText(Path.Combine(_dir, "sites.json"), "abc");
+        Tools.WriteManifest(_dir);
+        var bytes = File.ReadAllBytes(Path.Combine(_dir, "manifest.json"));
+        Assert.Contains((byte)'\n', bytes);
+        Assert.DoesNotContain((byte)'\r', bytes);
+    }
+
+    [Fact]
     public void LoadDem_WrongSize_Throws()
     {
         var path = Path.Combine(_dir, "small.img");

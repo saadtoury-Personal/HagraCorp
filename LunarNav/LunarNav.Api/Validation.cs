@@ -253,10 +253,7 @@ public static class Validation
             },
             ["sites"] = new JsonArray(results.Select(r => (JsonNode)r).ToArray()),
         };
-        File.WriteAllText(outJson, outDoc.ToJsonString(new JsonSerializerOptions
-        {
-            WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        }));
+        File.WriteAllText(outJson, outDoc.ToJsonString(Tools.DataJson));
         Console.WriteLine($"sun {sunStat.Within}/{sunStat.N} within {tol} (median |d| {sunStat.MedianAbs}), earth {earthStat.Within}/{earthStat.N} (median |d| {earthStat.MedianAbs})");
         Console.WriteLine($"wrote {outJson}");
     }

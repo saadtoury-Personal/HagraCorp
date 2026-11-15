@@ -69,6 +69,16 @@ public static class Tools
         }
     }
 
+    /// <summary>Options for the indented JSON files we generate (manifest.json, validation.json). NewLine is fixed to "\n":
+    /// the default follows the OS, so a run on Windows wrote CRLF and a run on macOS LF, which rewrote every line of the file
+    /// and changed its SHA-256 for nothing. wwwroot/data is "-text" in .gitattributes, so git keeps these bytes as written.</summary>
+    public static readonly JsonSerializerOptions DataJson = new(JsonSerializerDefaults.Web)
+    {
+        WriteIndented = true,
+        NewLine = "\n",
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+    };
+
     /// <summary>One data file: its SHA-256, where it comes from and the command that produced it.</summary>
     public record ManifestEntry(string Path, long Bytes, string Sha256, string Source, string Command);
 
@@ -100,12 +110,7 @@ public static class Tools
             .ToList();
 
         var path = Path.Combine(dataDir, "manifest.json");
-        File.WriteAllText(path, JsonSerializer.Serialize(new { files = entries },
-            new JsonSerializerOptions(JsonSerializerDefaults.Web)
-            {
-                WriteIndented = true,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            }));
+        File.WriteAllText(path, JsonSerializer.Serialize(new { files = entries }, DataJson));
         Console.WriteLine($"wrote {path}");
         return entries;
     }
