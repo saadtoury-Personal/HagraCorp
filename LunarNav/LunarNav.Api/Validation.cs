@@ -176,16 +176,15 @@ public static class Validation
         int needSun = pass["sunSitesWithin5"]!.GetValue<int>(), needEarth = pass["earthSitesWithin5"]!.GetValue<int>();
         int problems = zero.Count(z => z.SunV == "problem") + zero.Count(z => z.EarthV == "problem");
 
-        var pyDiffs = results.SelectMany(r => r["masts"]!.AsArray()).Select(m => new
-        {
-            Mast = m!["mastM"]!.GetValue<int>(),
-            Sun = Math.Abs(m["diffPythonSun"]!.GetValue<double>()),
-            Earth = Math.Abs(m["diffPythonEarth"]!.GetValue<double>()),
-        }).ToList();
-        double maxPy = thresholds["csharpVsPython"]!["maxAbsDiffPoints"]!.GetValue<double>();
-        var portedDiffs = results.SelectMany(r => r["masts"]!.AsArray()).Select(m => (
-            Sun: Math.Abs(m!["diffPortedSun"]!.GetValue<double>()), Earth: Math.Abs(m["diffPortedEarth"]!.GetValue<double>()))).ToList();
-        double maxPorted = thresholds["csharpVsPortedPython"]!["maxAbsDiffPoints"]!.GetValue<double>();
+        // One reader for both C# / Python checks: "Python" = ours.json (registered rule), "Ported" = ours_ported.json.
+        (List<(int Mast, double Sun, double Earth)> Rows, double Max) Diffs(string field, string rule) => (
+            results.SelectMany(r => r["masts"]!.AsArray()).Select(m => (
+                m!["mastM"]!.GetValue<int>(),
+                Math.Abs(m[$"diff{field}Sun"]!.GetValue<double>()),
+                Math.Abs(m[$"diff{field}Earth"]!.GetValue<double>()))).ToList(),
+            thresholds[rule]!["maxAbsDiffPoints"]!.GetValue<double>());
+        var (pyDiffs, maxPy) = Diffs("Python", "csharpVsPython");
+        var (portedDiffs, maxPorted) = Diffs("Ported", "csharpVsPortedPython");
 
         JsonObject Control(string id, Func<int, double> sun)
         {
@@ -253,10 +252,7 @@ public static class Validation
             },
             ["sites"] = new JsonArray(results.Select(r => (JsonNode)r).ToArray()),
         };
-        File.WriteAllText(outJson, outDoc.ToJsonString(new JsonSerializerOptions
-        {
-            WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-        }));
+        File.WriteAllText(outJson, outDoc.ToJsonString(Tools.DataJson));
         Console.WriteLine($"sun {sunStat.Within}/{sunStat.N} within {tol} (median |d| {sunStat.MedianAbs}), earth {earthStat.Within}/{earthStat.N} (median |d| {earthStat.MedianAbs})");
         Console.WriteLine($"wrote {outJson}");
     }

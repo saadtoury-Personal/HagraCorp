@@ -18,8 +18,10 @@ public sealed class Ephemeris
     {
         if (samples.Count == 0)
             throw new ArgumentException("samples must not be empty", nameof(samples));
-        if ((samples[^1].Utc - samples[0].Utc).TotalHours != samples.Count - 1)
-            throw new ArgumentException("samples must be hourly with no gaps", nameof(samples));
+        // Every step, not only the total span: a duplicate plus a gap keeps the span right but breaks At().
+        for (int i = 1; i < samples.Count; i++)
+            if (samples[i].Utc - samples[i - 1].Utc != TimeSpan.FromHours(1))
+                throw new ArgumentException($"samples must be hourly with no gaps (row {i}: {samples[i - 1].Utc:u} -> {samples[i].Utc:u})", nameof(samples));
         Samples = samples;
     }
 

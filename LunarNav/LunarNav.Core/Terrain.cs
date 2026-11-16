@@ -70,13 +70,15 @@ public sealed class Dem
         }
 
         var (line, sample) = LatLonToPixel(latDeg, lonDeg);
-        int l0 = (int)Math.Floor(line);
-        int s0 = (int)Math.Floor(sample);
-        if (l0 < 0 || s0 < 0 || l0 + 1 >= _lines || s0 + 1 >= _samples)
+        // Check while still a double: near the north pole the pixel position is huge, and casting it to int
+        // overflows into a value that passes the bounds test below and then indexes outside the array.
+        if (!(line >= 0 && line < _lines - 1 && sample >= 0 && sample < _samples - 1))
         {
             heightM = 0;
             return false;
         }
+        int l0 = (int)Math.Floor(line);
+        int s0 = (int)Math.Floor(sample);
 
         double fl = line - l0;
         double fs = sample - s0;

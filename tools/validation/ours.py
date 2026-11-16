@@ -4,7 +4,8 @@ import json, os, sys
 import numpy as np
 np.seterr(all="ignore")  # macOS Accelerate raises spurious matmul warnings; results are asserted finite below
 
-REPO = os.environ.get("LUNARNAV", "/Users/saadtoury/dev/hagracorp-repo/LunarNav")
+# Default: the LunarNav folder of this repository (tools/validation/ -> ../../LunarNav). Override with LUNARNAV.
+REPO = os.environ.get("LUNARNAV", os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "LunarNav")))
 DATA = REPO + "/LunarNav.Web/wwwroot/data"
 R_MOON, R_EARTH, SUN_RAD = 1737.4, 6371.0, 0.2666
 

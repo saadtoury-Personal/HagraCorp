@@ -100,10 +100,12 @@ api.MapGet("/sites/{id}/metrics", (string id, AppData data, DateTime? at, double
 {
     if (BadMast(mast) is { } bad)
         return bad;
-    if (!Enum.TryParse<SunRule>(sunRule, true, out var sr) || !Enum.TryParse<EarthRule>(earthRule, true, out var er))
+    // TryParse also accepts numbers ("99"): IsDefined rejects values that are not a named rule.
+    if (!Enum.TryParse<SunRule>(sunRule, true, out var sr) || !Enum.TryParse<EarthRule>(earthRule, true, out var er)
+        || !Enum.IsDefined(sr) || !Enum.IsDefined(er))
         return Results.BadRequest("sunRule must be edge|center|full and earthRule any|center");
-    if (stayDays is <= 0 or > 60)
-        return Results.BadRequest("stayDays must be in (0, 60]");
+    if (BadStay(stayDays) is { } badStay)
+        return badStay;
     var site = data.FindSite(id);
     if (site is null)
         return Results.NotFound($"unknown site '{id}'");
@@ -117,8 +119,12 @@ api.MapGet("/sites/{id}/battery", (string id, AppData data, DateTime? at, double
 {
     if (BadMast(mast) is { } bad)
         return bad;
-    if (stayDays is <= 0 or > 60 || capacityWh <= 0 || loadW < 0 || panelM2 < 0 || efficiency is < 0 or > 1 || minSocPct is < 0 or >= 100)
-        return Results.BadRequest("need stayDays in (0, 60], capacityWh > 0, loadW >= 0, panelM2 >= 0, efficiency in [0, 1], minSocPct in [0, 100)");
+    if (BadStay(stayDays) is { } badStay)
+        return badStay;
+    // Written as "must be inside": every comparison with NaN is false, so NaN and Infinity are rejected too.
+    if (!(capacityWh > 0 && double.IsFinite(capacityWh)) || !(loadW >= 0 && double.IsFinite(loadW))
+        || !(panelM2 >= 0 && double.IsFinite(panelM2)) || !(efficiency >= 0 && efficiency <= 1) || !(minSocPct >= 0 && minSocPct < 100))
+        return Results.BadRequest("need capacityWh > 0, loadW >= 0, panelM2 >= 0, efficiency in [0, 1], minSocPct in [0, 100)");
     var site = data.FindSite(id);
     if (site is null)
         return Results.NotFound($"unknown site '{id}'");
@@ -217,8 +223,10 @@ api.MapGet("/fallback", (AppData data, DateTime date, int slipWeeks = 0, double 
 {
     if (BadMast(mast) is { } bad)
         return bad;
-    if (slipWeeks is < 0 or > 52 || stayDays <= 0)
-        return Results.BadRequest("slipWeeks must be in 0..52 and stayDays > 0");
+    if (slipWeeks is < 0 or > 52)
+        return Results.BadRequest("slipWeeks must be in 0..52");
+    if (BadStay(stayDays) is { } badStay)
+        return badStay;
     if (data.Heatmap(mast) is not { } heat)
         return Results.NotFound("heatmap not computed yet");
 
@@ -239,8 +247,8 @@ api.MapGet("/ranking", (AppData data, DateTime date, double stayDays = 14, int m
 {
     if (BadMast(mast) is { } bad)
         return bad;
-    if (stayDays is <= 0 or > 60)
-        return Results.BadRequest("stayDays must be in (0, 60]");
+    if (BadStay(stayDays) is { } badStay)
+        return badStay;
 
     var sites = data.Sites.Where(s => s.Terrain).ToArray();   // S10: a flat skyline cannot compete with real relief
     return Guard(() => Results.Ok(Analysis.Ranking(data.Ephemeris, sites, sites.Select(s => data.MaskOrFlat(s, mast)).ToArray(),
@@ -249,10 +257,11 @@ api.MapGet("/ranking", (AppData data, DateTime date, double stayDays = 14, int m
 
 api.MapPost("/custom", (CustomRequest req, AppData data) =>
 {
+    // "Must be inside" form: NaN and Infinity (accepted by the JSON reader when quoted) fail every comparison.
+    if (!(req.Lat >= -89.9 && req.Lat <= -80.5) || !double.IsFinite(req.Lon) || !(req.Mast >= 1 && req.Mast <= 20))
+        return Results.BadRequest("lat must be in [-89.9, -80.5] (south-pole map), lon a finite number and mast in [1, 20] m");
     if (data.Dem is null)
         return Results.Problem("terrain map not loaded", statusCode: 503);
-    if (req.Lat is < -89.9 or > -80.5 || req.Mast is < 1 or > 20)
-        return Results.BadRequest("lat must be in [-89.9, -80.5] (south-pole map) and mast in [1, 20] m");
 
     var site = new Site("custom", "Custom point", req.Lat, req.Lon, "custom", "");
     return Guard(() =>
@@ -278,6 +287,9 @@ app.Run();
 return 0;
 
 static IResult? BadMast(int mast) => mast is 2 or 10 ? null : Results.BadRequest("mast must be 2 or 10");
+
+// Same limit on every endpoint. "stayDays is <= 0 or > 60" would let NaN through: both comparisons are false for NaN.
+static IResult? BadStay(double stayDays) => stayDays > 0 && stayDays <= 60 ? null : Results.BadRequest("stayDays must be in (0, 60]");
 
 // Query strings without 'Z' arrive as Unspecified: treat them as UTC, like every time in this API.
 static DateTime Utc(DateTime? t) => t is null ? DateTime.UtcNow
