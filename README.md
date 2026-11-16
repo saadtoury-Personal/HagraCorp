@@ -450,8 +450,8 @@ docker run -p 10000:10000 lunarnav-api
 ## 🤝 Workflow and contributing
 
 - **Branches:** one branch per person, off `dev`. PRs go to `dev`.
-- **`main` accepts PRs from `dev` only** — enforced by the `owner-approval` workflow.
-- **Approval:** the repo owner must approve the **current head commit** (a review, or the `approved` label). New commits remove the label, so approval is given again.
+- **`main` accepts PRs from `dev` only** — checked by the `source-branch` job in the `owner-approval` workflow.
+- **Approval:** every PR needs a review from the repo owner (`.github/CODEOWNERS`, enforced by the branch ruleset). New commits dismiss the review, so approval is given again.
 - **Before opening a PR:** all tests green (`LunarNav.Core.Tests` and `LunarNav.Tests`).
 - **House rules:**
   - Never move an official site to its "best pixel" — show the gap instead.

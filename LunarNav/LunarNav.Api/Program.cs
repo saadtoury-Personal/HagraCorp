@@ -1,5 +1,8 @@
 using LunarNav.Api;
 using LunarNav.Core;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 if (args is ["precompute", var demArg, var dataArg])
 {
@@ -39,9 +42,32 @@ builder.Services.AddSingleton(appData);
 
 builder.Services.AddSingleton(new MoonService(new HttpClient { Timeout = TimeSpan.FromSeconds(3) }, appData));
 
+// The host's proxy appends the caller IP last; reading only that last entry stops clients spoofing it.
+builder.Services.Configure<ForwardedHeadersOptions>(o => { o.ForwardedHeaders = ForwardedHeaders.XForwardedFor; o.KnownIPNetworks.Clear(); o.KnownProxies.Clear(); });
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
+// Public API on a small free instance: cap requests per client, and run the costly /custom one at a time.
+builder.Services.AddRateLimiter(o => {
+    o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    o.AddPolicy("per-ip", ctx => {
+        var ip = ctx.Connection.RemoteIpAddress?.ToString();
+        // The in-memory test host has no client IP.
+        if (ip == null) return RateLimitPartition.GetNoLimiter("no-ip");
+        return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions {
+            PermitLimit = 300,
+            Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0
+        });
+    });
+    o.AddConcurrencyLimiter("custom", c => {
+        c.PermitLimit = 1;
+        c.QueueLimit = 2;
+        c.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+});
 
 var app = builder.Build();
+
+app.UseForwardedHeaders();   // first, so the rate limiter keys on the real client IP
 
 app.MapOpenApi();   // the OpenAPI document is public: the demo API has no secrets
 
@@ -50,8 +76,9 @@ app.UseSwaggerUI(o => o.SwaggerEndpoint("/openapi/v1.json", "LunarNav API"));
 app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 
 app.UseCors();
+app.UseRateLimiter();
 
-var api = app.MapGroup("/api");
+var api = app.MapGroup("/api").RequireRateLimiting("per-ip");
 
 api.MapGet("/health", (AppData data) => Results.Ok(new { status = "ok", sites = data.Sites.Count })).WithName("Health");
 
@@ -121,10 +148,11 @@ api.MapGet("/sites/{id}/battery", (string id, AppData data, DateTime? at, double
         return bad;
     if (BadStay(stayDays) is { } badStay)
         return badStay;
-    // Written as "must be inside": every comparison with NaN is false, so NaN and Infinity are rejected too.
-    if (!(capacityWh > 0 && double.IsFinite(capacityWh)) || !(loadW >= 0 && double.IsFinite(loadW))
-        || !(panelM2 >= 0 && double.IsFinite(panelM2)) || !(efficiency >= 0 && efficiency <= 1) || !(minSocPct >= 0 && minSocPct < 100))
-        return Results.BadRequest("need capacityWh > 0, loadW >= 0, panelM2 >= 0, efficiency in [0, 1], minSocPct in [0, 100)");
+    // "Must be inside" form: NaN fails every comparison, and the 1e9 caps stop huge values overflowing to Infinity (500).
+    if (!(capacityWh > 0 && capacityWh <= 1e9) || !(loadW >= 0 && loadW <= 1e9)
+        || !(panelM2 >= 0 && panelM2 <= 1e9) || !(efficiency >= 0 && efficiency <= 1)
+        || !(minSocPct >= 0 && minSocPct < 100))
+        return Results.BadRequest("need capacityWh in (0, 1e9], loadW in [0, 1e9], panelM2 in [0, 1e9], efficiency in [0, 1], minSocPct in [0, 100)");
     var site = data.FindSite(id);
     if (site is null)
         return Results.NotFound($"unknown site '{id}'");
@@ -165,8 +193,11 @@ api.MapGet("/sites/{id}/timeline", (string id, AppData data, DateTime? from, int
 {
     if (BadMast(mast) is { } bad)
         return bad;
+    // Cap the answer size: 366 days every 10 min was ~10 MB for one request.
     if (days is <= 0 or > 366 || stepMinutes < 10)
         return Results.BadRequest("days must be in 1..366 and stepMinutes >= 10");
+    if ((long)days * 1440 / stepMinutes > 9000)
+        return Results.BadRequest("days must be in 1..366, stepMinutes >= 10, and at most 9000 points (days * 1440 / stepMinutes)");
     var site = data.FindSite(id);
     if (site is null)
         return Results.NotFound($"unknown site '{id}'");
@@ -269,7 +300,7 @@ api.MapPost("/custom", (CustomRequest req, AppData data) =>
         var mask = HorizonMask.Compute(data.Dem, req.Lat, req.Lon, req.Mast);
         return Results.Ok(new CustomResponse(mask, Analysis.Metrics(data.Ephemeris, site, mask, Utc(req.At), 14)));
     });
-}).WithName("PostCustom");
+}).RequireRateLimiting("custom").WithName("PostCustom");
 
 api.MapGet("/moon", async (MoonService moon, DateTime? at, CancellationToken ct) =>
 {
