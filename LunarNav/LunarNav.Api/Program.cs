@@ -1,5 +1,6 @@
 using LunarNav.Api;
 using LunarNav.Core;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 
@@ -41,6 +42,8 @@ builder.Services.AddSingleton(appData);
 
 builder.Services.AddSingleton(new MoonService(new HttpClient { Timeout = TimeSpan.FromSeconds(3) }, appData));
 
+// The host's proxy appends the caller IP last; reading only that last entry stops clients spoofing it.
+builder.Services.Configure<ForwardedHeadersOptions>(o => { o.ForwardedHeaders = ForwardedHeaders.XForwardedFor; o.KnownIPNetworks.Clear(); o.KnownProxies.Clear(); });
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 // Public API on a small free instance: cap requests per client, and run the costly /custom one at a time.
 builder.Services.AddRateLimiter(o => {
@@ -63,6 +66,8 @@ builder.Services.AddRateLimiter(o => {
 });
 
 var app = builder.Build();
+
+app.UseForwardedHeaders();   // first, so the rate limiter keys on the real client IP
 
 app.MapOpenApi();   // the OpenAPI document is public: the demo API has no secrets
 

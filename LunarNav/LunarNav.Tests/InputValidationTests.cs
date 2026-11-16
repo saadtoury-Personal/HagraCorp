@@ -31,6 +31,7 @@ public class InputValidationTests : IClassFixture<WebApplicationFactory<Program>
     [InlineData("/api/sites/haworth/battery?at=2027-01-01T00:00:00Z&capacityWh=1e308")]
     [InlineData("/api/sites/haworth/battery?at=2027-01-01T00:00:00Z&loadW=2e9")]
     [InlineData("/api/sites/haworth/timeline?from=2027-01-01T00:00:00Z&days=366&stepMinutes=10")]
+    [InlineData("/api/sites/haworth/timeline?from=2027-01-01T00:00:00Z&days=63&stepMinutes=10")]
     [InlineData("/api/sites/haworth/battery?at=2027-01-01T00:00:00Z&efficiency=NaN")]
     [InlineData("/api/sites/haworth/battery?at=2027-01-01T00:00:00Z&minSocPct=NaN")]
     [InlineData("/api/sites/haworth/metrics?at=2027-01-01T00:00:00Z&sunRule=99")]
@@ -45,6 +46,14 @@ public class InputValidationTests : IClassFixture<WebApplicationFactory<Program>
     public async Task Timeline_YearHourly_StillAllowed()
     {
         var res = await _client.GetAsync("/api/sites/haworth/timeline?from=2027-01-01T00:00:00Z&days=366&stepMinutes=60");
+        Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+    }
+
+    [Fact]
+    public async Task Timeline_Exactly9000Points_Allowed()
+    {
+        // 125 * 1440 / 20 = 9000, the cap itself.
+        var res = await _client.GetAsync("/api/sites/haworth/timeline?from=2027-01-01T00:00:00Z&days=125&stepMinutes=20");
         Assert.Equal(HttpStatusCode.OK, res.StatusCode);
     }
 
