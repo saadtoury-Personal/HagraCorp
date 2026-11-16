@@ -104,7 +104,7 @@ export default function Site() {
 
   return (
     <div className="relative flex min-h-dvh flex-col">
-      <div className="relative flex flex-1 flex-col overflow-hidden bg-black pb-[170px] md:pb-[150px]">
+      <div className="relative flex flex-1 flex-col overflow-hidden bg-black md:pb-[150px]">
         <div className="relative z-20 flex shrink-0 flex-col gap-4 px-5 pt-20 md:px-9 lg:flex-row lg:items-start lg:justify-between">
           <header className="max-w-[56ch]">
             <h1 className="text-[clamp(22px,2.6vw,36px)] font-light uppercase leading-tight tracking-[0.1em] text-balance">{s.name}</h1>
@@ -207,7 +207,8 @@ export default function Site() {
         <span className="absolute bottom-[150px] right-5 z-[5] hidden md:bottom-[calc(150px-1.75rem)] md:right-9 md:block">
           <SourceTag source={live.source} />
         </span>
-        <dl className="absolute inset-x-5 bottom-[0px] z-[4] grid grid-cols-2 border-t border-line md:inset-x-9 md:grid-cols-4">
+        {/* Phones: the 2x2 grid is taller than any fixed reserve, so it flows below the view instead of overlaying it. */}
+        <dl className="relative z-[4] mx-5 grid md:absolute md:inset-x-9 md:bottom-0 md:mx-0 grid-cols-2 border-t border-line md:inset-x-9 md:grid-cols-4">
           {stats.map((k, i) => (
             <div key={k.label} className={`py-2.5 pr-4 ${i % 2 ? 'border-l border-line-soft pl-4' : ''} ${i > 1 ? 'border-t border-line-soft md:border-t-0' : ''} md:border-l md:pl-5 md:first:border-l-0 md:first:pl-0`}>
               <dt className="lab">

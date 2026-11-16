@@ -55,7 +55,7 @@ export default function TimeBar() {
         />
         <div className="-mt-1.5 flex justify-between text-xs text-faint" aria-hidden>
           {[0, 30, 60, 90].map((d) => (
-            <span key={d}>{dayLabel(d)}</span>
+            <span key={d} className={d % 90 ? 'max-sm:hidden' : ''}>{dayLabel(d)}</span>
           ))}
         </div>
       </div>
