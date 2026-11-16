@@ -119,10 +119,12 @@ api.MapGet("/sites/{id}/battery", (string id, AppData data, DateTime? at, double
 {
     if (BadMast(mast) is { } bad)
         return bad;
+    if (BadStay(stayDays) is { } badStay)
+        return badStay;
     // Written as "must be inside": every comparison with NaN is false, so NaN and Infinity are rejected too.
-    if (!(stayDays > 0 && stayDays <= 60) || !(capacityWh > 0 && double.IsFinite(capacityWh)) || !(loadW >= 0 && double.IsFinite(loadW))
+    if (!(capacityWh > 0 && double.IsFinite(capacityWh)) || !(loadW >= 0 && double.IsFinite(loadW))
         || !(panelM2 >= 0 && double.IsFinite(panelM2)) || !(efficiency >= 0 && efficiency <= 1) || !(minSocPct >= 0 && minSocPct < 100))
-        return Results.BadRequest("need stayDays in (0, 60], capacityWh > 0, loadW >= 0, panelM2 >= 0, efficiency in [0, 1], minSocPct in [0, 100)");
+        return Results.BadRequest("need capacityWh > 0, loadW >= 0, panelM2 >= 0, efficiency in [0, 1], minSocPct in [0, 100)");
     var site = data.FindSite(id);
     if (site is null)
         return Results.NotFound($"unknown site '{id}'");

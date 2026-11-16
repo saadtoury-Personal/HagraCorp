@@ -123,6 +123,15 @@ public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
         Assert.Contains("2031-01-01T00:00:00Z", await res.Content.ReadAsStringAsync());   // last row of the data
     }
 
+    [Theory]
+    [InlineData("/api/sites/haworth/timeline?from=2032-01-01T00:00:00Z&days=2")]
+    [InlineData("/api/sites/haworth/export.csv?from=2032-01-01T00:00:00Z&days=2")]
+    public async Task TimelineAndExport_StartAfterEndOfData_Returns400(string url)
+    {
+        var res = await _client.GetAsync(url);
+        Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
+    }
+
     [Fact]
     public async Task ExportCsv_UnknownSite_Returns404()
     {

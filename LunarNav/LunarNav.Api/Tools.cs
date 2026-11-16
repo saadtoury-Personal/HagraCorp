@@ -64,7 +64,10 @@ public static class Tools
 
         void Write<T>(string path, T value)
         {
-            File.WriteAllText(path, JsonSerializer.Serialize(value, json));
+            // Write then rename: the server may read this file while precompute runs, and must never see half of it.
+            var tmp = path + ".tmp";
+            File.WriteAllText(tmp, JsonSerializer.Serialize(value, json));
+            File.Move(tmp, path, overwrite: true);
             Console.WriteLine($"wrote {path}");
         }
     }

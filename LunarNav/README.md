@@ -10,18 +10,18 @@ The Moon has no air, so the answer is pure geometry: where the Sun and the Earth
 |---|---|
 | **32** landing sites (31 with real relief, Apollo 11 flat) | **43,825** hourly Sun/Earth positions, 2026 → 2030 (JPL Horizons) |
 | **57.8 M** terrain heights, 80 m pixels (NASA LOLA) | **0.006°** max gap vs JPL Horizons for Sun/Earth direction |
-| **0.7 pt** median gap vs NASA illumination maps (31 sites) | **14** HTTP endpoints |
-| **78** automated tests (59 maths, 19 API) | **0** network calls needed to answer (except the Moon picture) |
+| **0.7 pt** median gap vs NASA illumination maps (31 sites) | **16** HTTP endpoints |
+| **148** automated tests (87 maths, 61 API) | **0** network calls needed to answer (except the Moon picture) |
 
 ## Repository layout
 
 | Project | Role |
 |---|---|
 | `LunarNav.Core` | Pure maths and decisions: geometry, ephemeris, terrain/horizon mask, analysis. No files, no network, unit-testable. No dependency other than .NET 11. |
-| `LunarNav.Api` | ASP.NET Core (.NET 11) web server: 14 endpoints, input validation, error mapping, data loading, Moon proxy. Also the entry point of the offline `precompute` job. |
+| `LunarNav.Api` | ASP.NET Core (.NET 11) web server: 16 endpoints, input validation, error mapping, data loading, Moon proxy. Also the entry point of the offline `precompute` job. |
 | `LunarNav.Web` | Blazor web app. Its `wwwroot/data` folder holds the precomputed data files. |
-| `LunarNav.Core.Tests` | 59 tests on the maths (geometry vs JPL, DEM projection, ephemeris, gaps, battery, ranking…). |
-| `LunarNav.Tests` | 19 tests that start the real API in memory and call its endpoints. |
+| `LunarNav.Core.Tests` | 87 tests on the maths (geometry vs JPL, DEM projection, ephemeris, gaps, battery, ranking…). |
+| `LunarNav.Tests` | 61 tests that start the real API in memory and call its endpoints. |
 | `Dockerfile` | Container build used for hosting. |
 
 The split is deliberate: Core has no I/O, so every formula can be tested with plain numbers and reused by the API, the offline job, the tests and the web app. The API stays thin: it reads files, validates inputs and calls Core.
@@ -92,7 +92,9 @@ Base path `/api`. All GET except `/custom`. JSON in camelCase, times in UTC (a m
 | `GET /sites/{id}/battery` | `at`, `stayDays`, `mast`, `capacityWh` (5000), `loadW` (150), `panelM2` (2), `efficiency` (0.28), `minSocPct` (20) | `BatteryDto` |
 | `GET /sites/{id}/uncertainty` | `mast` | `UncertaintyDto` (41 points, ranges, best point) |
 | `GET /sites/{id}/blockers` | `from`, `to`, `mast` | `BlockersDto`: Sun hours flat vs real, top 3 blocking sectors |
-| `GET /sites/{id}/timeline` | `from` (now), `days` (30, max 366), `stepMinutes` (60, min 10), `mast` | Array of `TimelinePoint` |
+| `GET /sites/{id}/timeline` | `from` (now), `days` (30, max 366), `stepMinutes` (60, min 10), `mast` | Array of `TimelinePoint`, cut at the end of the data |
+| `GET /sites/{id}/export.csv` | `from` (now), `days` (30, max 366), `mast` | Hourly series as CSV (Sun/Earth position, visible fraction, power), with a header naming the sources |
+| `GET /validation` | | `validation.json`: our Sun/Earth % vs NASA PGDA for 31 sites, thresholds, negative controls |
 | `GET /heatmap` | `mast` | `HeatmapDto` (all sites × days) |
 | `GET /fallback` | **`date`**, `slipWeeks` (0), `stayDays` (14), `requireEarth` (true), `mast` | `FallbackDto`: ranked sites |
 | `GET /ranking` | **`date`**, `stayDays` (14), `mast` | `RankingDto`: robust ranking of relief sites |
@@ -155,7 +157,7 @@ Pull requests into `dev` need an approved review; tests run before merging.
 
 ## Known limits
 
-- Data covers 2026-2030 only (heatmap to 2030-10-31): dates outside return 400. Re-run the two offline jobs with a longer range to extend.
+- Data covers 2026-2030 only (heatmap to 2030-10-31): dates outside return 400 (a period that starts inside and runs past the end returns what exists). Re-run the two offline jobs with a longer range to extend.
 - The polar map covers −80° to −90° only: other sites get a flat skyline (`terrain: false`), are ranked last and are excluded from the robust ranking.
 - 80 m pixels and one observer point: small rocks and nearby relief are averaged (see uncertainty rings and the ±0.2° margin).
 - Only masts of 2 m and 10 m are precomputed; other heights (1-20 m) go through `/custom`.

@@ -96,6 +96,16 @@ public class AnalysisTests
         Assert.Equal(eph.End, pts[^1].T);
     }
 
+    [Fact]
+    public void Timeline_StartAfterEphemeris_Throws()
+    {
+        var t0 = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var eph = new Ephemeris(Enumerable.Range(0, 49).Select(h => new EphemSample(t0.AddHours(h), 0, 0, 0, 0, 384400)).ToList());
+        var site = new Site("eq", "Equator", 0, 0, "test", "", Terrain: false);
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            Analysis.Timeline(eph, site, HorizonMask.Flat(), t0.AddHours(49), t0.AddDays(30), TimeSpan.FromHours(1)));
+    }
+
     private static string FindData(string name)
     {
         for (var dir = new DirectoryInfo(AppContext.BaseDirectory); dir is not null; dir = dir.Parent)

@@ -43,6 +43,9 @@ public static class Analysis
     {
         if (step <= TimeSpan.Zero)
             throw new ArgumentOutOfRangeException(nameof(step), "step must be positive");
+        // Without this a start after the data gives an empty success, while a start before it gives 400.
+        if (start > eph.End)
+            throw new ArgumentOutOfRangeException(nameof(start), start, "start is after the end of the ephemeris");
         var stop = end < eph.End ? end : eph.End;
         var points = new List<TimelinePoint>();
         for (var t = start; t <= stop; t += step)

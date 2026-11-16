@@ -79,11 +79,6 @@ public sealed class Dem
         }
         int l0 = (int)Math.Floor(line);
         int s0 = (int)Math.Floor(sample);
-        if (l0 < 0 || s0 < 0 || l0 + 1 >= _lines || s0 + 1 >= _samples)
-        {
-            heightM = 0;
-            return false;
-        }
 
         double fl = line - l0;
         double fs = sample - s0;
