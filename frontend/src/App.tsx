@@ -1,5 +1,5 @@
-import { MoonIcon } from '@phosphor-icons/react'
-import { lazy, Suspense, useEffect } from 'react'
+import { ListIcon, MoonIcon, XIcon } from '@phosphor-icons/react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { BrowserRouter, NavLink, Route, Routes, useLocation } from 'react-router'
 import CopyLink from './components/CopyLink'
 import PageBoundary from './components/PageBoundary'
@@ -27,17 +27,31 @@ const links = [
 
 function Header() {
   const { pathname } = useLocation()
-  // On phones the links scroll sideways: keep the current one in view.
+  // The menu belongs to the page it was opened on, so any navigation (links, back button) closes it.
+  const [openOn, setOpenOn] = useState<string | null>(null)
+  const open = openOn === pathname
+  const setOpen = (o: boolean) => setOpenOn(o ? pathname : null)
   useEffect(() => {
-    document.querySelector('nav[aria-label="Main"] [aria-current="page"]')?.scrollIntoView({ inline: 'center', block: 'nearest' })
-  }, [pathname])
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpenOn(null)
+    const wide = matchMedia('(min-width: 768px)')
+    const onWide = () => wide.matches && setOpenOn(null)
+    document.addEventListener('keydown', onKey)
+    wide.addEventListener('change', onWide)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      wide.removeEventListener('change', onWide)
+      document.body.style.overflow = ''
+    }
+  }, [open])
   return (
     <header className="fixed inset-x-0 top-0 z-30 flex h-16 items-center gap-2 bg-bg px-3 md:gap-6 md:bg-gradient-to-b md:from-bg md:to-transparent md:px-9">
       <NavLink to="/" className="flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-3 text-sm font-medium uppercase tracking-[0.3em]" aria-label="LunarNav home">
         <MoonIcon size={22} weight="light" aria-hidden />
-        <span className="hidden sm:inline">LunarNav</span>
+        <span>LunarNav</span>
       </NavLink>
-      <nav aria-label="Main" className="flex min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent,#000_6%,#000_88%,transparent)] md:justify-center md:[mask-image:none] [&::-webkit-scrollbar]:hidden">
+      <nav aria-label="Main" className="hidden min-w-0 flex-1 justify-center md:flex">
         {links.map(([to, label]) => (
           <NavLink
             key={to}
@@ -53,8 +67,35 @@ function Header() {
           </NavLink>
         ))}
       </nav>
+      <span className="flex-1 md:hidden" />
       <ServerStatus />
       <CopyLink />
+      <button
+        type="button"
+        className="flex min-h-11 min-w-11 shrink-0 items-center justify-center text-ink md:hidden"
+        aria-expanded={open}
+        aria-controls="mobile-nav"
+        aria-label={open ? 'Close menu' : 'Open menu'}
+        onClick={() => setOpen(!open)}
+      >
+        {open ? <XIcon size={22} aria-hidden /> : <ListIcon size={22} aria-hidden />}
+      </button>
+      {open && (
+        <nav id="mobile-nav" aria-label="Main" className="menu-in fixed inset-x-0 bottom-0 top-16 flex flex-col overflow-y-auto border-t border-line bg-bg px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-2 md:hidden">
+          {links.map(([to, label]) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/'}
+              className={({ isActive }) =>
+                `flex min-h-14 items-center border-b border-line text-lg font-medium uppercase tracking-[0.12em] ${isActive ? 'text-ink' : 'text-dim'}`
+              }
+            >
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+      )}
     </header>
   )
 }
