@@ -15,7 +15,13 @@ const TEAM: Member[] = [
     linkedin: 'https://www.linkedin.com/in/youssef-ben-amor-40132a35b/',
     email: 'mohamedyoussefbenamor@gmail.com',
   },
-  { name: 'Saad', role: 'Tech lead, full-stack and ephemeris engineer', owns: 'Architecture, the Sun and Earth position engine, integration.' },
+  {
+    name: 'Saad',
+    role: 'Tech lead, full-stack and ephemeris engineer',
+    owns: 'Architecture, the Sun and Earth position engine, integration.',
+    linkedin: 'https://www.linkedin.com/in/saad-toury-960aaa36a/',
+    email: 'saadtoury@gmail.com',
+  },
   { name: 'Nizar', role: 'Backend and API developer', owns: 'The API, the per-site pre-computation cache, deployment.' },
 ]
 
