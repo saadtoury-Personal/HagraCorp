@@ -1,20 +1,14 @@
 name: Owner approval
 
-# Green only when the repo owner approved the current head commit:
-#  - an APPROVED review by the owner on the head SHA (PRs opened by someone else), or
-#  - the "approved" label, applied by the owner (your own PRs: GitHub won't let you review them).
-# New commits remove the label, so approval must be given again.
+# Owner approval is no longer a check here: any PR can rewrite a workflow and fake a green check of the same name.
+# It is enforced by the ruleset instead (CODEOWNERS + "require code owner review", stale reviews dismissed on push).
 on:
   pull_request:
     branches: [main, dev]
-    types: [opened, reopened, synchronize, labeled, unlabeled]
-  pull_request_review:
-    types: [submitted, dismissed]
+    types: [opened, reopened, synchronize, edited]
 
 permissions:
   contents: read
-  pull-requests: write # to remove the label on new commits
-  actions: write # to re-run the PR's own failed check once the owner approves
 
 jobs:
   # Rulesets can't filter on the source branch, so main only accepts PRs from dev here.
@@ -30,45 +24,5 @@ jobs:
         run: |
           if [ "$BASE" = "main" ] && { [ "$HEAD_REF" != "dev" ] || [ "$HEAD_REPO" != "$REPO" ]; }; then
             echo "::error::PRs into main must come from $REPO:dev (got '$HEAD_REPO:$HEAD_REF')."
-            exit 1
-          fi
-
-  approval:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check owner approval
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-          PR: ${{ github.event.pull_request.number }}
-          HEAD: ${{ github.event.pull_request.head.sha }}
-          OWNER: ${{ github.repository_owner }}
-          ACTION: ${{ github.event.action }}
-        run: |
-          set -euo pipefail
-          # New commits drop the label. No exit here: a re-run of this run after approval must be able to pass.
-          if [ "$ACTION" = "synchronize" ]; then
-            gh api -X DELETE "repos/$REPO/issues/$PR/labels/approved" >/dev/null 2>&1 || true
-          fi
-
-          reviewed=$(gh api --paginate "repos/$REPO/pulls/$PR/reviews" \
-            --jq "[.[] | select(.user.login == \"$OWNER\" and .commit_id == \"$HEAD\" and .state == \"APPROVED\")] | length" \
-            | awk '{s+=$1} END {print s+0}')
-
-          has_label=$(gh api "repos/$REPO/issues/$PR/labels" --jq '[.[] | select(.name == "approved")] | length')
-          labeler=$(gh api --paginate "repos/$REPO/issues/$PR/events" \
-            --jq '.[] | select(.event == "labeled" and .label.name == "approved") | .actor.login' | tail -n1)
-
-          if [ "$reviewed" -gt 0 ] || { [ "$has_label" -gt 0 ] && [ "$labeler" = "$OWNER" ]; }; then
-            echo "Approved by $OWNER."
-            # A review runs in its own check suite, and the earlier failed pull_request run still blocks the merge.
-            # Re-run that one so it turns green too.
-            if [ "$GITHUB_EVENT_NAME" = "pull_request_review" ]; then
-              run=$(gh api "repos/$REPO/actions/runs?event=pull_request&head_sha=$HEAD" \
-                --jq "[.workflow_runs[] | select(.path == \".github/workflows/owner-approval.yml\")][0] | select(.conclusion == \"failure\") | .id")
-              if [ -n "$run" ]; then gh api -X POST "repos/$REPO/actions/runs/$run/rerun-failed-jobs" >/dev/null || echo "::warning::Could not re-run run $run; re-run it from the Actions tab."; fi
-            fi
-          else
-            echo "::error::Not approved by $OWNER. Approve the PR, or add the 'approved' label yourself."
             exit 1
           fi
