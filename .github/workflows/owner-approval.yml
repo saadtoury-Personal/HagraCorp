@@ -14,6 +14,7 @@ on:
 permissions:
   contents: read
   pull-requests: write # to remove the label on new commits
+  actions: write # to re-run the PR's own failed check once the owner approves
 
 jobs:
   # Rulesets can't filter on the source branch, so main only accepts PRs from dev here.
@@ -45,10 +46,9 @@ jobs:
           ACTION: ${{ github.event.action }}
         run: |
           set -euo pipefail
+          # New commits drop the label. No exit here: a re-run of this run after approval must be able to pass.
           if [ "$ACTION" = "synchronize" ]; then
             gh api -X DELETE "repos/$REPO/issues/$PR/labels/approved" >/dev/null 2>&1 || true
-            echo "::error::New commits pushed. Owner must approve again (add the 'approved' label)."
-            exit 1
           fi
 
           reviewed=$(gh api --paginate "repos/$REPO/pulls/$PR/reviews" \
@@ -61,6 +61,13 @@ jobs:
 
           if [ "$reviewed" -gt 0 ] || { [ "$has_label" -gt 0 ] && [ "$labeler" = "$OWNER" ]; }; then
             echo "Approved by $OWNER."
+            # A review runs in its own check suite, and the earlier failed pull_request run still blocks the merge.
+            # Re-run that one so it turns green too.
+            if [ "$GITHUB_EVENT_NAME" = "pull_request_review" ]; then
+              run=$(gh api "repos/$REPO/actions/runs?event=pull_request&head_sha=$HEAD" \
+                --jq "[.workflow_runs[] | select(.path == \".github/workflows/owner-approval.yml\")][0] | select(.conclusion == \"failure\") | .id")
+              if [ -n "$run" ]; then gh api -X POST "repos/$REPO/actions/runs/$run/rerun-failed-jobs" >/dev/null || echo "::warning::Could not re-run run $run; re-run it from the Actions tab."; fi
+            fi
           else
             echo "::error::Not approved by $OWNER. Approve the PR, or add the 'approved' label yourself."
             exit 1
