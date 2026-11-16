@@ -488,6 +488,18 @@ docker run -p 10000:10000 lunarnav-api
 
 ---
 
+## License
+
+Copyright (C) 2026 the HagraCorp team.
+
+LunarNav is free software, licensed under the [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0), an OSI-approved open-source license as required by the NASA Space Apps rules. You may use, modify and share it, but if you run a modified version as a network service, you must publish your source code under the same license.
+
+For use under different terms (for example, a commercial license), contact the team.
+
+Third-party data and models keep their own terms; see *Sources and credits* above.
+
+---
+
 <div align="center">
 
 *Small changes, big effects. That is the whole Moon in one sentence.* 🌑→🌕
